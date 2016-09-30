@@ -1,6 +1,6 @@
 # tankmayhem<br />
 CS 319 – Object Oriented Software Engineering <br />
-Instructor:Bora Güngören  <br />
+Instructor: Bora Güngören <br />
 Section 1 – Team 5:       <br />
 Turac Abbaszade, 21402997 <br />
 Burak Gök, 21302025       <br />
