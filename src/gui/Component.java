@@ -1,5 +1,7 @@
 package gui;
 
+import java.util.ArrayList;
+import java.util.List;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 
@@ -7,7 +9,7 @@ import processing.core.PGraphics;
  *
  * @author Burak Gök
  */
-public abstract class Component {
+public abstract class Component { //implements KeyListener, MouseListener {
     /**
      * Parent of this component.
      */
@@ -20,22 +22,50 @@ public abstract class Component {
     int z_order;
     
     /**
-     * Graphics object of this component.
-     */
-    protected PGraphics g;
-    
-    /**
      * Bounds of this component.
      * Top, Left, Bottom, Right // TODO Unify bounds
      */
     protected int[] bounds;
+    
+//    protected final List<KeyListener> keyListeners = new ArrayList<>(1);
+//    protected final List<MouseListener> mouseListeners = new ArrayList<>(1);
+//    
+//    public boolean addKeyListener(KeyListener listener) {
+//        if (keyListeners.contains(listener))
+//            return false;
+//        keyListeners.add(listener);
+//        return true;
+//    }
+//    public boolean removeKeyListener(KeyListener listener) {
+//        return keyListeners.remove(listener);
+//    }
+//    
+//    public boolean addMouseListener(MouseListener listener) {
+//        if (mouseListeners.contains(listener))
+//            return false;
+//        mouseListeners.add(listener);
+//        return true;
+//    }
+//    public boolean removeMouseListener(MouseListener listener) {
+//        return mouseListeners.remove(listener);
+//    }
+    
+//    protected KeyListener keyListener = null;
+//    protected MouseListener mouseListener = null;
+    
+//    public void setKeyListener(KeyListener listener) {
+//        keyListener = listener;
+//    }
+//    public void setMouseListener(MouseListener listener) {
+//        mouseListener = listener;
+//    }
     
     /**
      * Sets the parent of this component
      */
     public void setParent(Parent parent) {
         this.parent = parent;
-        g = parent.getGraphics();
+//        g = parent.getGraphics();
     }
     
 //    /**
@@ -47,17 +77,9 @@ public abstract class Component {
 //    }
     
     /**
-     * Sets the graphics object of this component.
-     */
-    public void setGraphics(PGraphics g) {
-        this.g = g;
-    }
-    
-    /**
      * Sets the bounds of this component.
-     * @param bounds Top, Left, Bottom, Right // TODO Unify bounds
      */
-    public void setBounds(int[] bounds) {
+    public void setBounds(int top, int left, int bottom, int right) { // TODO Unify bounds
         this.bounds = bounds;
     }
     
@@ -90,6 +112,6 @@ public abstract class Component {
     /**
      * Draws this component inside its bounds.
      */
-    public abstract void draw();
+    public abstract void draw(PGraphics g);
     
 }

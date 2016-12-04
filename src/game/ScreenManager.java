@@ -6,10 +6,15 @@ import processing.event.KeyEvent;
 import processing.event.MouseEvent;
 
 /**
- *
+ * Singleton
  * @author Burak Gök
  */
 public class ScreenManager extends PApplet {
+    /**
+     * Currently active instance of this class.
+     */
+    private static ScreenManager instance = null;
+    
     /**
      * Maintains game menus.
      */
@@ -19,6 +24,10 @@ public class ScreenManager extends PApplet {
             return ScreenManager.this;
         }
     };
+    
+    public ScreenManager() {
+        instance = this;
+    }
     
     @Override
     public void settings() {
@@ -59,30 +68,43 @@ public class ScreenManager extends PApplet {
     public void handleMouseEvent(MouseEvent event) {
         switch (event.getAction()) {
             case MouseEvent.PRESS:
-                topLevelParent.mousePressed(event);
+                topLevelParent.mousePressed(new gui.MouseEvent(event));
                 break;
             case MouseEvent.RELEASE:
-                topLevelParent.mouseReleased(event);
+                topLevelParent.mouseReleased(new gui.MouseEvent(event));
                 break;
             case MouseEvent.CLICK:
-                topLevelParent.mouseClicked(event);
+                topLevelParent.mouseClicked(new gui.MouseEvent(event));
                 break;
             case MouseEvent.DRAG:
-                topLevelParent.mouseDragged(event);
+                topLevelParent.mouseDragged(new gui.MouseEvent(event));
                 break;
             case MouseEvent.MOVE:
-                topLevelParent.mouseMoved(event);
+                topLevelParent.mouseMoved(new gui.MouseEvent(event));
                 break;
             case MouseEvent.ENTER:
-                topLevelParent.mouseEntered(event);
+                topLevelParent.mouseEntered(new gui.MouseEvent(event));
                 break;
             case MouseEvent.EXIT:
-                topLevelParent.mouseExited(event);
+                topLevelParent.mouseExited(new gui.MouseEvent(event));
                 break;
             case MouseEvent.WHEEL:
-                topLevelParent.mouseWheel(event);
+                topLevelParent.mouseWheel(new gui.MouseEvent(event));
                 break;
         }
+    }
+    
+    /**
+     * Returns the currently active instance of this class.
+     */
+    public static ScreenManager getInstance() {
+        return instance;
+    }
+    
+    @Override
+    public void finalize() {
+        if (instance == this)
+            instance = null;
     }
     
 }

@@ -5,8 +5,8 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import processing.core.PGraphics;
+import processing.core.PImage;
 import processing.event.KeyEvent;
-import processing.event.MouseEvent;
 
 /**
  * 
@@ -39,21 +39,14 @@ public class Parent extends Component implements InputListener {
      */
     private SortedSet<Component> components;
     
-    /**
-     * The children that listen to key events.
-     */
     private Map<Integer, KeyListener> keyListeners;
-    
-    /**
-     * The children that listen to mouse events.
-     */
     private SortedSet<MouseListener> mouseListeners;
     
     public Parent() {
         components = new TreeSet<>((c1, c2) -> c2.z_order - c1.z_order);
         keyListeners = new HashMap<>();
         mouseListeners = new TreeSet<>(
-                (m1, m2) -> ((Component)m2).z_order - ((Component)m1).z_order);
+                (m1, m2) -> m1.getZOrder() - m2.getZOrder());
     }
     
     /**
@@ -65,8 +58,6 @@ public class Parent extends Component implements InputListener {
         comp.z_order = z_order;
         components.add(comp);
         comp.setParent(this);
-        if (comp instanceof MouseListener)
-            mouseListeners.add((MouseListener) comp);
     }
     
     /**
@@ -85,26 +76,23 @@ public class Parent extends Component implements InputListener {
      */
     public boolean remove(Component comp) {
         boolean success = components.remove(comp);
-        if (success) {
+        if (success)
             comp.setParent(null);
-            if (comp instanceof MouseListener)
-                mouseListeners.remove((MouseListener) comp);
-        }
         return success;
     }
+    
+    // TODO updateComponents() -> Collections (Sets, Lists) -> Arrays
+    //                            to enable fast iteration
     
     /**
      * Draws the components owned by this parent.
      */
-    private void drawComponents() {
-        components.forEach((c) -> c.draw());
-    }
-    
-    /**
-     * Returns the graphics object of this parent.
-     */
-    PGraphics getGraphics() {
-        return g;
+    private void drawComponents(PGraphics g) { // TODO Unify bounds
+        components.forEach((c) -> {
+            g.translate(c.bounds[1], c.bounds[0]);
+            c.draw(g);
+            g.translate(-c.bounds[1], -c.bounds[0]);
+        });
     }
     
     /**
@@ -119,14 +107,18 @@ public class Parent extends Component implements InputListener {
      * A parent catches the focus when the key in which it is interested is
      * pressed, so that its children can be invoked during the key events
      * involving their interested keys.
+     * @return True if the focus key is successfully set. If this parent is a
+     *         top-level parent, false is returned.
      */
-    public void setFocusKey(int key) {
-        if (parent != null)
-            parent.addKeyListener(this, key);
+    public boolean setFocusKey(int key) {
+        if (parent == null)
+            return false;
+        parent.addKeyListener(this, key);
+        return true;
     }
     
     /**
-     * Associates the keys given with the specified key listener.
+     * Associates the given keys with the specified key listener.
      */
     public void addKeyListener(KeyListener listener, int... interestedKeys) {
         for (int key : interestedKeys) {
@@ -136,17 +128,41 @@ public class Parent extends Component implements InputListener {
         }
     }
     
+    /**
+     * Adds the specified mouse listener.
+     */
+    public void addMouseListener(MouseListener listener) {
+        mouseListeners.add(listener);
+    }
+    
+    private boolean enabled = true;
+    private PImage disabledImage = null;
+    
     @Override
-    public void draw() {
-        drawComponents();
+    public void draw(PGraphics g) {
+        if (enabled)
+            drawComponents(g);
+        else
+            g.image(disabledImage, 0, 0);
     }
     
     @Override
     public void setEnabled(boolean enabled) {
-        // TODO Gray-scaled, Unhandle key & mouse events
+        // TODO Unify bounds
+        this.enabled = enabled;
+        if (enabled)
+            disabledImage = null;
+        else {
+            PGraphics g2 = getApplicationFrame()
+                .createGraphics(bounds[3] - bounds[1], bounds[2] - bounds[0]);
+            draw(g2);
+            g2.filter(PImage.BLUR, 6);
+            disabledImage = g2;
+        }
     }
     
     public void keyPressed(KeyEvent event) {
+        if (!enabled) return;
         KeyListener listener = keyListeners.get(event.getKeyCode());
         if (listener != null)
             listener.keyPressed(event);
@@ -160,51 +176,69 @@ public class Parent extends Component implements InputListener {
         // TODO: Test keyPressed()
     }
     
-    public boolean mousePressed(MouseEvent event) {
-//        for (MouseListener comp : mouseListeners) {
-//            boolean consumed = comp.mousePressed(event);
-//            if (consumed)
-//                return true;
-//        }
-//        return false;
-        return mouseListeners.stream()
-                .map((comp) -> comp.mousePressed(event))
-                .anyMatch((consumed) -> (consumed));
+    public int[] getBounds() {
+        return bounds;
     }
+    public int getZOrder() {
+        return z_order;
+    }
+    
+    public boolean mousePressed(MouseEvent e) {
+//        MouseEvent event = new MouseEvent(e.getNative(), e.getMillis(),
+//                e.getAction(), e.getModifiers(), bounds[1], bounds[0], 
+//                e.getButton(), e.getCount()); // slow and space-intensive
+        // TODO Unify bounds
+//        return mouseListeners.stream()
+//                .filter((l) -> inside(l.getBounds(), e.getX(), e.getY()))
+//                .map((listener) -> listener.mousePressed(
+//                    e.translate(bounds[1], bounds[0])))
+//                .anyMatch((consumed) -> (consumed));
+        if (!enabled) return false;
+        for (MouseListener listener : mouseListeners) {
+            if (inside(listener.getBounds(), e.getX(), e.getY())) {
+                boolean consumed = listener.mousePressed(
+                        e.translate(bounds[1], bounds[0]));
+                if (consumed)
+                    return true;
+                e.translate(-bounds[1], -bounds[0]);
+            }
+        }
+        return false;
+    }
+
+    // A parent can catch a mouse event:
+//    @Override
+//    public boolean mousePressed(MouseEvent e) {
+//        if (!super.mousePressed(e)) {
+//            // Parent catches the event.
+//        }
+//    }
+    
     public boolean mouseReleased(MouseEvent event) {
-        return mouseListeners.stream()
-                .map((comp) -> comp.mouseReleased(event))
-                .anyMatch((consumed) -> (consumed));
+        return false;
     }
     public boolean mouseClicked(MouseEvent event) {
-        return mouseListeners.stream()
-                .map((comp) -> comp.mouseClicked(event))
-                .anyMatch((consumed) -> (consumed));
+        return false;
     }
     public boolean mouseDragged(MouseEvent event) {
-        return mouseListeners.stream()
-                .map((comp) -> comp.mouseDragged(event))
-                .anyMatch((consumed) -> (consumed));
+        return false;
     }
     public boolean mouseMoved(MouseEvent event) {
-        return mouseListeners.stream()
-                .map((comp) -> comp.mouseMoved(event))
-                .anyMatch((consumed) -> (consumed));
+        return false;
     }
     public boolean mouseEntered(MouseEvent event) {
-        return mouseListeners.stream()
-                .map((comp) -> comp.mouseEntered(event))
-                .anyMatch((consumed) -> (consumed));
+        return false;
     }
     public boolean mouseExited(MouseEvent event) {
-        return mouseListeners.stream()
-                .map((comp) -> comp.mouseExited(event))
-                .anyMatch((consumed) -> (consumed));
+        return false;
     }
     public boolean mouseWheel(MouseEvent event) {
-        return mouseListeners.stream()
-                .map((comp) -> comp.mouseWheel(event))
-                .anyMatch((consumed) -> (consumed));
+        return false;
+    }
+    
+    private static boolean inside(int[] bounds, int x, int y) { // TODO Unify bounds
+        return bounds[1] <= x && x <= bounds[3] && 
+               bounds[0] <= y && y <= bounds[2]; 
     }
     
 }
