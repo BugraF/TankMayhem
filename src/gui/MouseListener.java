@@ -13,8 +13,6 @@ package gui;
  * @author Burak Gök
  */
 public interface MouseListener {
-    int[] getBounds();
-    int getZOrder();
     boolean mousePressed(MouseEvent e);
     boolean mouseReleased(MouseEvent e);
     boolean mouseClicked(MouseEvent e);

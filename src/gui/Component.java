@@ -1,7 +1,5 @@
 package gui;
 
-import java.util.ArrayList;
-import java.util.List;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 
@@ -9,7 +7,7 @@ import processing.core.PGraphics;
  *
  * @author Burak Gök
  */
-public abstract class Component { //implements KeyListener, MouseListener {
+public abstract class Component {
     /**
      * Parent of this component.
      */
@@ -23,49 +21,20 @@ public abstract class Component { //implements KeyListener, MouseListener {
     
     /**
      * Bounds of this component.
-     * Top, Left, Bottom, Right // TODO Unify bounds
+     * Top, Left, Bottom, Right
      */
     protected int[] bounds;
     
-//    protected final List<KeyListener> keyListeners = new ArrayList<>(1);
-//    protected final List<MouseListener> mouseListeners = new ArrayList<>(1);
-//    
-//    public boolean addKeyListener(KeyListener listener) {
-//        if (keyListeners.contains(listener))
-//            return false;
-//        keyListeners.add(listener);
-//        return true;
-//    }
-//    public boolean removeKeyListener(KeyListener listener) {
-//        return keyListeners.remove(listener);
-//    }
-//    
-//    public boolean addMouseListener(MouseListener listener) {
-//        if (mouseListeners.contains(listener))
-//            return false;
-//        mouseListeners.add(listener);
-//        return true;
-//    }
-//    public boolean removeMouseListener(MouseListener listener) {
-//        return mouseListeners.remove(listener);
-//    }
-    
-//    protected KeyListener keyListener = null;
-//    protected MouseListener mouseListener = null;
-    
-//    public void setKeyListener(KeyListener listener) {
-//        keyListener = listener;
-//    }
-//    public void setMouseListener(MouseListener listener) {
-//        mouseListener = listener;
-//    }
+//    /**
+//     * Indicates whether this component is responsive to key and mouse events.
+//     */
+//    protected boolean enabled;
     
     /**
      * Sets the parent of this component
      */
     public void setParent(Parent parent) {
         this.parent = parent;
-//        g = parent.getGraphics();
     }
     
 //    /**
@@ -79,14 +48,17 @@ public abstract class Component { //implements KeyListener, MouseListener {
     /**
      * Sets the bounds of this component.
      */
-    public void setBounds(int top, int left, int bottom, int right) { // TODO Unify bounds
-        this.bounds = bounds;
+    public void setBounds(int top, int left, int bottom, int right) {
+        bounds = new int[] {top, left, bottom, right};
     }
     
-    /**
-     * Enables/disables this component.
-     */
+//    /**
+//     * Enables/disables this component.
+//     */
     public abstract void setEnabled(boolean enabled);
+//    public void setEnabled(boolean enabled) {
+//        this.enabled = enabled;
+//    }
     
     /**
      * Returns the top-level parent of this component.
