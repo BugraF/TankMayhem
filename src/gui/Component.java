@@ -25,10 +25,10 @@ public abstract class Component {
      */
     protected int[] bounds;
     
-//    /**
-//     * Indicates whether this component is responsive to key and mouse events.
-//     */
-//    protected boolean enabled;
+    /**
+     * Indicates whether this component is responsive to key and mouse events.
+     */
+    protected boolean enabled = true;
     
     /**
      * Sets the parent of this component
@@ -55,10 +55,10 @@ public abstract class Component {
 //    /**
 //     * Enables/disables this component.
 //     */
-    public abstract void setEnabled(boolean enabled);
-//    public void setEnabled(boolean enabled) {
-//        this.enabled = enabled;
-//    }
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+//    public abstract void setEnabled(boolean enabled);
     
     /**
      * Returns the top-level parent of this component.

@@ -14,6 +14,10 @@ public class MouseEvent {
         this.event = event;
     }
     
+    public int getAction() {
+        return event.getAction();
+    }
+    
     public MouseEvent translate(int x, int y) {
         translateX = x;
         translateY = y;

@@ -20,16 +20,6 @@ import processing.event.KeyEvent;
  * mouse pointer against the alpha channel of its image and consumes the mouse
  * event accordingly.
  * 
- * A parent can consume a mouse event itself:
- * <blockquote><pre>
- *   {@literal @}Override
- *    public boolean mousePressed(MouseEvent e) {
- *        if (!super.mousePressed(e)) {
- *            // Parent catches the event.
- *        }
- *    }
- * </pre></blockquote>
- * 
  * When a parent catches a key event, it checks whether there is a child
  * listening to the key. If a key listener is found, it is invoked by passing
  * the key event to it. If the key is not listened by any component, the key
@@ -45,6 +35,11 @@ public class Parent extends InteractiveComponent {
      * If null, there is no focused child.
      */
     private Component focusedChild = null;
+    
+    /**
+     * The code of the key used by this parent to be focused.
+     */
+    private int focusKey;
     
     /**
      * The components owned by this parent.
@@ -130,6 +125,7 @@ public class Parent extends InteractiveComponent {
     public boolean setFocusKey(int key) {
         if (parent == null)
             return false;
+        focusKey = key;
         parent.associateKeys(this, key);
         return true;
     }
@@ -145,7 +141,6 @@ public class Parent extends InteractiveComponent {
         }
     }
     
-    private boolean enabled = true;
     private PImage disabledImage = null;
     
     @Override
@@ -153,12 +148,12 @@ public class Parent extends InteractiveComponent {
         if (enabled)
             drawComponents(g);
         else
-            g.image(disabledImage, bounds[1], bounds[0]);
+            g.image(disabledImage, 0, 0);
     }
     
     @Override
     public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+        super.setEnabled(enabled);
         if (enabled)
             disabledImage = null;
         else {
@@ -170,56 +165,78 @@ public class Parent extends InteractiveComponent {
         }
     }
     
-    public void keyPressed(KeyEvent event) {
+    /*
+    The castings from KeyListener/MouseListener to Component/InteractiveComponent
+    in associateKeys(), handleKeyEvent(), handleMouseEvent() are because event
+    listeners of components are handled by this class. Since a component can only
+    be listened by itself in the current design, they are not wrong, albeit ugly.
+    If the listener handling logic is decoupled from this class and moved to
+    InteractiveComponent, this problem would be solved.
+    */
+
+    @Override
+    public void handleKeyEvent(KeyEvent e) {
         if (!enabled) return;
-        KeyListener listener = keyListeners.get(event.getKeyCode());
+        propagateKeyEvent(this, e);
+        KeyListener listener = keyListeners.get(e.getKeyCode());
         if (listener != null)
-            listener.keyPressed(event);
+            ((InteractiveComponent)listener).handleKeyEvent(e);
         else if (focusedChild != null && focusedChild instanceof KeyListener)
-            ((KeyListener) focusedChild).keyPressed(event);
+            ((InteractiveComponent)focusedChild).handleKeyEvent(e);
     }
-    public void keyReleased(KeyEvent event) {
-        // TODO: Test keyPressed()
-    }
-    public void keyTyped(KeyEvent event) {
-        // TODO: Test keyPressed()
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == focusKey)
+            if (parent != null)
+                parent.setFocusedChild(this);
     }
     
-    public boolean mousePressed(MouseEvent e) {
-        if (!enabled) return false;
+//    public void keyPressed(KeyEvent event) {
+//        if (!enabled) return;
+//        KeyListener listener = keyListeners.get(event.getKeyCode());
+//        if (listener != null)
+//            listener.keyPressed(event);
+//        else if (focusedChild != null && focusedChild instanceof KeyListener)
+//            ((KeyListener) focusedChild).keyPressed(event);
+//    }
+//    public void keyReleased(KeyEvent event) {
+//        // TODO: Test keyPressed()
+//    }
+//    public void keyTyped(KeyEvent event) {
+//        // TODO: Test keyPressed()
+//    }
+
+    @Override
+    public boolean handleMouseEvent(MouseEvent e) {
+        if (!enabled) return true;
         for (MouseListener listener : mouseListeners) {
             if (inside(((Component)listener).bounds, e.getX(), e.getY())) {
-                boolean consumed = listener.mousePressed(
-                        e.translate(bounds[1], bounds[0]));
+                boolean consumed = ((InteractiveComponent)listener)
+                        .handleMouseEvent(e.translate(bounds[1], bounds[0]));
                 if (consumed)
                     return true;
                 e.translate(-bounds[1], -bounds[0]);
             }
         }
-        return false;
+        return propagateMouseEvent(this, e);
     }
     
-    public boolean mouseReleased(MouseEvent event) {
-        return false;
-    }
-    public boolean mouseClicked(MouseEvent event) {
-        return false;
-    }
-    public boolean mouseDragged(MouseEvent event) {
-        return false;
-    }
-    public boolean mouseMoved(MouseEvent event) {
-        return false;
-    }
-    public boolean mouseEntered(MouseEvent event) {
-        return false;
-    }
-    public boolean mouseExited(MouseEvent event) {
-        return false;
-    }
-    public boolean mouseWheel(MouseEvent event) {
-        return false;
-    }
+//    public boolean mousePressed(MouseEvent e) {
+//        if (!enabled) return true;
+//        for (MouseListener listener : mouseListeners) {
+//            if (inside(((Component)listener).bounds, e.getX(), e.getY())) {
+//                boolean consumed = listener.mousePressed(
+//                        e.translate(bounds[1], bounds[0]));
+//                if (consumed)
+//                    return true;
+//                e.translate(-bounds[1], -bounds[0]);
+//            }
+//        }
+//        return false;
+//    }
+    
+    // TODO Other mouse events
     
     private static boolean inside(int[] bounds, int x, int y) {
         return bounds[1] <= x && x <= bounds[3] && 

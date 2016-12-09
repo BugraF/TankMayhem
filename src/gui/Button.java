@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import processing.core.PGraphics;
 import processing.core.PImage;
+import processing.event.KeyEvent;
 
 /**
  *
@@ -27,6 +28,12 @@ public class Button extends InteractiveComponent {
      * When the button is disabled, the gray-scaled normal state image is used.
      */
     private PImage[] stateImages; // normal, hover, pressed, disabled
+    
+    /**
+     * Key code of the mnemonic of this button.
+     * A mnemonic can be a key combination.
+     */
+    private int mnemonic;
     
     /**
      * The objects that listen to the invocation of this button.
@@ -55,14 +62,12 @@ public class Button extends InteractiveComponent {
     
     @Override
     public void draw(PGraphics g) {
-        g.image(stateImages[state], bounds[1], bounds[0]);
+        g.image(stateImages[state], 0, 0);
     }
-    
-    private boolean enabled = true;
     
     @Override
     public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+        super.setEnabled(enabled);
         if (!enabled)
             state = 3;
     }
@@ -74,6 +79,7 @@ public class Button extends InteractiveComponent {
      * @param key Button mnemonic, can be a key combination.
      */
     public void setMnemonic(int key) {
+        mnemonic = key;
         if (parent != null)
             parent.associateKeys(this, key);
     }
@@ -98,43 +104,49 @@ public class Button extends InteractiveComponent {
     public boolean removeActionListener(ActionListener listener) {
         return actionListeners.remove(listener);
     }
+    
+    private void invoke() {
+        for (ActionListener listener : actionListeners)
+            listener.actionPerformed(this);
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == mnemonic)
+            invoke();
+    }
+
+    @Override
+    public boolean handleMouseEvent(MouseEvent event) {
+        if (!consumeEvent(event)) return false;
+        if (!enabled) return true;
+        return propagateMouseEvent(this, event);
+    }
+    
+    private boolean consumeEvent(MouseEvent e) {
+        if (freeShape) {
+            PImage curImg = stateImages[state];
+            if (curImg.pixels[e.getX() + e.getY() * curImg.width] >>> 24 == 0)
+                return false;
+        }
+        return true;
+    }
 
     @Override
     public boolean mousePressed(MouseEvent e) {
-        if (freeShape) {
-            PImage curImg = stateImages[state];
-            if (getApplicationFrame().alpha(
-                    curImg.pixels[e.getX() + e.getY() * curImg.width]) == 0)
-                return false;
-        }
         state = 2;
         return true;
     }
 
     @Override
     public boolean mouseMoved(MouseEvent e) {
-        if (freeShape) {
-            PImage curImg = stateImages[state];
-            if (getApplicationFrame().alpha(
-                    curImg.pixels[e.getX() + e.getY() * curImg.width]) == 0) {
-                state = 0;
-                return false;
-            }
-        }
         state = 1;
         return true;
     }
     
     @Override
     public boolean mouseClicked(MouseEvent e) {
-        if (freeShape) {
-            PImage curImg = stateImages[state];
-            if (getApplicationFrame().alpha(
-                    curImg.pixels[e.getX() + e.getY() * curImg.width]) == 0)
-                return false;
-        }
-        for (ActionListener listener : actionListeners)
-            listener.actionPerformed(this);
+        invoke();
         return true;
     }
 
