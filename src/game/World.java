@@ -87,7 +87,7 @@ public class World {
         int index = bitMap.get(obj);
         bitMap.remove(obj);
         objMap.remove(index);
-        occupied &= (1 << index) ^ (-1);
+        occupied &= ~(1 << index); // Alternative: ^ (-1)
     }
     
     /** Returns the world objects that occupy the specified point. */
@@ -250,7 +250,7 @@ public class World {
         this.lastBounds[index] = bounds;
         
         int solidMask = (1 << index);
-        int emptyMask = solidMask ^ (-1);
+        int emptyMask = ~solidMask; // Alternative: ^ (-1)
         // The loop order is optimized for spatial locality.
         for (int y = diffBounds[0]; y <= diffBounds[2]; y++)
             for (int x = diffBounds[1]; x <= diffBounds[3]; x++)
@@ -258,8 +258,9 @@ public class World {
                 // non-transparent color value.
                 if (bounds[0] <= y && y <= bounds[2]
                         && bounds[1] <= x && x <= bounds[3]
-                        && ((pixels[x - bounds[1] + (y - bounds[0]) * imgWidth] 
-                            >> 24) & 0xFF) != 0)
+                        && (pixels[x - bounds[1] + (y - bounds[0]) * imgWidth] 
+                            >>> 24) != 0) // Unsigned shift
+                                          // Other alternative: >> 24) & 0xFF
                     collisionMask[x + y * width] |= solidMask;
                 // If the current point is outside the object bounds or has a
                 // transparent color value.
