@@ -1,5 +1,6 @@
 package gui;
 
+import gui.core.Parent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -122,7 +123,7 @@ public class ScreenManager extends PApplet {
 
     @Override
     protected void handleMouseEvent(MouseEvent event) {
-        topLevelParent.handleMouseEvent(new gui.MouseEvent(event));
+        topLevelParent.handleMouseEvent(new gui.core.MouseEvent(event));
     }
     
 //    /**

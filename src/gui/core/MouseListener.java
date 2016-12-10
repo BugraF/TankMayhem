@@ -1,4 +1,4 @@
-package gui;
+package gui.core;
 
 //import processing.event.MouseEvent;
 

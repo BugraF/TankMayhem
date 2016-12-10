@@ -1,4 +1,4 @@
-package gui;
+package gui.core;
 
 import java.util.HashMap;
 import java.util.Map;

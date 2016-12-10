@@ -1,4 +1,4 @@
-package gui;
+package gui.core;
 
 /**
  * @author Burak Gök

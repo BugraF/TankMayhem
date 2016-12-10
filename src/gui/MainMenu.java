@@ -1,5 +1,10 @@
 package gui;
 
+import gui.core.Component;
+import gui.core.ActionListener;
+import gui.core.Parent;
+import gui.core.Button;
+
 /**
  * Main Menu Screen includes 
  *      - 3 buttons

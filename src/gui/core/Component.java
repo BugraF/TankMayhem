@@ -1,4 +1,4 @@
-package gui;
+package gui.core;
 
 import processing.core.PApplet;
 import processing.core.PGraphics;

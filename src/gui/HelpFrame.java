@@ -1,5 +1,8 @@
 package gui;
 
+import gui.core.Component;
+import gui.core.ActionListener;
+
 /**
  * A frame which includes guide for Tank Mayhem
  * 

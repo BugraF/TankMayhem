@@ -1,4 +1,4 @@
-package gui;
+package gui.core;
 
 /**
  * Wrapper class for processing.event.MouseEvent
