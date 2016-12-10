@@ -24,10 +24,12 @@ public class Button extends InteractiveComponent {
     private int state = 0;
     
     /**
-     * All state images of this button.
-     * When the button is disabled, the gray-scaled normal state image is used.
+     * Sprite sheet of the state images of this button.
      */
-    private PImage[] stateImages; // normal, hover, pressed, disabled
+    private PImage stateImages; // normal, hover, pressed, disabled
+    
+    /** Height of a state image. **/
+    private int stateHeight;
     
     /**
      * Key code of the mnemonic of this button.
@@ -50,19 +52,18 @@ public class Button extends InteractiveComponent {
     
     /**
      * Sets the state images for this button.
-     * @param normal Drawn when the mouse pointer is outside of this button
-     * @param hover Drawn when the mouse pointer is inside of this button
-     * @param pressed Drawn when the mouse is pressed on this button
+     * @param stateImages Sprite sheet of the state images of this button.
+     *                    The images should be placed vertically.
      */
-    public void setImages(PImage normal, PImage hover, PImage pressed) {
-        PImage disabled = normal.copy();
-        disabled.filter(PImage.GRAY);
-        stateImages = new PImage[] {normal, hover, pressed, disabled};
+    public void setStateImages(PImage stateImages) {
+        this.stateImages = stateImages;
+        stateHeight = stateImages.height / 4;
     }
     
     @Override
     public void draw(PGraphics g) {
-        g.image(stateImages[state], 0, 0);
+        g.image(stateImages, 0, 0, width, height,
+                             0, state * stateHeight, width, stateHeight);
     }
     
     @Override
@@ -124,11 +125,9 @@ public class Button extends InteractiveComponent {
     }
     
     private boolean consumeEvent(MouseEvent e) {
-        if (freeShape) {
-            PImage curImg = stateImages[state];
-            if (curImg.pixels[e.getX() + e.getY() * curImg.width] >>> 24 == 0)
+        if (freeShape)
+            if (stateImages.pixels[e.getX() + e.getY() * width] >>> 24 == 0)
                 return false;
-        }
         return true;
     }
 
