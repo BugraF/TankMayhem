@@ -1,6 +1,5 @@
 package game;
 
-import com.sun.org.apache.xerces.internal.impl.xs.XSDDescription;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
