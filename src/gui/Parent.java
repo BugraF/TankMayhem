@@ -108,9 +108,9 @@ public class Parent extends InteractiveComponent {
      */
     private void drawComponents(PGraphics g) {
         components.forEach((c) -> {
-            g.translate(c.bounds[1], c.bounds[0]);
+            g.translate(c.bounds[0], c.bounds[1]);
             c.draw(g);
-            g.translate(-c.bounds[1], -c.bounds[0]);
+            g.translate(-c.bounds[0], -c.bounds[1]);
         });
     }
     
@@ -165,8 +165,7 @@ public class Parent extends InteractiveComponent {
         if (enabled)
             disabledImage = null;
         else {
-            PGraphics g2 = getContext()
-                .createGraphics(bounds[3] - bounds[1], bounds[2] - bounds[0]);
+            PGraphics g2 = getContext().createGraphics(width, height);
             draw(g2);
             g2.filter(PImage.BLUR, 6);
             disabledImage = g2;
@@ -206,10 +205,10 @@ public class Parent extends InteractiveComponent {
         for (MouseListener listener : mouseListeners) {
             if (inside(((Component)listener).bounds, e.getX(), e.getY())) {
                 boolean consumed = ((InteractiveComponent)listener)
-                        .handleMouseEvent(e.translate(bounds[1], bounds[0]));
+                        .handleMouseEvent(e.translate(bounds[0], bounds[1]));
                 if (consumed)
                     return true;
-                e.translate(-bounds[1], -bounds[0]);
+                e.translate(-bounds[0], -bounds[1]);
             }
         }
         return propagateMouseEvent(this, e);
@@ -230,8 +229,8 @@ public class Parent extends InteractiveComponent {
 //    }
     
     private static boolean inside(int[] bounds, int x, int y) {
-        return bounds[1] <= x && x <= bounds[3] && 
-               bounds[0] <= y && y <= bounds[2]; 
+        return bounds[0] <= x && x <= bounds[2] && 
+               bounds[1] <= y && y <= bounds[3]; 
     }
     
 }

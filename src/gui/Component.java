@@ -21,9 +21,14 @@ public abstract class Component {
     
     /**
      * Bounds of this component.
-     * Top, Left, Bottom, Right
+     * Left, Top, Right, Bottom
      */
     protected final int[] bounds = new int[4];
+    
+    /**
+     * Size of this component.
+     */
+    protected int width, height;
     
     /**
      * Indicates whether this component is responsive to key and mouse events.
@@ -46,13 +51,15 @@ public abstract class Component {
 //    }
     
     public void setLocation(int x, int y) {
-        bounds[0] = y;
-        bounds[1] = x;
+        bounds[0] = x;
+        bounds[1] = y;
     }
     
     public void setSize(int width, int height) {
-        bounds[2] = bounds[0] + height;
-        bounds[3] = bounds[1] + width;
+        this.width = width;
+        this.height = height;
+        bounds[2] = bounds[0] + width;
+        bounds[3] = bounds[1] + height;
     }
     
 //    /**
