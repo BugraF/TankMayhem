@@ -2,6 +2,8 @@ package gui;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import processing.core.PApplet;
 import processing.event.KeyEvent;
 import processing.event.MouseEvent;
@@ -27,11 +29,18 @@ public class ScreenManager extends PApplet {
     };
     
     private final List<Parent> screens = new ArrayList<>(3);
-    private int currentScreen;
+    private Parent currentScreen;
+    
+    private final List<Frame> frames = new ArrayList<>(4);
+    private Frame currentFrame = null;
     
     final static int SCREEN_MAIN_MENU = 0,
                      SCREEN_NEW_GAME_MENU = 1,
                      SCREEN_GAME = 2;
+    final static int FRAME_HELP = 0,
+                     FRAME_CREDITS = 1,
+                     FRAME_PAUSE_MENU = 2,
+                     FRAME_MARKET = 3;
     
     public ScreenManager() {
         instance = this;
@@ -45,11 +54,15 @@ public class ScreenManager extends PApplet {
     
     @Override
     public void setup() {
-        screens.add(new MainMenu());
-        screens.add(new NewGameMenu());
-        screens.add(new GameScreen());
-        currentScreen = SCREEN_MAIN_MENU;
-        topLevelParent.add(screens.get(currentScreen));
+        screens.add(new MainMenu(),
+                    new NewGameMenu(),
+                    new GameScreen());
+        frames.add(new HelpFrame(),
+                   new CreditsFrame(),
+                   new PauseMenu(),
+                   new MarketFrame());
+        currentScreen = screens.get(0);
+        topLevelParent.add(currentScreen);
     }
     
     @Override
@@ -58,9 +71,42 @@ public class ScreenManager extends PApplet {
     }
     
     void switchScreen(int screen) {
-        topLevelParent.remove(screens.get(currentScreen));
-        topLevelParent.add(screens.get(screen));
-        currentScreen = screen;
+        topLevelParent.remove(currentScreen);
+        currentScreen = screens.get(screen);
+        topLevelParent.add(currentScreen);
+    }
+    
+    void switchFrame(int frame) {
+        if (currentFrame == null) {
+            Logger.getLogger("ScreenManager")
+                    .log(Level.WARNING, "There is no frame to be replaced.");
+            return;
+        }
+        topLevelParent.remove(currentFrame);
+        currentFrame = frames.get(frame);
+        topLevelParent.add(currentFrame);
+    }
+    
+    void showFrame(int frame) {
+        if (currentFrame != null) {
+            Logger.getLogger("ScreenManager")
+                    .log(Level.WARNING, "There is already a frame shown.");
+            return;
+        }
+        currentScreen.setEnabled(false);
+        currentFrame = frames.get(frame);
+        topLevelParent.add(currentFrame);
+    }
+    
+    void closeFrame() {
+        if (currentFrame == null) {
+            Logger.getLogger("ScreenManager")
+                    .log(Level.WARNING, "There is no frame to be closed.");
+            return;
+        }
+        currentScreen.setEnabled(true);
+        topLevelParent.remove(currentFrame);
+        currentFrame = null;
     }
     
     // There is no point for exposing the top-level parent.
