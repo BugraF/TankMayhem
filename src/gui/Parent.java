@@ -33,27 +33,34 @@ public class Parent extends InteractiveComponent {
     /**
      * The child that has the focus.
      * If null, there is no focused child.
+     * Only interactive components can be focused.
      */
-    private Component focusedChild = null;
+    private InteractiveComponent focusedChild = null;
     
     /**
-     * The code of the key used by this parent to be focused.
+     * Code of the key used by this parent to be focused.
      */
     private int focusKey;
     
     /**
-     * The components owned by this parent.
+     * Components owned by this parent.
      */
-    private SortedSet<Component> components;
+    private final SortedSet<Component> components;
     
-    private Map<Integer, KeyListener> keyListeners;
-    private SortedSet<MouseListener> mouseListeners;
+    /**
+     * Interactive components mapped to their interested keys.
+     */
+    private final Map<Integer, InteractiveComponent> keyListeners;
+    
+    /**
+     * Interactive components sorted according to their z-order.
+     */
+    private final SortedSet<InteractiveComponent> mouseListeners;
     
     public Parent() {
         components = new TreeSet<>((c1, c2) -> c2.z_order - c1.z_order);
         keyListeners = new HashMap<>();
-        mouseListeners = new TreeSet<>(
-                (m1, m2) -> ((Component)m1).z_order - ((Component)m2).z_order);
+        mouseListeners = new TreeSet<>((m1, m2) -> m1.z_order - m2.z_order);
     }
     
     /**
@@ -65,8 +72,8 @@ public class Parent extends InteractiveComponent {
         comp.z_order = z_order;
         components.add(comp);
         comp.setParent(this);
-        if (comp instanceof MouseListener)
-            mouseListeners.add((MouseListener) comp);
+        if (comp instanceof InteractiveComponent)
+            mouseListeners.add((InteractiveComponent) comp);
     }
     
     /**
@@ -87,8 +94,8 @@ public class Parent extends InteractiveComponent {
         boolean success = components.remove(comp);
         if (success) {
             comp.setParent(null);
-            if (comp instanceof MouseListener)
-                mouseListeners.remove((MouseListener) comp);
+            if (comp instanceof InteractiveComponent)
+                mouseListeners.remove((InteractiveComponent) comp);
         }
         return success;
     }
@@ -109,8 +116,9 @@ public class Parent extends InteractiveComponent {
     
     /**
      * Sets the child that has the focus.
+     * @see #focusedChild
      */
-    void setFocusedChild(Component comp) {
+    void setFocusedChild(InteractiveComponent comp) {
         focusedChild = comp;
     }
     
@@ -131,13 +139,13 @@ public class Parent extends InteractiveComponent {
     }
     
     /**
-     * Associates the given keys with the specified key listener.
+     * Associates the given keys with the specified component.
      */
-    public void associateKeys(KeyListener listener, int... interestedKeys) {
+    public void associateKeys(InteractiveComponent comp, int... interestedKeys) {
         for (int key : interestedKeys) {
             if (keyListeners.containsKey(key))
                 throw new KeyConflictException(key, keyListeners.get(key));
-            keyListeners.put(key, listener);
+            keyListeners.put(key, comp);
         }
     }
     
@@ -157,32 +165,23 @@ public class Parent extends InteractiveComponent {
         if (enabled)
             disabledImage = null;
         else {
-            PGraphics g2 = getApplicationFrame()
+            PGraphics g2 = getContext()
                 .createGraphics(bounds[3] - bounds[1], bounds[2] - bounds[0]);
             draw(g2);
             g2.filter(PImage.BLUR, 6);
             disabledImage = g2;
         }
     }
-    
-    /*
-    The castings from KeyListener/MouseListener to Component/InteractiveComponent
-    in associateKeys(), handleKeyEvent(), handleMouseEvent() are because event
-    listeners of components are handled by this class. Since a component can only
-    be listened by itself in the current design, they are not wrong, albeit ugly.
-    If the listener handling logic is decoupled from this class and moved to
-    InteractiveComponent, this problem would be solved.
-    */
 
     @Override
     public void handleKeyEvent(KeyEvent e) {
         if (!enabled) return;
         propagateKeyEvent(this, e);
-        KeyListener listener = keyListeners.get(e.getKeyCode());
+        InteractiveComponent listener = keyListeners.get(e.getKeyCode());
         if (listener != null)
-            ((InteractiveComponent)listener).handleKeyEvent(e);
-        else if (focusedChild != null && focusedChild instanceof KeyListener)
-            ((InteractiveComponent)focusedChild).handleKeyEvent(e);
+            listener.handleKeyEvent(e);
+        else if (focusedChild != null)
+            focusedChild.handleKeyEvent(e);
     }
 
     @Override
@@ -199,12 +198,6 @@ public class Parent extends InteractiveComponent {
 //            listener.keyPressed(event);
 //        else if (focusedChild != null && focusedChild instanceof KeyListener)
 //            ((KeyListener) focusedChild).keyPressed(event);
-//    }
-//    public void keyReleased(KeyEvent event) {
-//        // TODO: Test keyPressed()
-//    }
-//    public void keyTyped(KeyEvent event) {
-//        // TODO: Test keyPressed()
 //    }
 
     @Override
@@ -235,8 +228,6 @@ public class Parent extends InteractiveComponent {
 //        }
 //        return false;
 //    }
-    
-    // TODO Other mouse events
     
     private static boolean inside(int[] bounds, int x, int y) {
         return bounds[1] <= x && x <= bounds[3] && 

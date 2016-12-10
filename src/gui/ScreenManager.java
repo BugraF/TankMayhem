@@ -21,7 +21,7 @@ public class ScreenManager extends PApplet {
      */
     private final Parent topLevelParent = new Parent() {
         @Override
-        public PApplet getApplicationFrame() {
+        public PApplet getContext() {
             return ScreenManager.this;
         }
     };

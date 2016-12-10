@@ -1,0 +1,49 @@
+{
+    "sunny": {
+        "@terrain.texture": "grass",
+        "decoration": {
+            "name": "Sunny",
+            "@resources": [
+                "background.sunny",
+                "foreground.burningtank"
+            ]
+        }
+    },
+    
+    "cloudy": {
+        "@terrain.texture": "grass_dark",
+        "decoration": {
+            "name": "Cloudy",
+            "@resources": [
+                "background.sunny",
+                "background.cloud1",
+                "background.cloud2",
+                "background.cloud3",
+                "foreground.burnedtank"
+            ]
+        }
+    },
+
+    "rainy": {
+        "@terrain.texture": "mud",
+        "decoration": {
+            "name": "Rainy",
+            "@resources": [
+                "background.rainy",
+                "foreground.destroyedtank"
+            ]
+        }
+    },
+
+    "snowy": {
+        "terrain.texture": "snow",
+        "decoration": {
+            "name": "Snowy",
+            "@resources": [
+                "background.snowy",
+                "background.cloud*",
+                "foreground.tank_buried_undersnow"
+            ]
+        }
+    }
+}

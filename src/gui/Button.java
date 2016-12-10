@@ -16,7 +16,7 @@ public class Button extends InteractiveComponent {
      * Non-rectangular buttons consume mouse events only if the mouse pointer
      * is on a non-transparent point.
      */
-    private boolean freeShape;
+    private boolean freeShape = false;
     
     /**
      * Current state of this button.

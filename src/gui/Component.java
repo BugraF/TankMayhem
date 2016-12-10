@@ -23,7 +23,7 @@ public abstract class Component {
      * Bounds of this component.
      * Top, Left, Bottom, Right
      */
-    protected int[] bounds;
+    protected final int[] bounds = new int[4];
     
     /**
      * Indicates whether this component is responsive to key and mouse events.
@@ -45,11 +45,14 @@ public abstract class Component {
 //        this.z_order = z_order;
 //    }
     
-    /**
-     * Sets the bounds of this component.
-     */
-    public void setBounds(int top, int left, int bottom, int right) {
-        bounds = new int[] {top, left, bottom, right};
+    public void setLocation(int x, int y) {
+        bounds[0] = y;
+        bounds[1] = x;
+    }
+    
+    public void setSize(int width, int height) {
+        bounds[2] = bounds[0] + height;
+        bounds[3] = bounds[1] + width;
     }
     
 //    /**
@@ -77,8 +80,8 @@ public abstract class Component {
     /**
      * Returns the application frame at which this component is placed.
      */
-    public PApplet getApplicationFrame() {
-        return getTopLevelParent().getApplicationFrame();
+    public PApplet getContext() {
+        return getTopLevelParent().getContext();
     }
     
     /**
