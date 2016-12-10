@@ -13,7 +13,7 @@ We will develop a turn-based multiplayer 2D game involving tank battle. We inspi
 
 ## Progress
 - :construction: UI Core
-- :x: UI Screens
+- :construction: UI Screens
 - :white_check_mark: Physics Engine
 - :x: Rendering Engine
 - :x: Game Logic
