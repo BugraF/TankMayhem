@@ -24,8 +24,7 @@ public class MainMenu extends Parent implements ActionListener{
     /**
     * Sliders
     */
-//    private final Slider soundSlider = new Slider();
-//    private final Slider musicSlider = new Slider();
+    // TODO add sliders - music slider and sound slider
     
     public MainMenu() {
         playBtn.setStateImages(getContext()
@@ -36,7 +35,7 @@ public class MainMenu extends Parent implements ActionListener{
         playBtn.addActionListener(this);
         
         helpBtn.setStateImages(getContext()
-                .loadImage("component/button/help_btn.png"));
+                .loadImage("component/button/help_btn_in_mainmenu.png"));
         helpBtn.setFreeShape(true);
         helpBtn.setLocation(470, 333);
         helpBtn.setSize(350, 200);
@@ -48,6 +47,8 @@ public class MainMenu extends Parent implements ActionListener{
         creditsBtn.setLocation(810, 333);
         creditsBtn.setSize(300, 200);
         creditsBtn.addActionListener(this);
+        
+        // TODO specify sliders
     }
     
     private Frame helpFrame = null;
@@ -55,14 +56,16 @@ public class MainMenu extends Parent implements ActionListener{
     
     @Override
     public void actionPerformed(Component comp) {
-        if(comp == playBtn)
+        if (comp == playBtn)
             ((ScreenManager)getContext())
                     .switchScreen(ScreenManager.SCREEN_NEW_GAME_MENU);
         else if (comp == helpBtn)
             ((ScreenManager)getContext())
                     .showFrame(ScreenManager.FRAME_HELP);
-        else
+        else if (comp == creditsBtn)
             ((ScreenManager)getContext())
                     .showFrame(ScreenManager.FRAME_CREDITS);
+        
+        // TODO add listeners to sliders
     }
 }

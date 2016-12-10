@@ -4,13 +4,13 @@ import gui.core.Component;
 import gui.core.ActionListener;
 
 /**
- * A frame which includes guide for Tank Mayhem
+ * A frame which includes credits for Tank Mayhem
  * 
  * @author Bugra Felekoglu
  */
-public class HelpFrame extends Frame implements ActionListener {
+public class CreditsFrame extends Frame implements ActionListener {
 
-    public HelpFrame(){
+    public CreditsFrame(){
         setSize(1000, 700);
     }
     

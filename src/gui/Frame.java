@@ -22,11 +22,16 @@ public class Frame extends Parent implements ActionListener{
         closeBtn.setStateImages(getContext()
                 .loadImage("component/button/close_btn.png"));
         closeBtn.setFreeShape(true);
-        closeBtn.setLocation(160, 333);
-        closeBtn.setSize(300, 200);
+        closeBtn.setSize(45, 45);
         closeBtn.addActionListener(this);
     }
 
+    @Override
+    public void setSize(int width, int height) {
+        super.setSize(width, height);
+        closeBtn.setLocation(width-55, 10);
+    }
+    
     @Override
     public void actionPerformed(Component comp) {
         if(comp == closeBtn)
