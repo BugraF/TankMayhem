@@ -213,17 +213,15 @@ public class Parent extends InteractiveComponent {
         if (!enabled) return true;
         for (InteractiveComponent listener : mouseListeners) {
             if (inside(listener.bounds, e.getX(), e.getY())) {
-                
-                if (lastMouseHandler != listener) {
-                    if (lastMouseHandler != this)
-                        lastMouseHandler.handleMouseEvent(
-                                e.derive(processing.event.MouseEvent.EXIT)); // is translate() required?
+                if (lastMouseHandler != listener)
                     e.derive(processing.event.MouseEvent.ENTER);
-                }
                 
                 boolean consumed = listener.handleMouseEvent(
                         e.translate(-listener.bounds[0], -listener.bounds[1]));
                 if (consumed) {
+                    if (lastMouseHandler != listener && lastMouseHandler != this)
+                        lastMouseHandler.handleMouseEvent(
+                                e.derive(processing.event.MouseEvent.EXIT));
                     lastMouseHandler = listener;
                     return true;
                 }
@@ -231,32 +229,17 @@ public class Parent extends InteractiveComponent {
                 e.translate(listener.bounds[0], listener.bounds[1]);
             }
         }
-        if (lastMouseHandler != this) {
+        if (lastMouseHandler != this)
             lastMouseHandler.handleMouseEvent(
                     e.derive(processing.event.MouseEvent.EXIT));
-            e.derive(processing.event.MouseEvent.ENTER);
-        }
         lastMouseHandler = this;
         return propagateMouseEvent(this, e);
     }
     
-//    public boolean mousePressed(MouseEvent e) {
-//        if (!enabled) return true;
-//        for (MouseListener listener : mouseListeners) {
-//            if (inside(((Component)listener).bounds, e.getX(), e.getY())) {
-//                boolean consumed = listener.mousePressed(
-//                        e.translate(bounds[1], bounds[0]));
-//                if (consumed)
-//                    return true;
-//                e.translate(-bounds[1], -bounds[0]);
-//            }
-//        }
-//        return false;
-//    }
-    
     private static boolean inside(int[] bounds, int x, int y) {
-        return bounds[0] <= x && x <= bounds[2] && 
-               bounds[1] <= y && y <= bounds[3];
+        // Right and bottom bounds are exclusive (see: Component#bounds)
+        return bounds[0] <= x && x < bounds[2] && 
+               bounds[1] <= y && y < bounds[3];
     }
     
 }
