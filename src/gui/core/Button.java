@@ -26,10 +26,7 @@ public class Button extends InteractiveComponent {
     /**
      * Sprite sheet of the state images of this button.
      */
-    private PImage stateImages; // normal, hover, pressed, disabled
-    
-    /** Height of a state image. **/
-    private int stateHeight;
+    private PImage[] stateImages; // normal, hover, pressed, disabled
     
     /**
      * Key code of the mnemonic of this button.
@@ -59,14 +56,19 @@ public class Button extends InteractiveComponent {
      *                      computed using this parameter.
      */
     public void setStateImages(PImage stateImages, boolean neverDisabled) {
-        this.stateImages = stateImages;
-        stateHeight = stateImages.height / (neverDisabled ? 3 : 4);
+        int stateCount = neverDisabled ? 3 : 4;
+        this.stateImages = new PImage[stateCount];
+        int stateHeight = stateImages.height / stateCount;
+        for (int i = 0; i < stateCount; i++) {
+            this.stateImages[i] = stateImages.get(0, i * stateHeight, 
+                    stateImages.width, stateHeight);
+            this.stateImages[i].loadPixels();
+        }
     }
     
     @Override
     public void draw(PGraphics g) {
-        g.image(stateImages, 0, 0, width, height,
-                             0, state * stateHeight, width, stateHeight);
+        g.image(stateImages[state], 0, 0);
     }
     
     @Override
@@ -122,15 +124,18 @@ public class Button extends InteractiveComponent {
 
     @Override
     public boolean handleMouseEvent(MouseEvent event) {
-        if (!consumeEvent(event)) return false;
+        if (event.getAction() != processing.event.MouseEvent.EXIT
+                && !consumeEvent(event)) return false;
         if (!enabled) return true;
         return propagateMouseEvent(this, event);
     }
     
     private boolean consumeEvent(MouseEvent e) {
-        if (freeShape)
-            if (stateImages.pixels[e.getX() + e.getY() * width] >>> 24 == 0)
+        if (freeShape) {
+            PImage curImg = stateImages[state];
+            if (curImg.pixels[e.getX() + e.getY() * curImg.width] >>> 24 == 0)
                 return false;
+        }
         return true;
     }
 
@@ -141,7 +146,7 @@ public class Button extends InteractiveComponent {
     }
 
     @Override
-    public boolean mouseMoved(MouseEvent e) {
+    public boolean mouseReleased(MouseEvent e) {
         state = 1;
         return true;
     }
@@ -151,10 +156,18 @@ public class Button extends InteractiveComponent {
         invoke();
         return true;
     }
+    
+    @Override
+    public boolean mouseEntered(MouseEvent e) {
+        state = 1;
+        System.out.println("Entered");
+        return true;
+    }
 
     @Override
     public boolean mouseExited(MouseEvent e) {
         state = 0;
+        System.out.println("Exited");
         return true;
     }
     
