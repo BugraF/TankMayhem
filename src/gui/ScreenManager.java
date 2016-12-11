@@ -51,11 +51,13 @@ public class ScreenManager extends PApplet {
     @Override
     public void settings() {
         // TODO Buğra: Update screen size
-        size(1280, 768, "processing.awt.PGraphicsJava2D");
+        size(1280, 768);
     }
     
     @Override
     public void setup() {
+        topLevelParent.setSize(width, height);
+        
         screens.addAll(Arrays.asList(
                 new MainMenu(),
                 new NewGameMenu(),
@@ -68,7 +70,10 @@ public class ScreenManager extends PApplet {
                 new MarketFrame()
         ));
         
-        screens.forEach((s) -> s.init(this));
+        screens.forEach((s) -> {
+            s.setSize(width, height);
+            s.init(this);
+        });
         frames.forEach((f) -> f.init(this));
         
         currentScreen = screens.get(0);
