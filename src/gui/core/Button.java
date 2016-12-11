@@ -54,10 +54,13 @@ public class Button extends InteractiveComponent {
      * Sets the state images for this button.
      * @param stateImages Sprite sheet of the state images of this button.
      *                    The images should be placed vertically.
+     * @param neverDisabled Indicates whether {@code stateImages} contains the
+     *                      disabled-state image. The height of a state image is
+     *                      computed using this parameter.
      */
-    public void setStateImages(PImage stateImages) {
+    public void setStateImages(PImage stateImages, boolean neverDisabled) {
         this.stateImages = stateImages;
-        stateHeight = stateImages.height / 4;
+        stateHeight = stateImages.height / (neverDisabled ? 3 : 4);
     }
     
     @Override
