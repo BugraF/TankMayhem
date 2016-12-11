@@ -2,21 +2,22 @@ package gui;
 
 import gui.core.Component;
 import gui.core.ActionListener;
+import gui.core.Parent;
+import gui.core.Button;
 
 /**
- * A frame which includes credits for Tank Mayhem
+ * New Game Menu Screen
  * 
  * @author Bugra Felekoglu
  */
-public class CreditsFrame extends Frame implements ActionListener {
-
-    public CreditsFrame(){
-        setSize(1000, 700);
+public class NewGameMenu extends Parent implements ActionListener{
+    
+    public NewGameMenu() {
+        
     }
     
     @Override
     public void actionPerformed(Component comp) {
         
     }
-    
 }

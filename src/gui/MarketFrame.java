@@ -4,14 +4,14 @@ import gui.core.Component;
 import gui.core.ActionListener;
 
 /**
- * A frame which includes credits for Tank Mayhem
+ * A frame which includes market items.
  * 
  * @author Bugra Felekoglu
  */
-public class CreditsFrame extends Frame implements ActionListener {
+public class MarketFrame extends Frame implements ActionListener {
 
-    public CreditsFrame(){
-        setSize(1000, 700);
+    public MarketFrame(){
+        setSize(1080, 580);
     }
     
     @Override
