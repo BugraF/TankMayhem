@@ -53,6 +53,8 @@ public abstract class Component {
     public void setLocation(int x, int y) {
         bounds[0] = x;
         bounds[1] = y;
+        bounds[2] = x + width;
+        bounds[3] = y + height;
     }
     
     public void setSize(int width, int height) {
