@@ -3,9 +3,10 @@ package gui;
 import gui.core.Component;
 import gui.core.ActionListener;
 import gui.core.Button;
+import processing.core.PApplet;
 
 /**
- * Pause frame, includes:
+ * Pause frame, includes: 
  *      #musicSlider
  *      #soundSlider
  *      #helpBtn
@@ -20,17 +21,18 @@ public class PauseMenu extends Frame implements ActionListener {
 
     // TODO add music slider and sound slider
     
-    public PauseMenu(){
+    @Override
+    public void init(PApplet context){
         setSize(430, 520);
-//        helpBtn.setStateImages(getContext()
-//                .loadImage("component/button/help_btn_small.png"));
+//        helpBtn.setStateImages(context
+//                .loadImage("component/button/help_btn_small.png"), true);
         helpBtn.setFreeShape(true);
         helpBtn.setLocation(70, 290);
         helpBtn.setSize(300, 90);
         helpBtn.addActionListener(this);
         
-//        exitBtn.setStateImages(getContext()
-//                .loadImage("component/button/exit_btn.png"));
+//        exitBtn.setStateImages(context
+//                .loadImage("component/button/exit_btn.png"), true);
         exitBtn.setFreeShape(true);
         exitBtn.setLocation(70, 400);
         exitBtn.setSize(300, 90);

@@ -4,6 +4,7 @@ import gui.core.Component;
 import gui.core.ActionListener;
 import gui.core.Parent;
 import gui.core.Button;
+import processing.core.PApplet;
 
 /**
  * Main Menu Screen includes 
@@ -26,29 +27,30 @@ public class MainMenu extends Parent implements ActionListener{
     */
     // TODO add sliders - music slider and sound slider
     
-    public MainMenu() {
+    @Override
+    public void init(PApplet context) {
         add(playBtn, helpBtn, creditsBtn);
         
-        playBtn.setStateImages(getContext()
-                .loadImage("component/button/play_btn.png"));
+        playBtn.setStateImages(context
+                .loadImage("component/button/play_btn.png"), true);
         playBtn.setFreeShape(true);
         playBtn.setLocation(160, 333);
         playBtn.setSize(300, 200);
         playBtn.addActionListener(this);
         playBtn.setMnemonic(80);
        
-        helpBtn.setStateImages(getContext()
+        helpBtn.setStateImages(context
 //                .loadImage("component/button/help_btn_big.png"));
-                .loadImage("component/button/play_btn.png"));
+                .loadImage("component/button/play_btn.png"), true);
         helpBtn.setFreeShape(true);
         helpBtn.setLocation(470, 333);
         helpBtn.setSize(350, 200);
         helpBtn.addActionListener(this);
         helpBtn.setMnemonic(72);
         
-        creditsBtn.setStateImages(getContext()
+        creditsBtn.setStateImages(context
 //                .loadImage("component/button/credits_btn.png"));
-                .loadImage("component/button/play_btn.png"));
+                .loadImage("component/button/play_btn.png"), true);
         creditsBtn.setFreeShape(true);
         creditsBtn.setLocation(810, 333);
         creditsBtn.setSize(300, 200);

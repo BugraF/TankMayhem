@@ -4,6 +4,7 @@ import gui.core.Component;
 import gui.core.ActionListener;
 import gui.core.Parent;
 import gui.core.Button;
+import processing.core.PApplet;
 
 /**
  * New Game Menu Screen
@@ -11,8 +12,9 @@ import gui.core.Button;
  * @author Bugra Felekoglu
  */
 public class NewGameMenu extends Parent implements ActionListener{
-    
-    public NewGameMenu() {
+        
+    @Override
+    public void init(PApplet context) {
         
     }
     
