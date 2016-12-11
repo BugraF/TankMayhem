@@ -81,7 +81,7 @@ public class Parent extends InteractiveComponent {
      * according to the order in which they are given.
      */
     public void add(Component... comps) {
-        int z = components.last().z_order;
+        int z = components.isEmpty() ? 0 : components.last().z_order;
         for (Component comp : comps) 
             add(++z, comp);
     }
