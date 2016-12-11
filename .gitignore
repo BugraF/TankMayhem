@@ -1,12 +1,15 @@
 *.class
-# *.pdf
+*.pdf
 
 # Private NetBeans configuration files
 /nbproject/private/
 
+# Data Folder #
+/data/
+
 # Libraries #
-# *.jar
-# *.zip
+*.jar
+*.zip
 
 # *.class does the same job, but NetBeans want to add this.
 /build/
