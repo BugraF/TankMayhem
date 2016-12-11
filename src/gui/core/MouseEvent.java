@@ -9,18 +9,30 @@ public class MouseEvent {
     
     private final processing.event.MouseEvent event;
     private int translateX, translateY;
+    private int action;
     
     public MouseEvent(processing.event.MouseEvent event) {
         this.event = event;
+        this.action = event.getAction();
+    }
+    
+    public MouseEvent derive(int action) {
+        this.action = action;
+        return this;
+    }
+    
+    public MouseEvent revert() {
+        action = event.getAction();
+        return this;
     }
     
     public int getAction() {
-        return event.getAction();
+        return action;
     }
     
     public MouseEvent translate(int x, int y) {
-        translateX = x;
-        translateY = y;
+        translateX += x;
+        translateY += y;
         return this;
     }
     
