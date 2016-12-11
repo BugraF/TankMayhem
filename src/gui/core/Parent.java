@@ -229,9 +229,11 @@ public class Parent extends InteractiveComponent {
                 e.translate(listener.bounds[0], listener.bounds[1]);
             }
         }
-        if (lastMouseHandler != this)
+        if (lastMouseHandler != this) {
             lastMouseHandler.handleMouseEvent(
                     e.derive(processing.event.MouseEvent.EXIT));
+            e.revert();
+        }
         lastMouseHandler = this;
         return propagateMouseEvent(this, e);
     }
