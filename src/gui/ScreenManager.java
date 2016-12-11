@@ -2,6 +2,7 @@ package gui;
 
 import gui.core.Parent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -55,13 +56,17 @@ public class ScreenManager extends PApplet {
     
     @Override
     public void setup() {
-        screens.add(new MainMenu(),
-                    new NewGameMenu(),
-                    new GameScreen());
-        frames.add(new HelpFrame(),
-                   new CreditsFrame(),
-                   new PauseMenu(),
-                   new MarketFrame());
+        screens.addAll(Arrays.asList(
+                new MainMenu(),
+                new NewGameMenu(),
+                new GameScreen()
+        ));
+        frames.addAll(Arrays.asList(
+                new HelpFrame(),
+                new CreditsFrame(),
+                new PauseMenu(),
+                new MarketFrame()
+        ));
         currentScreen = screens.get(0);
         topLevelParent.add(currentScreen);
     }
