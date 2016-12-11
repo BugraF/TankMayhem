@@ -111,9 +111,6 @@ public class Parent extends InteractiveComponent {
     }
     
     /**
-     * Draws the components owned by this parent.it
-    
-    /**
      * Draws the components owned by this parent.
      */
     private void drawComponents(PGraphics g) {
@@ -209,18 +206,37 @@ public class Parent extends InteractiveComponent {
 //            ((KeyListener) focusedChild).keyPressed(event);
 //    }
 
+    private InteractiveComponent lastMouseHandler = this; // avoid null-checking
+    
     @Override
     public boolean handleMouseEvent(MouseEvent e) {
         if (!enabled) return true;
-        for (MouseListener listener : mouseListeners) {
-            if (inside(((Component)listener).bounds, e.getX(), e.getY())) {
-                boolean consumed = ((InteractiveComponent)listener)
-                        .handleMouseEvent(e.translate(bounds[0], bounds[1]));
-                if (consumed)
+        for (InteractiveComponent listener : mouseListeners) {
+            if (inside(listener.bounds, e.getX(), e.getY())) {
+                
+                if (lastMouseHandler != listener) {
+                    if (lastMouseHandler != this)
+                        lastMouseHandler.handleMouseEvent(
+                                e.derive(processing.event.MouseEvent.EXIT)); // is translate() required?
+                    e.derive(processing.event.MouseEvent.ENTER);
+                }
+                
+                boolean consumed = listener.handleMouseEvent(
+                        e.translate(-listener.bounds[0], -listener.bounds[1]));
+                if (consumed) {
+                    lastMouseHandler = listener;
                     return true;
-                e.translate(-bounds[0], -bounds[1]);
+                }
+                e.revert();
+                e.translate(listener.bounds[0], listener.bounds[1]);
             }
         }
+        if (lastMouseHandler != this) {
+            lastMouseHandler.handleMouseEvent(
+                    e.derive(processing.event.MouseEvent.EXIT));
+            e.derive(processing.event.MouseEvent.ENTER);
+        }
+        lastMouseHandler = this;
         return propagateMouseEvent(this, e);
     }
     
@@ -240,7 +256,7 @@ public class Parent extends InteractiveComponent {
     
     private static boolean inside(int[] bounds, int x, int y) {
         return bounds[0] <= x && x <= bounds[2] && 
-               bounds[1] <= y && y <= bounds[3]; 
+               bounds[1] <= y && y <= bounds[3];
     }
     
 }
