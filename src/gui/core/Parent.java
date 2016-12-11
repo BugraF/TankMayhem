@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PImage;
 import processing.event.KeyEvent;
@@ -102,6 +103,15 @@ public class Parent extends InteractiveComponent {
     
     // TODO updateComponents() -> Collections (Sets, Lists) -> Arrays
     //                            to enable fast iteration
+    
+    @Override
+    public void init(PApplet context) {
+        super.init(context);
+        components.forEach((c) -> c.init(context));
+    }
+    
+    /**
+     * Draws the components owned by this parent.it
     
     /**
      * Draws the components owned by this parent.

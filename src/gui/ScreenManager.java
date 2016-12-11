@@ -67,6 +67,10 @@ public class ScreenManager extends PApplet {
                 new PauseMenu(),
                 new MarketFrame()
         ));
+        
+        screens.forEach((s) -> s.init(this));
+        frames.forEach((f) -> f.init(this));
+        
         currentScreen = screens.get(0);
         topLevelParent.add(currentScreen);
     }

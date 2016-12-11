@@ -73,6 +73,13 @@ public abstract class Component {
 //    public abstract void setEnabled(boolean enabled);
     
     /**
+     * This method is used to initialize resources related to the context.
+     * The use of this method for context-independent initialization tasks
+     * is encouraged.
+     */
+    public void init(PApplet context) {}
+    
+    /**
      * Returns the top-level parent of this component.
      * If this component has no parent, this function returns null.
      */
