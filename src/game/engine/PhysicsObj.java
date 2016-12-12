@@ -1,4 +1,4 @@
-package game;
+package game.engine;
 
 /**
  * Any object that will need motion integrated will implement this.

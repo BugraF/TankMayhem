@@ -1,4 +1,4 @@
-package game;
+package game.engine;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,7 +44,7 @@ public class Physics {
     }
     
     /**
-     * Creates a physics engine by specifying the given delta time
+     * Creates a physics engine by specifying the delta time
      * @param deltaTime @see #deltaTime
      */
     public Physics(int deltaTime) {
