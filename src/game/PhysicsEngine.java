@@ -1,5 +1,7 @@
 package game;
 
+import game.engine.Physics;
+import game.engine.PhysicsObj;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +24,7 @@ public class PhysicsEngine {
      * Indicates that the turn will be switched once the bomb and particle
      * containers gets empty.
      */
-    boolean changeTurnWhenStabilized = false;
+    boolean switchTurnWhenStabilized = false;
     
     public PhysicsEngine() {
         physics.addObjectClasses(bombs, particles, powerups, tanks);
@@ -46,8 +48,8 @@ public class PhysicsEngine {
      */
     void update() {
         physics.update();
-        if (changeTurnWhenStabilized && bombs.isEmpty() && particles.isEmpty())
-            Game.getInstance().changeTurn();
+        if (switchTurnWhenStabilized && bombs.isEmpty() && particles.isEmpty())
+            Game.getInstance().switchTurn();
     }
     
     /**
