@@ -59,9 +59,9 @@ public class Parent extends InteractiveComponent {
     private final SortedSet<InteractiveComponent> mouseListeners;
     
     public Parent() {
-        components = new TreeSet<>((c1, c2) -> c2.z_order - c1.z_order);
+        components = new TreeSet<>((c1, c2) -> c1.z_order - c2.z_order);
         keyListeners = new HashMap<>();
-        mouseListeners = new TreeSet<>((m1, m2) -> m1.z_order - m2.z_order);
+        mouseListeners = new TreeSet<>((m1, m2) -> m2.z_order - m1.z_order);
     }
     
     /**
@@ -111,9 +111,17 @@ public class Parent extends InteractiveComponent {
     }
     
     /**
+     * Sets the background image.
+     * @param background Null to remove the background image.
+     */
+    public void setBackground(PImage background) {
+        this.background = background;
+    }
+    
+    /**
      * Draws the components owned by this parent.
      */
-    private void drawComponents(PGraphics g) {
+    protected void drawComponents(PGraphics g) {
         components.forEach((c) -> {
             g.translate(c.bounds[0], c.bounds[1]);
             c.draw(g);
@@ -156,12 +164,16 @@ public class Parent extends InteractiveComponent {
         }
     }
     
+    private PImage background = null;
     private PImage disabledImage = null;
     
     @Override
     public void draw(PGraphics g) {
-        if (enabled)
+        if (enabled) {
+            if (background != null)
+                g.image(background, 0, 0);
             drawComponents(g);
+        }
         else
             g.image(disabledImage, 0, 0);
     }
@@ -173,7 +185,9 @@ public class Parent extends InteractiveComponent {
             disabledImage = null;
         else {
             PGraphics g2 = getContext().createGraphics(width, height);
-            draw(g2);
+            g2.beginDraw();
+            drawComponents(g2);
+            g2.endDraw();
             g2.filter(PImage.BLUR, 6);
             disabledImage = g2;
         }
