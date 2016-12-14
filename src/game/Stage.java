@@ -4,6 +4,7 @@ import game.engine.Renderer;
 import game.engine.World;
 import gui.core.InteractiveComponent;
 import gui.core.MouseEvent;
+import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.event.KeyEvent;
 
@@ -16,7 +17,8 @@ public class Stage extends InteractiveComponent {
     private World world;
     private Decoration decoration;
     private final Renderer renderer = new Renderer();
-    private final int[] camera = new int[4];
+    private final int[] camBounds = new int[4], // x1, y1, x2, y2 (l, t, r, b)
+                        cam = new int[2], camNext = new int[2]; // x, y (center)
     
     private Interaction interaction;
     private int z_order;
@@ -62,41 +64,63 @@ public class Stage extends InteractiveComponent {
         tracerEnabled = enabled;
     }
     
+    private boolean updateCamera = false,
+                    shiftCamera = false;
+    
     /**
-     * Shifts the camera to the specified focus point slowly.
+     * Shifts the camera to the specified point slowly.
+     * @see #setCamera(int, int) 
      */
     void shiftCamera(int x, int y) {
-        // TODO Implement shiftCamera()
+        setCamera(x, y);
+        shiftCamera = true;
     }
+    
+    private int hWidth, hHeight;
     
     /**
      * Sets the visible region of the game world.
      * The specified point is used as the focus of the camera.
      */
     void setCamera(int x, int y) {
-        int hWidth = width / 2;
-        int hHeight = height / 2;
+        hWidth = width / 2;
+        hHeight = height / 2;
         
-        if (x < hWidth) x = hWidth;
-        else if (x > world.width() - hWidth) x = world.width() - hWidth;
-        if (y < hHeight) x = hHeight;
-        else if (x > world.height() - hHeight) x = world.height()- hHeight;
+        camNext[0] = PApplet.constrain(x, hWidth, world.width() - hWidth);
+        camNext[1] = PApplet.constrain(y, hHeight, world.height() - hHeight);
         
-        camera[0] = x - hWidth;
-        camera[1] = y - hHeight;
-        camera[2] = x + hWidth;
-        camera[3] = y + hHeight;
+        updateCamera = true;
     }
     
+    // TODO Another graphics object should be passed to this method since
+    // images do not support drawing a specific region.
     @Override
     public void draw(PGraphics g) {
-        decoration.drawBackground(g, bounds);
+        if (shiftCamera) {
+            cam[0] = (int)PApplet.lerp(cam[0], camNext[0], 0.1f);
+            cam[1] = (int)PApplet.lerp(cam[1], camNext[1], 0.1f);
+            if (cam[0] == camNext[0] && cam[1] == camNext[1])
+                shiftCamera = updateCamera = false;
+        } else if (updateCamera) {
+            cam[0] = camNext[0];
+            cam[1] = camNext[1];
+            updateCamera = false;
+        }
+        if (updateCamera) {
+            camBounds[0] = cam[0] - hWidth;
+            camBounds[1] = cam[1] - hHeight;
+            camBounds[2] = cam[0] + hWidth;
+            camBounds[3] = cam[1] + hHeight;
+        }
+        g.translate(camBounds[0], camBounds[1]);
+        
+        decoration.drawBackground(g, camBounds);
         if (tracerEnabled)
             tracer.draw(g);
         if (z_order < 0)
             interaction.draw(g);
-        renderer.draw(g, bounds);
-        decoration.drawForeground(g, bounds);
+        renderer.draw(g, camBounds);
+        decoration.drawForeground(g, camBounds);
         if (z_order >= 0)
             interaction.draw(g);
     }
