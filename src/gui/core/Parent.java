@@ -133,7 +133,7 @@ public class Parent extends InteractiveComponent {
      * Sets the child that has the focus.
      * @see #focusedChild
      */
-    void setFocusedChild(InteractiveComponent comp) {
+    public void setFocusedChild(InteractiveComponent comp) {
         focusedChild = comp;
     }
     
@@ -180,17 +180,17 @@ public class Parent extends InteractiveComponent {
     
     @Override
     public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
         if (enabled)
             disabledImage = null;
         else {
             PGraphics g2 = getContext().createGraphics(width, height);
             g2.beginDraw();
-            drawComponents(g2);
+            draw(g2);
             g2.endDraw();
-            g2.filter(PImage.BLUR, 6);
+//            g2.filter(PImage.BLUR, 6); // TODO Find faster implementation
             disabledImage = g2;
         }
+        super.setEnabled(enabled);
     }
 
     @Override
