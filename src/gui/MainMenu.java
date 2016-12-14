@@ -5,6 +5,8 @@ import gui.core.ActionListener;
 import gui.core.Parent;
 import gui.core.Button;
 import processing.core.PApplet;
+import processing.core.PGraphics;
+import processing.core.PImage;
 
 /**
  * Main Menu Screen includes 
@@ -16,6 +18,11 @@ import processing.core.PApplet;
 public class MainMenu extends Parent implements ActionListener{
     
     /**
+     * Background Image
+     */
+    private PImage background; 
+    
+    /**
     * Main buttons
     */
     private final Button playBtn = new Button();
@@ -25,11 +32,14 @@ public class MainMenu extends Parent implements ActionListener{
     /**
     * Sliders
     */
-    // TODO add sliders - music slider and sound slider
+    private final Slider musicSli = new Slider();
+    private final Slider soundSli = new Slider();
     
     @Override
     public void init(PApplet context) {
-        add(playBtn, helpBtn, creditsBtn);
+        background = context.loadImage("backgrounds/main_menu.png");
+        
+        add(playBtn, helpBtn, creditsBtn, musicSli, soundSli);
         
         playBtn.setStateImages(context
                 .loadImage("component/button/play_btn.png"), true);
@@ -40,8 +50,7 @@ public class MainMenu extends Parent implements ActionListener{
         playBtn.setMnemonic(80);
        
         helpBtn.setStateImages(context
-//                .loadImage("component/button/help_btn_big.png"));
-                .loadImage("component/button/play_btn.png"), true);
+                .loadImage("component/button/help_btn_big.png"), true);
         helpBtn.setFreeShape(true);
         helpBtn.setLocation(470, 333);
         helpBtn.setSize(350, 200);
@@ -49,17 +58,17 @@ public class MainMenu extends Parent implements ActionListener{
         helpBtn.setMnemonic(72);
         
         creditsBtn.setStateImages(context
-//                .loadImage("component/button/credits_btn.png"));
-                .loadImage("component/button/play_btn.png"), true);
+                .loadImage("component/button/credits_btn.png"), true);
         creditsBtn.setFreeShape(true);
-        creditsBtn.setLocation(810, 333);
+        creditsBtn.setLocation(820, 333);
         creditsBtn.setSize(300, 200);
         creditsBtn.addActionListener(this);
         creditsBtn.setMnemonic(62);
         
-        // TODO specify sliders
-        // loc 20, 650 - size 140, 40
-        // loc 20, 710 - size 140, 40
+        musicSli.setLocation(20,650);
+        musicSli.setSize(140, 40);
+        soundSli.setLocation(20,710);
+        soundSli.setSize(140, 40);
     }
     
     private Frame helpFrame = null;
@@ -78,5 +87,11 @@ public class MainMenu extends Parent implements ActionListener{
                     .showFrame(ScreenManager.FRAME_CREDITS);
         
         // TODO add listeners to sliders
+    }
+    
+    @Override
+    public void draw(PGraphics g){
+        g.image(background, 0, 0);
+        drawComponents(g);
     }
 }

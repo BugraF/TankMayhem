@@ -5,6 +5,7 @@ import gui.core.ActionListener;
 import gui.core.Parent;
 import gui.core.Button;
 import processing.core.PApplet;
+import processing.core.PGraphics;
 
 /**
  * A scheme for mini screens (frames). 
@@ -21,6 +22,7 @@ public class Frame extends Parent implements ActionListener{
     
     @Override
     public void init(PApplet context){
+        add(closeBtn);
         closeBtn.setStateImages(context
                 .loadImage("component/button/close_btn.png"), true);
         closeBtn.setFreeShape(true);
