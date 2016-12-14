@@ -35,7 +35,7 @@ public class Game {
     private final World world;
     
     /** Game entity catalog */
-    private final Catalog catalog;
+//    private final Catalog catalog;
     
 //    private Map<String, ObservableAttribute> observableAttributes;
     
@@ -47,7 +47,7 @@ public class Game {
         
         physics = new PhysicsEngine();
         stage = new Stage();
-        catalog = new Catalog();
+//        catalog = new Catalog();
         
         AssetManager assetManager = manager.getAssetManager();
         Map<String, Object> maps = assetManager.readJSONObject("config/maps.json");
@@ -83,9 +83,9 @@ public class Game {
             int y = terrainImage.height - 1;
             while (terrainImage.pixels[x + y * terrainImage.height] >>> 24 == 0)
                 y--;
-            Tank tank = Tank.create(player.getMode(), x, y, player.getColor());
-            addEntity(tank);
-            player.setTank(tank);
+//            Tank tank = Tank.create(player.getMode(), x, y, player.getColor());
+//            addEntity(tank);
+//            player.setTank(tank);
             playerList.add(player);
         }
         this.players = playerList.iterator();
@@ -201,6 +201,10 @@ public class Game {
     }
     
     private class CircularList<E> extends ArrayList<E> {
+        public CircularList(int initialCapacity) {
+            super(initialCapacity);
+        }
+        
         @Override
         public CircularIterator iterator() {
             return new CircularIterator();

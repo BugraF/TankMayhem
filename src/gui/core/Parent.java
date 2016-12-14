@@ -59,9 +59,9 @@ public class Parent extends InteractiveComponent {
     private final SortedSet<InteractiveComponent> mouseListeners;
     
     public Parent() {
-        components = new TreeSet<>((c1, c2) -> c2.z_order - c1.z_order);
+        components = new TreeSet<>((c1, c2) -> c1.z_order - c2.z_order);
         keyListeners = new HashMap<>();
-        mouseListeners = new TreeSet<>((m1, m2) -> m1.z_order - m2.z_order);
+        mouseListeners = new TreeSet<>((m1, m2) -> m2.z_order - m1.z_order);
     }
     
     /**
@@ -111,9 +111,17 @@ public class Parent extends InteractiveComponent {
     }
     
     /**
+     * Sets the background image.
+     * @param background Null to remove the background image.
+     */
+    public void setBackground(PImage background) {
+        this.background = background;
+    }
+    
+    /**
      * Draws the components owned by this parent.
      */
-    private void drawComponents(PGraphics g) {
+    protected void drawComponents(PGraphics g) {
         components.forEach((c) -> {
             g.translate(c.bounds[0], c.bounds[1]);
             c.draw(g);
@@ -125,7 +133,7 @@ public class Parent extends InteractiveComponent {
      * Sets the child that has the focus.
      * @see #focusedChild
      */
-    void setFocusedChild(InteractiveComponent comp) {
+    public void setFocusedChild(InteractiveComponent comp) {
         focusedChild = comp;
     }
     
@@ -156,27 +164,33 @@ public class Parent extends InteractiveComponent {
         }
     }
     
+    private PImage background = null;
     private PImage disabledImage = null;
     
     @Override
     public void draw(PGraphics g) {
-        if (enabled)
+        if (enabled) {
+            if (background != null)
+                g.image(background, 0, 0);
             drawComponents(g);
+        }
         else
             g.image(disabledImage, 0, 0);
     }
     
     @Override
     public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
         if (enabled)
             disabledImage = null;
         else {
             PGraphics g2 = getContext().createGraphics(width, height);
+            g2.beginDraw();
             draw(g2);
-            g2.filter(PImage.BLUR, 6);
+            g2.endDraw();
+//            g2.filter(PImage.BLUR, 6); // TODO Find faster implementation
             disabledImage = g2;
         }
+        super.setEnabled(enabled);
     }
 
     @Override

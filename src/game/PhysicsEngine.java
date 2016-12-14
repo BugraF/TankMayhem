@@ -57,13 +57,13 @@ public class PhysicsEngine {
      */
     void add(PhysicsObj obj) {
         if (obj instanceof Bomb)
-            bombs.add(obj);
+            bombs.add((Bomb) obj);
         else if (obj instanceof Particle)
-            particles.add(obj);
+            particles.add((Particle) obj);
         else if (obj instanceof PowerUp)
-            powerups.add(obj);
+            powerups.add((PowerUp) obj);
         else if (obj instanceof Tank)
-            tanks.add(obj);
+            tanks.add((Tank) obj);
     }
     
     /**
@@ -71,13 +71,13 @@ public class PhysicsEngine {
      */
     void remove(PhysicsObj obj) {
         if (obj instanceof Bomb)
-            bombs.remove(obj);
+            bombs.remove((Bomb) obj);
         else if (obj instanceof Particle)
-            particles.remove(obj);
+            particles.remove((Particle) obj);
         else if (obj instanceof PowerUp)
-            powerups.remove(obj);
+            powerups.remove((PowerUp) obj);
         else if (obj instanceof Tank)
-            tanks.remove(obj);
+            tanks.remove((Tank) obj);
     }
     
     Tank[] getTanks() {
