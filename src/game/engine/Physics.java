@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class Physics {
     
-    private final List<List<PhysicsObj>> objectClasses;
+    private final List<List<? extends PhysicsObj>> objectClasses;
     
     /** Last checked system time in milliseconds */
     private long previousTime;
@@ -58,7 +58,7 @@ public class Physics {
      * Object classes can be used to assign different acceleration values for
      * different kinds of physics objects.
      */
-    public void addObjectClasses(List<PhysicsObj>... objClasses) {
+    public void addObjectClasses(List<? extends PhysicsObj>... objClasses) {
         objectClasses.addAll(Arrays.asList(objClasses));
     }
     
@@ -101,7 +101,7 @@ public class Physics {
     
         for (int iteration = 1; iteration <= timeStepAmt; iteration++) {
             for (int i = 0; i < objectClasses.size(); i++) {
-                List<PhysicsObj> objClass = objectClasses.get(i);
+                List<? extends PhysicsObj> objClass = objectClasses.get(i);
                 for (PhysicsObj object : objClass) {
                     if (!object.isXStable()) {
                         float velX = object.getVx();
