@@ -72,8 +72,8 @@ public abstract class Bomb implements PhysicsObj, RenderObj {
 
                     // Create a particle
                     Particle particle = new Particle(
-                            game, terrain.getColor(solidX, solidY), x, y, 
-                            velX, velY, destRes);
+                            game, terrain.getColor(solidX, solidY), destRes);
+                    particle.init(x, y, velX, velY);
                     game.addEntity(particle);
 
                     // Remove the corresponding pixels

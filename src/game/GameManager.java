@@ -45,7 +45,7 @@ public class GameManager {
      * @param players Player list
      */
     public void startNewGame(String map, Player[] players) {
-        game = new Game(map, players);
+        game = new Game(this, map, players);
     }
     
     /**
