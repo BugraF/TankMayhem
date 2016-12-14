@@ -6,6 +6,7 @@ package game;
  */
 
 class Player {
+
     private	int score;      //Score of the player
     private	int cash;       //Total money of the player
     private	String name;    //Name of the player
@@ -31,10 +32,19 @@ class Player {
      * Returns player’s inventory which includes bombs and power-ups
      * @return 
      */
-    /*public Inventory getInventory ( ){  		
+    public Inventory getInventory ( ){  		
         //TODO uncommend and implement this after inventory implemented
-    }*/
+    }
+    public String getName() {
+        return name;
+    }
 
+    public String getMode() {
+        return mode;
+    }
+    public int getColor() {
+        return color;
+    }
     public int getScore ( ){ 	
         return score;
     }
