@@ -80,4 +80,8 @@ public class PhysicsEngine {
             tanks.remove(obj);
     }
     
+    Tank[] getTanks() {
+        return tanks.toArray(new Tank[0]);
+    }
+    
 }
