@@ -78,10 +78,21 @@ public class ScreenManager extends PApplet {
         
         currentScreen = screens.get(0);
         topLevelParent.add(currentScreen);
+        topLevelParent.setFocusedChild(currentScreen);
     }
+    
+    long last;
+    int frameRate;
     
     @Override
     public void draw() {
+        long now = System.currentTimeMillis();
+        if (now - last >= 1000) {
+            System.out.println(frameRate);
+            frameRate = 0;
+            last = now;
+        }
+        frameRate++;
         topLevelParent.draw(g);
     }
     
@@ -89,6 +100,7 @@ public class ScreenManager extends PApplet {
         topLevelParent.remove(currentScreen);
         currentScreen = screens.get(screen);
         topLevelParent.add(currentScreen);
+        topLevelParent.setFocusedChild(currentScreen);
     }
     
     void switchFrame(int frame) {
@@ -100,6 +112,7 @@ public class ScreenManager extends PApplet {
         topLevelParent.remove(currentFrame);
         currentFrame = frames.get(frame);
         topLevelParent.add(currentFrame);
+        topLevelParent.setFocusedChild(currentFrame);
     }
     
     void showFrame(int frame) {
@@ -111,6 +124,7 @@ public class ScreenManager extends PApplet {
         currentScreen.setEnabled(false);
         currentFrame = frames.get(frame);
         topLevelParent.add(currentFrame);
+        topLevelParent.setFocusedChild(currentFrame);
     }
     
     void closeFrame() {
@@ -122,6 +136,7 @@ public class ScreenManager extends PApplet {
         currentScreen.setEnabled(true);
         topLevelParent.remove(currentFrame);
         currentFrame = null;
+        topLevelParent.setFocusedChild(currentScreen);
     }
     
     // There is no point for exposing the top-level parent.
@@ -139,57 +154,6 @@ public class ScreenManager extends PApplet {
     protected void handleMouseEvent(MouseEvent event) {
         topLevelParent.handleMouseEvent(new gui.core.MouseEvent(event));
     }
-    
-//    /**
-//     * Propagates received key events to the top-level parent.
-//     */
-//    @Override
-//    public void handleKeyEvent(KeyEvent event) {
-//        switch (event.getAction()) {
-//            case KeyEvent.PRESS:
-//                topLevelParent.keyPressed(event);
-//                break;
-//            case KeyEvent.RELEASE:
-//                topLevelParent.keyReleased(event);
-//                break;
-//            case KeyEvent.TYPE:
-//                topLevelParent.keyTyped(event);
-//                break;
-//        }
-//    }
-//    
-//    /**
-//     * Propagates received mouse events to the top-level parent.
-//     */
-//    @Override
-//    public void handleMouseEvent(MouseEvent event) {
-//        switch (event.getAction()) {
-//            case MouseEvent.PRESS:
-//                topLevelParent.mousePressed(new gui.MouseEvent(event));
-//                break;
-//            case MouseEvent.RELEASE:
-//                topLevelParent.mouseReleased(new gui.MouseEvent(event));
-//                break;
-//            case MouseEvent.CLICK:
-//                topLevelParent.mouseClicked(new gui.MouseEvent(event));
-//                break;
-//            case MouseEvent.DRAG:
-//                topLevelParent.mouseDragged(new gui.MouseEvent(event));
-//                break;
-//            case MouseEvent.MOVE:
-//                topLevelParent.mouseMoved(new gui.MouseEvent(event));
-//                break;
-//            case MouseEvent.ENTER:
-//                topLevelParent.mouseEntered(new gui.MouseEvent(event));
-//                break;
-//            case MouseEvent.EXIT:
-//                topLevelParent.mouseExited(new gui.MouseEvent(event));
-//                break;
-//            case MouseEvent.WHEEL:
-//                topLevelParent.mouseWheel(new gui.MouseEvent(event));
-//                break;
-//        }
-//    }
     
     /**
      * Returns the currently active instance of this class.
