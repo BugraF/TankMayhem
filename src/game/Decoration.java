@@ -1,7 +1,5 @@
 package game;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import processing.core.PGraphics;
 import processing.core.PImage;
 
