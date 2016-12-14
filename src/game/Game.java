@@ -4,11 +4,13 @@ import game.engine.WorldObj;
 import game.engine.World;
 import game.engine.PhysicsObj;
 import game.engine.RenderObj;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Map;
 import processing.core.PImage;
 
 /**
- * Singleton
+ * Singleton + Mediator + Façade
  * @author Burak Gök
  */
 public class Game {
@@ -27,6 +29,7 @@ public class Game {
      * the game.
      */
     private final Stage stage;
+    private final Terrain terrain;
     
     /** Static game world (terrain and tanks) */
     private final World world;
@@ -36,7 +39,7 @@ public class Game {
     
 //    private Map<String, ObservableAttribute> observableAttributes;
     
-    private final CircularIterator<Player> players; // TODO Implement CircularList
+    private final CircularList<Player>.CircularIterator players; // TODO Implement CircularList
     
     public Game(GameManager manager, String map, Player[] players) {
         instance = this;
@@ -47,24 +50,25 @@ public class Game {
         catalog = new Catalog();
         
         AssetManager assetManager = manager.getAssetManager();
-        Map<String, Object> assets 
-                = assetManager.readConfigurationFile("maps.json");
+        Map<String, Object> maps = assetManager.readJSONObject("config/maps.json");
+        Map<String, Object> assets = (Map<String, Object>) maps.get(map);
         
         PImage terrainTexture = (PImage) assets.get("terrain.texture");
-        String[] files = assetManager.getFiles("terrain/surface");
-        PImage terrainSurface = assetManager.loadAsset(
-                files[(int)(Math.random() * files.length)]);
+        Object[] surfaces = assetManager.readJSONArray("config/surfaces.json");
+        Map<String, Object> surface = (Map<String, Object>)
+                surfaces[(int)(Math.random() * surfaces.length)];
+        PImage terrainSurface = assetManager.loadAsset((String)surface.get("name"));
         PImage terrainImage = AssetManager.mask(terrainTexture, terrainSurface);
-        Terrain terrain = new Terrain(terrainImage, 2);
+        terrain = new Terrain(terrainImage, 2, (int)surface.get("sky"));
         
         world = new World(terrainImage.width, 768); // TODO Buğra: Specify height
               // Height should be fixed and can be greater than the screen height
         stage.setWorld(world);
         addEntity(terrain);
         
-        Decoration decoration = Decoration
-                .create((String) assets.get("decoration.name"));
-        decoration.setResources((PImage[]) assets.get("decoration.resources"));
+        Map<String, Object> decInfo = (Map<String, Object>) assets.get("decoration");
+        Decoration decoration = Decoration.create((String) decInfo.get("name"));
+        decoration.setResources((PImage[]) decInfo.get("resources"));
         decoration.setTerrain(terrain); // Terrain.getMask() -> image
         stage.setDecoration(decoration);
         
@@ -88,12 +92,24 @@ public class Game {
     }
     
     public Player getCurrentPlayer() {
-        return players.get();
+        return players.current();
     }
     
     /** Returns the tank of the current players. */
     public Tank getActiveTank() {
-        return players.get().getTank();
+        return players.current().getTank();
+    }
+    
+    Terrain getTerrain() {
+        return terrain;
+    }
+    
+    PhysicsEngine getPhysicsEngine() {
+        return physics;
+    }
+    
+    World getWorld() {
+        return world;
     }
     
     /**
@@ -128,24 +144,24 @@ public class Game {
      * @param damageGiven The total damage delivered to other players
      */
     void updatePlayerStatus(float damageGiven) {
-        players.get().updateScore((int)(damageGiven * 0)); // TODO Specify factor
-        players.get().updateCash((int)(damageGiven * 0)); // TODO Specify factor
+        players.current().updateScore((int)(damageGiven * 0)); // TODO Specify factor
+        players.current().updateCash((int)(damageGiven * 0)); // TODO Specify factor
     }
     
     void switchTurn() {
-        Player curPlayer = players.get();
+        Player curPlayer = players.current();
         players.next();
-        while (!players.get().isAlive())
+        while (!players.current().isAlive())
             players.next();
         
-        if (players.get() == curPlayer) {
+        if (players.current() == curPlayer) {
             gameOver();
             return;
         }
         Tank tank = getActiveTank();
         stage.shiftCamera((int)tank.getX(), (int)tank.getY());
-        if (players.get() instanceof AI)
-            ((AI)players.get()).play();
+        if (players.current() instanceof AI)
+            ((AI)players.current()).play();
     }
     
     /**
@@ -164,8 +180,12 @@ public class Game {
      * Loads the end-game screen.
      */
     void gameOver() {
-        
+        // observableAttributes.get("game_over").set(true);
     }
+    
+//    public Map<String, ObservableAttribute> getAttributes() {
+//        return observableAttributes;
+//    }
     
     /**
      * Returns the currently active instance of this class.
@@ -178,6 +198,32 @@ public class Game {
     public void finalize() {
         if (instance == this)
             instance = null;
+    }
+    
+    private class CircularList<E> extends ArrayList<E> {
+        @Override
+        public CircularIterator iterator() {
+            return new CircularIterator();
+        }
+        
+        class CircularIterator implements Iterator<E> {
+            int cursor = 0;
+            
+            @Override
+            public boolean hasNext() {
+                return !isEmpty();
+            }
+            
+            public E current() {
+                return get(cursor);
+            }
+
+            @Override
+            public E next() {
+                cursor = cursor++ % size();
+                return get(cursor);
+            }
+        }
     }
     
 }
