@@ -9,18 +9,28 @@ import game.engine.RenderObj;
  */
 public abstract class Bomb implements PhysicsObj, RenderObj {
     /** Context of this bomb */
-    private final Game game;
+    protected final Game game;
     
     /** Position */
-    private float x, y;
+    protected float x, y;
     
     /** Velocity */
-    private float velX, velY;
+    protected float velX, velY;
     
     int blastPower;
     
     public Bomb(Game game) {
         this.game = game;
+    }
+    
+    /**
+     * Sets the position and velocity of this bomb.
+     */
+    public void init(float x, float y, float velX, float velY) {
+        this.x = x;
+        this.y = y;
+        this.velX = velX;
+        this.velY = velY;
     }
     
     /**
@@ -102,9 +112,10 @@ public abstract class Bomb implements PhysicsObj, RenderObj {
             float distSq = xDiff * xDiff + yDiff * yDiff;
 
             if (distSq < radiusSq) {
-                float damage = blastPower * 1 / distSq; // TODO Specify factor
+                float damage = blastPower * 1 / distSq; // TODO Specify factor, shield bonus?
                 tank.updateHp(damage);
-                totalDamage += damage;
+                if (tank != game.getActiveTank())
+                    totalDamage += damage;
             }
         }
         

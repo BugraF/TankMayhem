@@ -1,5 +1,6 @@
 package game;
 
+import game.engine.World;
 import processing.core.PGraphics;
 import processing.core.PImage;
 
@@ -14,14 +15,15 @@ import processing.core.PImage;
  */
 public abstract class Decoration {
     
+    private World world;
     private Terrain terrain;
     
     static Decoration create(String name) {
         switch (name) {
-            case "Sunny": return new Sunny();
-            case "Cloudy": return new Cloudy();
-            case "Rainy": return new Rainy();
-            case "Snowy": return new Snowy();
+//            case "Sunny": return new Sunny();
+//            case "Cloudy": return new Cloudy();
+//            case "Rainy": return new Rainy();
+//            case "Snowy": return new Snowy();
             default: throw new RuntimeException("No such decoration: " + name);
         }
     }
@@ -43,6 +45,13 @@ public abstract class Decoration {
      * Specifies the required resources of this decoration.
      */
     abstract void setResources(PImage... resources);
+    
+    /**
+     * Associates this decoration to the specified world.
+     */
+    void setWorld(World world) {
+        this.world = world;
+    }
     
     /**
      * Associates this decoration to the specified terrain.
