@@ -11,24 +11,16 @@ import processing.core.PImage;
  * 
  * @author Bugra Felekoglu
  */
-public class HelpFrame extends Frame implements ActionListener {
+public class HelpFrame extends Frame {
     
     private PImage background;
     
     @Override
     public void init(PApplet context){
+        super.init(context);
         setSize(1000, 700);
-        background = context.loadImage("backgrounds/help.png");
-    }
-    
-    @Override
-    public void actionPerformed(Component comp) {
-        
-    }
-    
-    @Override
-    public void draw(PGraphics g){
-        g.image(background, 1140, 34);
-        drawComponents(g);
+        setLocation(140, 34);
+        background = context.loadImage("background/help.png");
+        setBackground(background);
     }
 }

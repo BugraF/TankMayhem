@@ -11,25 +11,16 @@ import processing.core.PImage;
  * 
  * @author Bugra Felekoglu
  */
-public class CreditsFrame extends Frame implements ActionListener {
+public class CreditsFrame extends Frame  {
     
     private PImage background;
     
     @Override
     public void init(PApplet context){
-        setSize(1000, 700);
-        background = context.loadImage("backgrounds/credits.png");
+        super.init(context);
+        setSize(580, 640);
+        setLocation(350, 64);
+        background = context.loadImage("background/credits.png");
+        setBackground(background);
     }
-    
-    @Override
-    public void actionPerformed(Component comp) {
-        
-    }
-    
-    @Override
-        public void draw(PGraphics g){
-        g.image(background, 1140, 34);
-        drawComponents(g);
-    }
-    
 }

@@ -25,8 +25,8 @@ public class Frame extends Parent implements ActionListener{
         add(closeBtn);
         closeBtn.setStateImages(context
                 .loadImage("component/button/close_btn.png"), true);
-        closeBtn.setFreeShape(true);
         closeBtn.setSize(45, 45);
+        closeBtn.setMnemonic(27); // Mnemonic => ESC
         closeBtn.addActionListener(this);
     }
 
