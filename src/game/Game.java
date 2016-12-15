@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import processing.core.PImage;
+import processing.data.JSONArray;
+import processing.data.JSONObject;
 
 /**
  * Singleton + Mediator + Façade
@@ -50,14 +52,15 @@ public class Game {
 //        catalog = new Catalog();
         
         AssetManager assetManager = manager.getAssetManager();
-        Map<String, Object> maps = assetManager.readJSONObject("config/maps.json");
-        Map<String, Object> assets = (Map<String, Object>) maps.get(map);
+        JSONObject mapInfo = assetManager.readJSONObject("config/maps.json")
+                .getJSONObject(map);
+        Map<String, Object> assets = assetManager.process(mapInfo);
         
         PImage terrainTexture = (PImage) assets.get("terrain.texture");
-        Object[] surfaces = assetManager.readJSONArray("config/surfaces.json");
-        Map<String, Object> surface = (Map<String, Object>)
-                surfaces[(int)(Math.random() * surfaces.length)];
-        PImage terrainSurface = assetManager.loadAsset((String)surface.get("name"));
+        JSONArray surfaces = assetManager.readJSONArray("config/surfaces.json");
+        Map<String, Object> surface = assetManager.process(
+                surfaces.getJSONObject((int)(Math.random() * surfaces.size())));
+        PImage terrainSurface = (PImage) surface.get("image");
         PImage terrainImage = AssetManager.mask(terrainTexture, terrainSurface);
         terrain = new Terrain(terrainImage, 2, (int)surface.get("sky"));
         
