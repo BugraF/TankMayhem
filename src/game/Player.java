@@ -4,37 +4,51 @@ package game;
  *
  * @author Haluk İncidelen
  */
+public class Player {
 
-class Player {
-
-    private	int score;      //Score of the player
-    private	int cash;       //Total money of the player
-    private	String name;    //Name of the player
-    private	String mode;	//Player’s chosen tank mode which affects the bonuses or penalties of the tanks
-    private	int color;      //Color of the player
-    private	Tank tank;      //Tank object that is owned by this player
+    private final String name;
+    private final int color;
+    /**
+     * Mode of this player.
+     * Each mode gives unique damage and shield bonuses.
+     */
+    private final String mode;
+    
+    private int score;
+    private int cash;
+    
+    private Tank tank;
+    
+    private final Inventory inventory = new Inventory();
+    
+    public Player(String name, String mode, int color) {
+        this.name = name;
+        this.mode = mode;
+        this.color = color;
+    }
     
     /**
-     * Returns the tank of this player
-     * @return 
+     * Returns the tank of this player.
      */
-    public Tank getTank ( ){ 
+    public Tank getTank() { 
         return tank;
     }
+    
     /**
-     * //Assigns the specified tank to this player
-     * @param tank 
+     * Assigns the specified tank to this player.
      */
-    public void setTank (Tank tank){ 
-        
+    public void setTank(Tank tank) { 
+        this.tank = tank;
     }
+    
     /**
-     * Returns player’s inventory which includes bombs and power-ups
-     * @return 
+     * Returns this player’s inventory.
+     * @see Inventory
      */
-    public Inventory getInventory ( ){  		
-        //TODO uncommend and implement this after inventory implemented
+    public Inventory getInventory() {
+        return inventory;
     }
+    
     public String getName() {
         return name;
     }
@@ -42,42 +56,43 @@ class Player {
     public String getMode() {
         return mode;
     }
+
     public int getColor() {
         return color;
     }
-    public int getScore ( ){ 	
+    
+    public int getScore() { 	
         return score;
     }
-    /**
-     * Increments player’s total score with given quantity
-     * @param delta 
-     */
-    public void updateScore (int delta){    
-        score = score + delta;
-    }
-    /**
-     * Returns player’s current money amount
-     * @return 
-     */
-    public int getCash ( ){
+    
+    public int getCash() {
         return cash;
     }
+    
     /**
-     * Updates player’s total cash with given quantity (Increases or decreases)
-     * @param delta 
+     * Increments this player’s total score by the specified amount.
      */
-    public void updateCash (int delta){ 
+    public void updateScore(int delta) {
+        if (delta < 0)
+            throw new RuntimeException("Score changes cannot be negative.");
+        score += delta;
+    }
+    
+    /**
+     * Increments this player’s total cash by the specified amount.
+     */
+    public void updateCash(int delta) {
+        if (delta < 0)
+            throw new RuntimeException("Money changes cannot be negative.");
         cash = cash + delta;
     }
+    
     /**
-     * Shows the player’s current situation whether alive or died
-     * @return 
+     * Indicates whether the tank of this player is destroyed.
+     * @see Tank#getHP()
      */
-    public boolean isAlive ( ){   
-        if( tank.getHP() > 0.0 )
-            return true;
-        else 
-            return false;
+    public boolean isAlive() {   
+        return tank.getHP() != 0;
     }
    
 }
