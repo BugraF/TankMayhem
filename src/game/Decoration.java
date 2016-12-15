@@ -15,8 +15,8 @@ import processing.core.PImage;
  */
 public abstract class Decoration {
     
-    private World world;
-    private Terrain terrain;
+    protected World world;
+    protected Terrain terrain;
     
     static Decoration create(String name) {
         switch (name) {
