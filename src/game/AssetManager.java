@@ -25,14 +25,12 @@ public class AssetManager {
         this.context = context;
     }
     
-    public Map<String, Object> readJSONObject(String fileName) {
-        JSONObject object = context.loadJSONObject(fileName);
-        return process(object);
+    public JSONObject readJSONObject(String fileName) {
+        return context.loadJSONObject(fileName);
     }
     
-    public Object[] readJSONArray(String fileName) {
-        JSONArray array = context.loadJSONArray(fileName);
-        return process(array);
+    public JSONArray readJSONArray(String fileName) {
+        return context.loadJSONArray(fileName);
     }
     
     private Object process(Object object) {
@@ -46,7 +44,7 @@ public class AssetManager {
             return object; // String, Number, Boolean
     }
     
-    private Map<String, Object> process(JSONObject object) {
+    public Map<String, Object> process(JSONObject object) {
         Map<String, Object> result = new HashMap<>(object.size());
         Iterator<String> iterator = object.keyIterator();
         
@@ -70,7 +68,7 @@ public class AssetManager {
         return result;
     }
     
-    private Object[] process(JSONArray jArray) {
+    public Object[] process(JSONArray jArray) {
         Object[] array = new Object[jArray.size()];
         for (int i = 0; i < jArray.size(); i++)
             array[i] = process(jArray.get(i));
@@ -149,6 +147,7 @@ public class AssetManager {
         return context.loadImage(name);
     }
     
+    // TODO texture(tile) & surface
     public static PImage mask(PImage orig, PImage mask) {
         orig.mask(mask); // mask need to be gray-scale
         return orig;
