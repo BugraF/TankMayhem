@@ -21,18 +21,28 @@ import processing.core.PImage;
  */
 public class Slider extends InteractiveComponent {
     
-    /**
-     * Icon is a clickable image which makes volume 0 or previous value.
-     * Slide is a draggable image that adjusts the volume.
-     * Line is clickable image which moves the slide.
-     */
-    private PImage icon;
+    // Clickable image which makes volume 0 or previous value
+    private  PImage icon;
     
-    private float value;
-
-    /**
-     * 
-     */
+    private boolean isMuted = false;
+    
+    // Scale rate
+    private float rate = 1; 
+    
+    // Bounds of clickable line
+    private int limX1 = 105;
+    private int limY1 = 20;
+    private int limX2 = 285;
+    private int limY2 = 60;
+    
+    // Bound of clickable box
+    private int boxSize = 80;
+    
+    // Slider Location (cur and prev)
+    private int loc = 195; 
+    private int prev = 195;
+    
+    @Override
     public void init(PApplet context){
         
     }
@@ -41,44 +51,94 @@ public class Slider extends InteractiveComponent {
         this.icon = icon;
     }
     
-    public void setValue(float value) {
-        this.value = value;
-    }
-
-    public float getValue() {
-        return value;
-    }
+    // TODO @Buğra Calculate with respect to heigth
     
     @Override
     public void draw(PGraphics g) {
         // Orange rectangle
         g.noStroke();
         g.fill(236, 204, 129);
-        g.rect(80,20,210,40);
+        g.rect(80 * rate, 20 * rate, 220 * rate, 40 * rate);
 
         // Volume line
         g.stroke(0);
-        g.strokeWeight((float) 2.4);
-        g.line(90, 40, 275, 40);
+        g.strokeWeight((float) 2.4 * rate);
+        g.line(90 * rate, 40 * rate, 285 * rate, 40 * rate);
 
         // Limit
         g.strokeWeight(1);
-        g.line(105, 37, 105, 43);
+        g.line(105 * rate, 37 * rate, 105 * rate, 43 * rate);
 
         // Slider 
         g.noStroke();
         g.fill(0);
-        g.rect(105, 25, 10, 30);
+        g.rect((loc-5) * rate, 25 * rate, 10 * rate, 30 * rate);
 
         // Box
         g.fill(0);
-        g.quad(0,0,100,0,80,80,0,80);
+        g.quad(0, 0, 100 * rate, 0, 80 * rate, 80 * rate, 0, 80 * rate);
+        
+        // Icon
+        g.image(icon, 0, 0, 80 * rate, 80 * rate);
+        
+        if(isMuted){
+            // Cross Line
+            g.stroke(241, 203, 130);
+            g.strokeWeight((float) 3.5 * rate);
+            g.line(15 * rate, 70 * rate, 75 * rate, 10 * rate);
+        }
+    }
+    
+    public void setScaleRate(float rate){
+        this.rate = rate;
     }
 
     @Override
     public boolean mousePressed(MouseEvent e) {
-        return true;
+        // toggle mute
+        // set value
+        if ((e.getY() > limY1 * rate) && (e.getY() < limY2 * rate)
+                && (e.getX() > limX1 * rate) && (e.getX() < limX2 * rate)){
+            loc = (int) (e.getX() / rate);
+            prev = loc;
+            isMuted = false;
+            // TODO @Buğra update volume
+            System.out.println(loc);
+            return true;
+        }
+        else if ((e.getY() < boxSize * rate) && (e.getX() < boxSize * rate)){
+            if(!isMuted) {
+                isMuted = true;
+                loc = 106;
+                // TODO @Buğra Mute volume
+            }
+            else {
+                isMuted = false;
+                loc = prev;
+                // TODO @Buğra Unmute volume
+            }
+            return true;
+        }
+        else
+            return false;
     }    
     
-    
+    @Override
+    public boolean mouseDragged(MouseEvent e) {
+        // toggle mute
+        // set value
+        if ((e.getY() > limY1 * rate) && (e.getY() < limY2 * rate)
+                && (e.getX() > limX1 * rate) && (e.getX() < limX2 * rate)){
+            loc = (int) (e.getX() / rate);
+            prev = loc;
+            if(loc == 106)
+                isMuted = true;
+            else
+                isMuted = false;
+            // TODO @Buğra update volume
+            return true;
+        }
+        else
+            return false;
+    } 
 }
