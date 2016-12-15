@@ -37,7 +37,8 @@ public class MainMenu extends Parent implements ActionListener{
     
     @Override
     public void init(PApplet context) {
-        background = context.loadImage("backgrounds/main_menu.png");
+        background = context.loadImage("background/main_menu.png");
+        setBackground(background);
         
         add(playBtn, helpBtn, creditsBtn, musicSli, soundSli);
         
@@ -47,7 +48,7 @@ public class MainMenu extends Parent implements ActionListener{
         playBtn.setLocation(160, 333);
         playBtn.setSize(300, 200);
         playBtn.addActionListener(this);
-        playBtn.setMnemonic(80);
+        playBtn.setMnemonic(80);    // mnemonic => p
        
         helpBtn.setStateImages(context
                 .loadImage("component/button/help_btn_big.png"), true);
@@ -55,7 +56,7 @@ public class MainMenu extends Parent implements ActionListener{
         helpBtn.setLocation(470, 333);
         helpBtn.setSize(350, 200);
         helpBtn.addActionListener(this);
-        helpBtn.setMnemonic(72);
+        helpBtn.setMnemonic(72);    // mnemonic => h
         
         creditsBtn.setStateImages(context
                 .loadImage("component/button/credits_btn.png"), true);
@@ -63,16 +64,17 @@ public class MainMenu extends Parent implements ActionListener{
         creditsBtn.setLocation(820, 333);
         creditsBtn.setSize(300, 200);
         creditsBtn.addActionListener(this);
-        creditsBtn.setMnemonic(62);
+        creditsBtn.setMnemonic(62); // mnemonic => c
         
+        musicSli.setScaleRate((float)0.5);
         musicSli.setLocation(20,650);
-        musicSli.setSize(140, 40);
+        musicSli.setSize(150, 40);
+        musicSli.setIcon(context.loadImage("component/button/music_icon.png"));
+        soundSli.setScaleRate((float)0.5);
         soundSli.setLocation(20,710);
-        soundSli.setSize(140, 40);
+        soundSli.setSize(150, 40);
+        soundSli.setIcon(context.loadImage("component/button/sound_icon.png"));
     }
-    
-    private Frame helpFrame = null;
-    private Frame creditsFrame = null;
     
     @Override
     public void actionPerformed(Component comp) {
@@ -86,12 +88,7 @@ public class MainMenu extends Parent implements ActionListener{
             ((ScreenManager)getContext())
                     .showFrame(ScreenManager.FRAME_CREDITS);
         
-        // TODO add listeners to sliders
-    }
-    
-    @Override
-    public void draw(PGraphics g){
-        g.image(background, 0, 0);
-        drawComponents(g);
+        // TODO @Buğra add listeners to sliders
+        // TODO @Buğra set mnemonics of sliders
     }
 }
