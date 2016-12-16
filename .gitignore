@@ -5,7 +5,8 @@
 /nbproject/private/
 
 # Data Folder #
-/data/
+/data/*
+!/data/config
 
 # Libraries #
 *.jar
