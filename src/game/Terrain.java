@@ -51,15 +51,17 @@ public class Terrain implements WorldObj, RenderObj {
      * Color the pixel at the specified point.
      */
     public void addPixel(int color, int x, int y) {
+        y -= sky;
         if (x > 0 && x < image.width && y > 0 && y < image.height)
             image.pixels[x + y * image.width] = color;
     }
     
     /**
      * Makes the pixel at the specified point transparent.
-     * Equivalent to addPixel(0, x, y).
+     * Equivalent to {@see #addPixel(0, int, int)}.
      */
     public void removePixel(int x, int y) {
+        y -= sky;
         if (x > 0 && x < image.width && y > 0 && y < image.height)
             image.pixels[x + y * image.width] = 0;
     }
@@ -70,6 +72,7 @@ public class Terrain implements WorldObj, RenderObj {
      * #00000000 is returned.
      */
     public int getColor(int x, int y) {
+        y -= sky;
         if (x > 0 && x < image.width && y > 0 && y < image.height)
             return image.pixels[x + y * image.width];
         return 0;
@@ -80,6 +83,7 @@ public class Terrain implements WorldObj, RenderObj {
      * @return X and Y components of the normal vector.
      */
     public float[] getNormal(int x, int y) {
+        y -= sky;
         // First find all nearby solid pixels, and create a vector to the
         // average solid pixel from (x,y)
         float avgX = 0;
@@ -101,6 +105,7 @@ public class Terrain implements WorldObj, RenderObj {
      * or not it's transparent.
      */
     public boolean isPixelSolid(int x, int y) {
+        y -= sky;
         if (x > 0 && x < image.width && y > 0 && y < image.height)
             return image.pixels[x + y * image.width] != 0;
         return false; // out of bounds, not solid
@@ -118,7 +123,9 @@ public class Terrain implements WorldObj, RenderObj {
 
     @Override
     public void draw(PGraphics g, int[] bounds) {
-        g.image(image, bounds[0], bounds[1] + sky);
+        g.translate(-bounds[0], -bounds[1]);
+        g.image(image, 0, sky);
+        g.translate(bounds[0], bounds[1]);
     }
     
 }
