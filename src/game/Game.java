@@ -75,6 +75,8 @@ public class Game {
         decoration.setTerrain(terrain); // Terrain.getMask() -> image
         stage.setDecoration(decoration);
         
+        JSONObject modes = assetManager.readJSONObject("config/modes.json");
+        Map<String, Object> modeInfo = assetManager.process(modes);
         CircularList<Player> playerList = new CircularList<>(players.length);
         int free = 50;
         int occupy = (terrainImage.width - (players.length - 1) * free)
@@ -86,15 +88,22 @@ public class Game {
             int y = terrainImage.height - 1;
             while (terrainImage.pixels[x + y * terrainImage.height] >>> 24 == 0)
                 y--;
-            // TODO Burak: AssetManager.fill(mode.image, color)
-            PImage image = null;
-            Tank tank = new Tank(this, image, player.getColor());
-            tank.init(player.getMode(), x, y);
+            
+            Map<String, Object> mode = (Map<String, Object>)
+                    modeInfo.get(player.getMode());
+            Tank tank = new Tank(this, 
+                    AssetManager.fill((PImage) mode.get("image"), 0,
+                    player.getColor()), player.getColor());
+            tank.init(x, y, (float)mode.get("damage"), (float)mode.get("shield"));
             addEntity(tank);
             player.setTank(tank);
             playerList.add(player);
         }
         this.players = playerList.iterator();
+    }
+    
+    public Player[] getPlayers() {
+        return players.array();
     }
     
     public Player getCurrentPlayer() {
@@ -116,6 +125,10 @@ public class Game {
     
     World getWorld() {
         return world;
+    }
+    
+    public Stage getStage() {
+        return stage;
     }
     
     /**
@@ -232,6 +245,10 @@ public class Game {
             public E next() {
                 cursor = cursor++ % size();
                 return get(cursor);
+            }
+            
+            public E[] array() {
+                return (E[]) toArray();
             }
         }
     }
