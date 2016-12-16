@@ -53,18 +53,20 @@ public class Tank implements PhysicsObj, WorldObj, RenderObj {
         this.color = color;
     }
     
-    public void init(String mode, int x, int y) {
+    public void init(int x, int y, float damageBonus, float shieldBonus) {
         this.x = x;
         this.y = y;
+        this.damageBonus = damageBonus;
+        this.shieldBonus = shieldBonus;
         
-        if ("assault".equals(mode)) {
-            damageBonus = 1.2f;
-            shieldBonus = 0.8f;
-        }
-        else if ("armored".equals(mode)) {
-            damageBonus = 0.8f;
-            shieldBonus = 1.2f;
-        }
+//        if ("assault".equals(mode)) {
+//            damageBonus = 1.2f;
+//            shieldBonus = 0.8f;
+//        }
+//        else if ("armored".equals(mode)) {
+//            damageBonus = 0.8f;
+//            shieldBonus = 1.2f;
+//        }
     }
     
     @Override
