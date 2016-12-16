@@ -1,86 +1,97 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package game;
+
 import game.engine.PhysicsObj;
 import game.engine.RenderObj;
 import game.engine.WorldObj;
 import processing.core.PGraphics;
 import processing.core.PImage;
 
-
 /**
  *
  * @author aytajabbaszade
  */
-public abstract class Tank 
-        implements PhysicsObj, WorldObj, RenderObj{
+public abstract class Tank implements PhysicsObj, WorldObj, RenderObj {
+    /** The context of this tank */
+    private final Game game;
     
-    private float x;
-    private float y;
-    private float velX;
-    private float velY;
-    private boolean goLeft;
-    private boolean goRight;
-    private float firePower;
-    private float fireAngle;
-    private int hp;
+    /** Position of this tank */
+    private float x, y;
+    
+    /** Velocity of this tank */
+    private float velX, velY;
+    
+    private boolean goLeft, goRight;
+    
+    float firePower, fireAngle;
+    
+    /* Tank Status */
+    private float hp;
     private int fuel;
+    
+    /* Bonuses & Penalties */
     private float agility;
     private float shieldBonus;
     private float damageBonus;
-    public float rotation;
-    public boolean onGround;
-    private Game game;
+    
+    /* Physical Conditions */
+    private float rotation;
+    private boolean onGround;
+    
     private int terrainMask;
     private int tanksMask;
     private int tankHeight;
     private int tankWidth;
-    public Tank(Game game, int color){
-        this.game=game;
-        velX = 0;
-        velY = 0;		
+    
+    public Tank(Game game, int color) {
+        this.game = game;
+        // TODO Burak: AssetManager.fill(std.image, color)
+    }
+    
+    @Override
+    public void draw(PGraphics g, int[] bounds) {
+        
     }
 
-    //methods
-    public void moveLeft(){
+    public void moveLeft() {
 	goLeft = true;
     }
-    public void moveRight(){
+    public void moveRight() {
         goRight = true;
     }
-    public void stopLeft(){
+    public void stopLeft() {
 	goLeft = false;
     }
-    public void stopRight(){
+    public void stopRight() {
         goRight = false;    
     }
-    public void updateHp(int delta){
-	hp = hp + delta;
+    
+    /**
+     * Updates the health points of this tank by the specified amount.
+     */
+    public void updateHp(float delta){
+	hp += delta;
     }
+    
+    /**
+     * Sets the maneuver capability of this tank. This method effectively
+     * changes the speed of the tank.
+     * @param agility Default value is 1. To slow down the tank, a value less
+     *                than 1 should be specified. Similarly, to speed up the
+     *                tank, a value greater than 1 is used.
+     */
     public void setAgility(float agility){
         this.agility = agility;
     }
-    @Override
-    public float getX(){
-        return x;
-    }
-     @Override
-    public float getY(){
-        return y;
-    }
-     @Override
-     public float getVx(){
-        return velX;
-    }
-     @Override
-    public float getVy(){
-        return velY;
-    }
+    
+    /**
+     * Returns the health points of this tank.
+     */
     public float getHP() {
         return hp;
+    }
+    
+    public int getFuel() {
+        return fuel;
     }
 
     public float getFirePower() {
@@ -90,46 +101,9 @@ public abstract class Tank
     public float getFireAngle() {
         return fireAngle;
     }
-
-    public int getFuel() {
-        return fuel;
-    }
-
-    public boolean isOnGround() {
-        return onGround;
-    }
-     @Override
-    public void setX(float x){
-        this.x = x;
-    }
-     @Override
-    public void setY(float y){
-        this.y = y;
-    }
-     @Override
-    public void setVx(float vX){
-        this.velX = vX;
-    }
-     @Override
-    public void setVy(float vY){
-        this.velY = vY;
-    }
-     @Override
-    public boolean isXStable(){
-        return true;
-    }
-    
-    @Override
-    public boolean isYStable(){
-        if (onGround == true){
-            return true;
-        }
-        else
-            return false;
-    }
      
     @Override
-    public void checkConstraints(){// world border, movement, hold surface
+    public void checkConstraints() { // world border, movement, hold surface
         if(getX()<0){
             setX(0);
         }
@@ -177,26 +151,30 @@ public abstract class Tank
     }
     
     @Override
-    public void draw(PGraphics g, int[] bounds) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public PImage getMask() {
+        return null;
     }
     
-    /*@Override
-    public PImage getMask(){
-        PImage tank = loadImage("tank.jpg");
-        return tank;
-    }
     @Override
-    public int[] getBounds(){
-        return
-    }*/
+    public int[] getBounds() {
+        return null;
+    }
 
     private void rotate(float delta) {
-        rotation+=delta;
+        rotation += delta;
     }
-
-
-   
     
+    public float getX() { return x; }
+    public float getY() { return y; }
+    public float getVx() { return velX; }
+    public float getVy() { return velY; }
+    
+    public void setX(float x) { this.x = x; }
+    public void setY(float y) { this.y = y; }
+    public void setVx(float vX) { this.velX = vX; }
+    public void setVy(float vY) { this.velY = vY; }
+    
+    public boolean isXStable() { return true; } // TODO Haluk: Fix
+    public boolean isYStable() { return onGround; }
     
 }
