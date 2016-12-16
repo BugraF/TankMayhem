@@ -1,17 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package gui;
 
-import gui.core.ActionListener;
-import gui.core.Component;
 import gui.core.InteractiveComponent;
 import gui.core.MouseEvent;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PImage;
+import processing.event.KeyEvent;
 
 /**
  * Slider consist of a button and a basic slider.
@@ -42,9 +36,17 @@ public class Slider extends InteractiveComponent {
     private int loc = 195; 
     private int prev = 195;
     
+    private int focusKey;
+    
     @Override
     public void init(PApplet context){
         
+    }
+    
+    public void setFocusKey(int key) {
+        focusKey = key;
+        if (parent != null)
+            parent.associateKeys(this, key);
     }
     
     public void setIcon(PImage icon){
@@ -91,6 +93,16 @@ public class Slider extends InteractiveComponent {
     
     public void setScaleRate(float rate){
         this.rate = rate;
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == focusKey)
+            parent.setFocusedChild(this);
+        else if (e.getKeyCode() == 37)
+            loc -= 10;
+        else if (e.getKeyCode() == 39)
+            loc += 10;
     }
 
     @Override

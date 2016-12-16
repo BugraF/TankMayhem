@@ -5,7 +5,6 @@ import gui.core.ActionListener;
 import gui.core.Parent;
 import gui.core.Button;
 import processing.core.PApplet;
-import processing.core.PGraphics;
 import processing.core.PImage;
 
 /**
@@ -32,15 +31,15 @@ public class MainMenu extends Parent implements ActionListener{
     /**
     * Sliders
     */
-    private final Slider musicSli = new Slider();
-    private final Slider soundSli = new Slider();
+    private final Slider musicSlider = new Slider();
+    private final Slider soundSlider = new Slider();
     
     @Override
     public void init(PApplet context) {
         background = context.loadImage("background/main_menu.png");
         setBackground(background);
         
-        add(playBtn, helpBtn, creditsBtn, musicSli, soundSli);
+        add(playBtn, helpBtn, creditsBtn, musicSlider, soundSlider);
         
         playBtn.setStateImages(context
                 .loadImage("component/button/play_btn.png"), true);
@@ -64,16 +63,21 @@ public class MainMenu extends Parent implements ActionListener{
         creditsBtn.setLocation(820, 333);
         creditsBtn.setSize(300, 200);
         creditsBtn.addActionListener(this);
-        creditsBtn.setMnemonic(62); // mnemonic => c
+        creditsBtn.setMnemonic(67); // mnemonic => c
         
-        musicSli.setScaleRate((float)0.5);
-        musicSli.setLocation(20,650);
-        musicSli.setSize(150, 40);
-        musicSli.setIcon(context.loadImage("component/button/music_icon.png"));
-        soundSli.setScaleRate((float)0.5);
-        soundSli.setLocation(20,710);
-        soundSli.setSize(150, 40);
-        soundSli.setIcon(context.loadImage("component/button/sound_icon.png"));
+        musicSlider.setScaleRate((float)0.5);
+        musicSlider.setLocation(20,650);
+        musicSlider.setSize(150, 40);
+        musicSlider.setIcon(context.loadImage("component/button/music_icon.png"));
+        musicSlider.setFocusKey(77);
+        
+        soundSlider.setScaleRate((float)0.5);
+        soundSlider.setLocation(20,710);
+        soundSlider.setSize(150, 40);
+        soundSlider.setIcon(context.loadImage("component/button/sound_icon.png"));
+        soundSlider.setFocusKey(83);
+        
+        super.init(context);
     }
     
     @Override
