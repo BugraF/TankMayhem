@@ -86,9 +86,12 @@ public class Game {
             int y = terrainImage.height - 1;
             while (terrainImage.pixels[x + y * terrainImage.height] >>> 24 == 0)
                 y--;
-//            Tank tank = Tank.create(player.getMode(), x, y, player.getColor());
-//            addEntity(tank);
-//            player.setTank(tank);
+            // TODO Burak: AssetManager.fill(mode.image, color)
+            PImage image = null;
+            Tank tank = new Tank(this, image, player.getColor());
+            tank.init(player.getMode(), x, y);
+            addEntity(tank);
+            player.setTank(tank);
             playerList.add(player);
         }
         this.players = playerList.iterator();

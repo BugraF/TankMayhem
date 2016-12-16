@@ -10,7 +10,7 @@ import processing.core.PImage;
  *
  * @author aytajabbaszade
  */
-public abstract class Tank implements PhysicsObj, WorldObj, RenderObj {
+public class Tank implements PhysicsObj, WorldObj, RenderObj {
     /** The context of this tank */
     private final Game game;
     
@@ -29,27 +29,60 @@ public abstract class Tank implements PhysicsObj, WorldObj, RenderObj {
     private int fuel;
     
     /* Bonuses & Penalties */
-    private float agility;
-    private float shieldBonus;
-    private float damageBonus;
+    private float agility = 1;
+    private float damageBonus = 1;
+    private float shieldBonus = 1;
     
-    /* Physical Conditions */
+    /* Physical Properties */
+    private final int color;
     private float rotation;
     private boolean onGround;
+    
+    /* Image & Bounds */
+    private final PImage image; // without barrel
+    private final int[] bounds = new int[4];
     
     private int terrainMask;
     private int tanksMask;
     private int tankHeight;
     private int tankWidth;
     
-    public Tank(Game game, int color) {
+    public Tank(Game game, PImage image, int color) {
         this.game = game;
-        // TODO Burak: AssetManager.fill(std.image, color)
+        this.image = image;
+        this.color = color;
+    }
+    
+    public void init(String mode, int x, int y) {
+        this.x = x;
+        this.y = y;
+        
+        if ("assault".equals(mode)) {
+            damageBonus = 1.2f;
+            shieldBonus = 0.8f;
+        }
+        else if ("armored".equals(mode)) {
+            damageBonus = 0.8f;
+            shieldBonus = 1.2f;
+        }
     }
     
     @Override
     public void draw(PGraphics g, int[] bounds) {
-        
+        if (inside(this.bounds, bounds)) {
+            g.pushMatrix();
+            g.translate(x, y);
+            g.rotate(rotation);
+            g.image(image, x, y);
+            g.rotate(fireAngle);
+            g.fill(color);
+            g.rect(0, -2, 20, 4);
+            g.popMatrix();
+        }
+    }
+    
+    private static boolean inside(int[] b, int[] bb) {
+        return true; // TODO Burak: Bound checking for Tank
     }
 
     public void moveLeft() {
@@ -152,12 +185,12 @@ public abstract class Tank implements PhysicsObj, WorldObj, RenderObj {
     
     @Override
     public PImage getMask() {
-        return null;
+        return image;
     }
     
     @Override
     public int[] getBounds() {
-        return null;
+        return bounds;
     }
 
     private void rotate(float delta) {
@@ -174,7 +207,7 @@ public abstract class Tank implements PhysicsObj, WorldObj, RenderObj {
     public void setVx(float vX) { this.velX = vX; }
     public void setVy(float vY) { this.velY = vY; }
     
-    public boolean isXStable() { return true; } // TODO Haluk: Fix
+    public boolean isXStable() { return true; }
     public boolean isYStable() { return onGround; }
     
 }
