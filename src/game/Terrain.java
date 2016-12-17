@@ -57,7 +57,7 @@ public class Terrain implements WorldObj, RenderObj {
     }
     
     /**
-     * Makes the pixel at the specified point transparent.
+     * Colors the pixel at the specified point with #00000000.
      * Equivalent to {@see #addPixel(0, int, int)}.
      */
     public void removePixel(int x, int y) {
@@ -83,7 +83,6 @@ public class Terrain implements WorldObj, RenderObj {
      * @return X and Y components of the normal vector.
      */
     public float[] getNormal(int x, int y) {
-        y -= sky;
         // First find all nearby solid pixels, and create a vector to the
         // average solid pixel from (x,y)
         float avgX = 0;
