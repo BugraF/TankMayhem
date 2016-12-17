@@ -2,6 +2,7 @@ package game;
 
 import game.engine.Physics;
 import game.engine.PhysicsObj;
+import game.engine.World;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +11,9 @@ import java.util.List;
  * @author Burak Gök
  */
 public class PhysicsEngine {
+    /** Context of this physics engine */
+    private final Game game;
+    
     /**
      * Underlying physics engine
      */
@@ -26,9 +30,10 @@ public class PhysicsEngine {
      */
     boolean switchTurnWhenStabilized = false;
     
-    public PhysicsEngine() {
+    public PhysicsEngine(Game game) {
+        this.game = game;
         physics.addObjectClasses(bombs, particles, powerups, tanks);
-        physics.setAcceleration(0, 980, 3);
+        physics.setAcceleration(0, 980, 0, 1, 2, 3);
     }
     
     /**
@@ -49,8 +54,23 @@ public class PhysicsEngine {
      */
     void update() {
         physics.update();
-        if (switchTurnWhenStabilized && bombs.isEmpty() && particles.isEmpty())
-            Game.getInstance().switchTurn();
+        if (!bombs.isEmpty()) {
+            World world = game.getWorld();
+            float[] bounds = new float[] {world.width(), world.height(), 0, 0};
+            for (Bomb bomb : bombs) {
+                bounds[0] = Math.min(bounds[0], bomb.getX());
+                bounds[1] = Math.min(bounds[1], bomb.getY());
+                bounds[2] = Math.max(bounds[2], bomb.getX());
+                bounds[3] = Math.max(bounds[3], bomb.getX());
+            }
+            float camX = (bounds[0] + bounds[2]) / 2;
+            float camY = (bounds[1] + bounds[3]) / 2;
+            game.getStage().shiftCamera((int)camX, (int)camY);
+        }
+        if (switchTurnWhenStabilized && bombs.isEmpty() && particles.isEmpty()) {
+            game.switchTurn();
+            switchTurnWhenStabilized = false;
+        }
     }
     
     /**
