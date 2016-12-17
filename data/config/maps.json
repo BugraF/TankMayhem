@@ -1,0 +1,11 @@
+{
+    "desert": {
+        "@terrain.texture": "terrain/texture/sand.png",
+        "decoration": {
+            "name": "Desert",
+            "@resources": [
+                
+            ]
+        }
+    }
+}
