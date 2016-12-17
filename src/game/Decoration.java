@@ -20,7 +20,7 @@ public abstract class Decoration {
     
     static Decoration create(String name) {
         switch (name) {
-//            case "Sunny": return new Sunny();
+            case "Desert": return new DesertDecoration();
 //            case "Cloudy": return new Cloudy();
 //            case "Rainy": return new Rainy();
 //            case "Snowy": return new Snowy();

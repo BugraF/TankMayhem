@@ -10,7 +10,7 @@ public class Inventory {
      * The quantities of items are stored at the locations which are the same as
      * their id's.
      */
-    private final int[] quantity = new int[0/*Catalog.COUNT*/];
+    private final int[] quantity = new int[1/*Catalog.COUNT*/]; // Test
     
     /**
      * Increments the quantity of the specified item by 1.

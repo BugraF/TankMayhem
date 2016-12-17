@@ -25,13 +25,14 @@ public class DesertDecoration extends Decoration{
     
     @Override
     void drawBackground(PGraphics g, int[] bounds) {
-        float translateX = (bounds[0]*(world.width()-background.width)/
-                (world.width()-(bounds[2]-bounds[0])));
-        float translateY = (bounds[1]*(world.height()-background.height)/
-                (world.height()-(bounds[3]-bounds[1])));
-        g.translate(-translateX, -translateY);
-        g.image(background, 0, 0);
-        g.translate(translateX, translateY);
+//        float translateX = (bounds[0]*(world.width()-background.width)/
+//                (world.width()-(bounds[2]-bounds[0])));
+//        float translateY = (bounds[1]*(world.height()-background.height)/
+//                (world.height()-(bounds[3]-bounds[1])));
+//        g.translate(-translateX, -translateY);
+//        g.image(background, 0, 0);
+//        g.translate(translateX, translateY);
+        g.background(-1);
     }
 
     @Override
