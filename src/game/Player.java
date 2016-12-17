@@ -12,7 +12,7 @@ public class Player {
      * Mode of this player.
      * Each mode gives unique damage and shield bonuses.
      */
-    private final String mode;
+    private final Mode mode;
     
     private int score;
     private int cash;
@@ -21,10 +21,11 @@ public class Player {
     
     private final Inventory inventory = new Inventory();
     
-    public Player(String name, String mode, int color) {
+    public Player(String name, Mode mode, int color) {
         this.name = name;
         this.mode = mode;
         this.color = color;
+        inventory.add(0, Integer.MAX_VALUE); // Test
     }
     
     /**
@@ -53,7 +54,7 @@ public class Player {
         return name;
     }
 
-    public String getMode() {
+    public Mode getMode() {
         return mode;
     }
 
@@ -93,6 +94,12 @@ public class Player {
      */
     public boolean isAlive() {   
         return tank.getHP() != 0;
+    }
+    
+    public static enum Mode {
+        Assault,
+        Balanced,
+        Armored;
     }
    
 }

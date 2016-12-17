@@ -7,7 +7,7 @@ package game;
  */
 public abstract class AI extends Player {
 
-    public AI(String name, String mode, int color) {
+    public AI(String name, Mode mode, int color) {
         super(name, mode, color);
     }
     
