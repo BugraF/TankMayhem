@@ -243,8 +243,8 @@ public class World {
         if (diffBounds == null) {
             int[] lastBounds = this.lastBounds[index];
             diffBounds = new int[] {
-                min(lastBounds[0], bounds[0]), min(lastBounds[1], bounds[1]), // t, l
-                max(lastBounds[2], bounds[2]), max(lastBounds[3], bounds[3])  // b, r
+                min(lastBounds[0], bounds[0]), min(lastBounds[1], bounds[1]), // l, t
+                max(lastBounds[2], bounds[2]), max(lastBounds[3], bounds[3])  // r, b
             };
         }
         this.lastBounds[index] = bounds;
@@ -252,13 +252,13 @@ public class World {
         int solidMask = (1 << index);
         int emptyMask = ~solidMask; // Alternative: ^ (-1)
         // The loop order is optimized for spatial locality.
-        for (int y = diffBounds[0]; y <= diffBounds[2]; y++)
-            for (int x = diffBounds[1]; x <= diffBounds[3]; x++)
+        for (int y = diffBounds[1]; y < diffBounds[3]; y++)
+            for (int x = diffBounds[0]; x < diffBounds[2]; x++)
                 // If the current point is inside the object bounds and has a
                 // non-transparent color value.
-                if (bounds[0] <= y && y <= bounds[2]
-                        && bounds[1] <= x && x <= bounds[3]
-                        && (pixels[x - bounds[1] + (y - bounds[0]) * imgWidth] 
+                if (bounds[1] <= y && y < bounds[3]
+                        && bounds[0] <= x && x < bounds[2]
+                        && (pixels[x - bounds[0] + (y - bounds[1]) * imgWidth] 
                             >>> 24) != 0) // Unsigned shift
                                           // Other alternative: >> 24) & 0xFF
                     collisionMask[x + y * width] |= solidMask;
