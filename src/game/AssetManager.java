@@ -1,13 +1,8 @@
 package game;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import processing.core.PApplet;
 import processing.core.PImage;
 import processing.data.JSONArray;
@@ -157,7 +152,7 @@ public class AssetManager {
             for (int p = 0; p < orig.width * orig.height; p++)
                 orig.pixels[p] &= 0xFFFFFF;
             
-            PImage image = new PImage(orig.width, orig.height, PImage.ARGB);
+            PImage image = new PImage(mask.width, mask.height, PImage.ARGB);
             image.loadPixels();
             for (int y = 0, _y = 0; y < image.height; y++) {
                 for (int x = 0, _x = 0; x < image.width; x++) {
