@@ -47,8 +47,7 @@ public class Game implements SelectionChangeListener {
         instance = this;
         this.manager = manager;
         
-        physics = new PhysicsEngine();
-        physics.setWind(0); // To initialize acceleration
+        physics = new PhysicsEngine(this);
         stage = new Stage(this);
 //        catalog = new Catalog();
         
@@ -104,6 +103,7 @@ public class Game implements SelectionChangeListener {
             
             tank.fireAngle = (float)(Math.random() * Math.PI); // Test
             tank.firePower = 0.8f; // Test
+            tank.updateHp(100); // Test, otherwise infinite loop in switchTurn()
             
             addEntity(tank);
             player.setTank(tank);
@@ -148,6 +148,8 @@ public class Game implements SelectionChangeListener {
     
     public void update() {
         physics.update();
+        terrain.update();
+//        world.updateMask(terrain, terrain.getBounds()); // Test
     }
     
     /**
@@ -204,6 +206,7 @@ public class Game implements SelectionChangeListener {
         }
         Tank tank = getActiveTank();
         stage.shiftCamera((int)tank.getX(), (int)tank.getY());
+        ((FireInteraction)fi).setTank(tank); // Test
         if (players.current() instanceof AI)
             ((AI)players.current()).play();
     }
@@ -229,6 +232,13 @@ public class Game implements SelectionChangeListener {
     
 //    public Map<String, ObservableAttribute> getAttributes() {
 //        return observableAttributes;
+//    }
+    
+//    /**
+//     * Returns the asset manager associated to the manager of this class.
+//     */
+//    AssetManager getAssetManager() {
+//        return manager.getAssetManager();
 //    }
     
     /**
@@ -268,7 +278,7 @@ public class Game implements SelectionChangeListener {
 
             @Override
             public E next() {
-                cursor = cursor++ % size();
+                cursor = ++cursor % size();
                 return get(cursor);
             }
             
