@@ -104,7 +104,8 @@ public class Physics {
         for (int iteration = 1; iteration <= timeStepAmt; iteration++) {
             for (int i = 0; i < objectClasses.size(); i++) {
                 List<? extends PhysicsObj> objClass = objectClasses.get(i);
-                for (PhysicsObj object : objClass) {
+                for (int j = 0; j < objClass.size(); j++) {
+                    PhysicsObj object = objClass.get(j);
                     if (!object.isXStable()) {
                         float velX = object.getVx();
                         velX += acceleration.get(i)[0] * deltaTimeInSeconds;
