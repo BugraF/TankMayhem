@@ -178,13 +178,22 @@ public class Stage extends InteractiveComponent {
         if (!enabled) return true;
         return propagateMouseEvent(interaction, event);
     }
-
+    
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == 65) // A
             game.getActiveTank().moveLeft();
         else if (e.getKeyCode() == 68) // D
             game.getActiveTank().moveRight();
+        
+        else if (e.getKeyCode() == 100) // Numpad 4
+            shiftCamera((int)cam[0] - 100, (int)cam[1]);
+        else if (e.getKeyCode() == 102) // Numpad 6
+            shiftCamera((int)cam[0] + 100, (int)cam[1]);
+        else if (e.getKeyCode() == 104) // Numpad 8
+            shiftCamera((int)cam[0], (int)cam[1] - 50);
+        else if (e.getKeyCode() == 98) // Numpad 2
+            shiftCamera((int)cam[0], (int)cam[1] + 50);
     }
 
     @Override
