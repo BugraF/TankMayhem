@@ -31,9 +31,14 @@ public interface Interaction extends KeyListener, MouseListener {
     }
     
     /**
-     * Draws the interaction visuals such as aiming assistant.
+     * Draws the interaction visuals behind the terrain.
      */
-    void draw(PGraphics g);
+    default void drawBehindTerrain(PGraphics g) {}
+    
+    /**
+     * Draws the interaction visuals after the terrain.
+     */
+    default void drawAfterTerrain(PGraphics g) {}
     
     /**
      * Finalizes the interaction and also expected to remove the related item
