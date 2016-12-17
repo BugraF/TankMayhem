@@ -13,7 +13,7 @@ public class GameManager {
      */
     private static GameManager instance = null;
     
-    private Game game = null;
+//    private Game game = null;
     
     private ScreenManager screenManager;
     private AssetManager assetManager; // TODO Implement using PApplet
@@ -40,12 +40,12 @@ public class GameManager {
 //    }
     
     /**
-     * Starts a new game with the specified map and players.
+     * Starts a new game with the specified map and players, and returns it.
      * @param map Game map
      * @param players Player list
      */
-    public void startNewGame(String map, Player[] players) {
-        game = new Game(this, map, players);
+    public Game startNewGame(String map, Player[] players) {
+        return new Game(this, map, players);
     }
     
     /**

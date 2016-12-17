@@ -15,7 +15,7 @@ import processing.data.JSONObject;
  * Singleton + Mediator + Façade
  * @author Burak Gök
  */
-public class Game {
+public class Game implements SelectionChangeListener {
     /**
      * Currently active instance of this class.
      */
@@ -41,14 +41,15 @@ public class Game {
     
 //    private Map<String, ObservableAttribute> observableAttributes;
     
-    private final CircularList<Player>.CircularIterator players; // TODO Implement CircularList
+    private final CircularList<Player>.CircularIterator players;
     
     public Game(GameManager manager, String map, Player[] players) {
         instance = this;
         this.manager = manager;
         
         physics = new PhysicsEngine();
-        stage = new Stage();
+        physics.setWind(0); // To initialize acceleration
+        stage = new Stage(this);
 //        catalog = new Catalog();
         
         AssetManager assetManager = manager.getAssetManager();
@@ -64,14 +65,14 @@ public class Game {
         PImage terrainImage = AssetManager.mask(terrainTexture, terrainSurface);
         terrain = new Terrain(terrainImage, 2, (int)surface.get("sky"));
         
-        world = new World(terrainImage.width, 768); // TODO Buğra: Specify height
-              // Height should be fixed and can be greater than the screen height
+        world = new World(terrain.getBounds()[2], terrain.getBounds()[3]);
         stage.setWorld(world);
-        addEntity(terrain);
+        world.add(terrain);
+        stage.setTerrain(terrain);
         
         Map<String, Object> decInfo = (Map<String, Object>) assets.get("decoration");
         Decoration decoration = Decoration.create((String) decInfo.get("name"));
-        decoration.setResources((PImage[]) decInfo.get("resources"));
+//        decoration.setResources((PImage[]) decInfo.get("resources"));
         decoration.setTerrain(terrain); // Terrain.getMask() -> image
         stage.setDecoration(decoration);
         
@@ -79,31 +80,45 @@ public class Game {
         Map<String, Object> modeInfo = assetManager.process(modes);
         CircularList<Player> playerList = new CircularList<>(players.length);
         int free = 50;
-        int occupy = (terrainImage.width - (players.length - 1) * free)
+        int occupy = (terrainImage.width - (players.length + 1) * free)
                 / players.length;
-        int left = 0;
+        int left = free;
         for (Player player : players) {
             int x = left + (int)(Math.random() * occupy);
-            left += free;
+            left += occupy + free;
             int y = terrainImage.height - 1;
-            while (terrainImage.pixels[x + y * terrainImage.height] >>> 24 == 0)
+            while (terrainImage.pixels[x + y * terrainImage.width] >>> 24 != 0)
                 y--;
             
             Map<String, Object> mode = (Map<String, Object>)
-                    modeInfo.get(player.getMode());
+                    modeInfo.get(player.getMode().toString());
             Tank tank = new Tank(this, 
                     AssetManager.fill((PImage) mode.get("image"), 0,
-                    player.getColor()), player.getColor());
-            tank.init(x, y, (float)mode.get("damage"), (float)mode.get("shield"));
+                    player.getColor()), (int)mode.get("barrel"), player.getColor());
+            
+            y += (int)surface.get("sky") - ((PImage)mode.get("image")).height / 2;
+            System.out.println("x: " + x + ", y: " + y);
+            
+            tank.init(x, y, ((Number)mode.get("damage")).floatValue(), 
+                            ((Number)mode.get("shield")).floatValue());
+            
+            tank.fireAngle = (float)(Math.random() * Math.PI); // Test
+            tank.firePower = 0.8f; // Test
+            
             addEntity(tank);
             player.setTank(tank);
             playerList.add(player);
         }
         this.players = playerList.iterator();
+        
+        Tank tank = getActiveTank();
+        stage.setSize(1280, 500); // TODO Decoupling ????
+        stage.shiftCamera((int)tank.getX(), (int)tank.getY());
+        fi = new FireInteraction(this);
     }
     
     public Player[] getPlayers() {
-        return players.array();
+        return players.list().toArray(new Player[players.count()]);
     }
     
     public Player getCurrentPlayer() {
@@ -131,6 +146,10 @@ public class Game {
         return stage;
     }
     
+    public void update() {
+        physics.update();
+    }
+    
     /**
      * Adds the specified game entity to the related control objects
      * (PhysicsEngine, World, Stage).
@@ -155,6 +174,12 @@ public class Game {
             world.remove((WorldObj) entity);
         if (entity instanceof RenderObj)
             stage.getRenderer().remove((RenderObj) entity);
+    }
+    
+    private final Interaction fi; // Test
+    @Override
+    public void selectionChanged(int itemId) {
+        stage.setInteraction(0, fi);
     }
     
     /**
@@ -247,8 +272,12 @@ public class Game {
                 return get(cursor);
             }
             
-            public E[] array() {
-                return (E[]) toArray();
+            public CircularList<E> list() {
+                return CircularList.this;
+            }
+            
+            public int count() {
+                return size();
             }
         }
     }

@@ -28,6 +28,7 @@ public class PhysicsEngine {
     
     public PhysicsEngine() {
         physics.addObjectClasses(bombs, particles, powerups, tanks);
+        physics.setAcceleration(0, 980, 3);
     }
     
     /**
