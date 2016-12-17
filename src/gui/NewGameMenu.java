@@ -1,6 +1,9 @@
 package gui;
 
+import game.Game;
 import game.GameManager;
+import game.Player;
+import static game.Player.Mode;
 import gui.core.Component;
 import gui.core.ActionListener;
 import gui.core.Button;
@@ -68,7 +71,6 @@ public class NewGameMenu extends Parent implements ActionListener{
         back_btn.addActionListener(this);
         back_btn.setMnemonic(27);    // mnemonic => ESC
         
-        snowy.setFont(context.createFont("Segoe UI Black", 35));
         snowy.setAttribute("snowy");
         snowy.setText("SNOWY MOUNTAINS");
         snowy.setFont(font);
@@ -76,7 +78,6 @@ public class NewGameMenu extends Parent implements ActionListener{
         snowy.setSize(360, 90);
         snowy.addActionListener(this);
         
-        rainy.setFont(context.createFont("Segoe UI Black", 35));
         rainy.setAttribute("rainy");
         rainy.setText("RAINY HILLS");
         rainy.setFont(font);
@@ -84,7 +85,6 @@ public class NewGameMenu extends Parent implements ActionListener{
         rainy.setSize(360, 90);
         rainy.addActionListener(this);
         
-        desert.setFont(context.createFont("Segoe UI Black", 35));
         desert.setAttribute("desert");
         desert.setText("HOT DESERT");
         desert.setFont(font);
@@ -93,7 +93,6 @@ public class NewGameMenu extends Parent implements ActionListener{
         desert.setSelected(true);
         desert.addActionListener(this);
         
-        sunny.setFont(context.createFont("Segoe UI Black", 35));
         sunny.setAttribute("sunny");
         sunny.setText("SUNNY FOREST");
         sunny.setFont(font);
@@ -106,21 +105,26 @@ public class NewGameMenu extends Parent implements ActionListener{
     
     @Override
     public void actionPerformed(Component comp) {
-        if(comp == start_btn){
-            ((ScreenManager)getContext())
+        if (comp == start_btn) {
+            Game game = GameManager.getInstance().startNewGame(map, 
+            new Player[] { // Sample Data
+                new Player("Burak", Mode.Assault, 0xFFFF0000),
+                new Player("Buğra", Mode.Armored, 0xFF0000FF)
+            });
+            Parent screen = ((ScreenManager)getContext())
                     .switchScreen(ScreenManager.SCREEN_GAME);
-//            GameManager.getInstance().startNewGame(map, );
+            ((GameScreen)screen).setGame(game);
         }
-        else if(comp == back_btn){
+        else if (comp == back_btn) {
             ((ScreenManager)getContext())
                     .switchScreen(ScreenManager.SCREEN_MAIN_MENU);
         }
-        else if(comp instanceof ListButton){
-            for(ListButton btn : listButtons)
-                if(btn.isSelected())
+        else if (comp instanceof ListButton) {
+            for (ListButton btn : listButtons)
+                if (btn.isSelected())
                     btn.setSelected(false);
             ((ListButton)comp).setSelected(true);
-            ((ListButton)comp).getAttribute();
+            map = ((ListButton)comp).getAttribute();
         }
             
     }

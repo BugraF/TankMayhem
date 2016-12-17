@@ -6,21 +6,20 @@ import game.Stage;
 import gui.core.Component;
 import gui.core.ActionListener;
 import gui.core.Parent;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PGraphics;
 import processing.core.PImage;
+import processing.event.KeyEvent;
 
 /**
  * Game Screen
  * 
  * @author Bugra Felekoglu
  */
-public class GameScreen extends Parent implements ActionListener{
+public class GameScreen extends Parent implements ActionListener {
     
     private PFont font;
     
@@ -28,39 +27,55 @@ public class GameScreen extends Parent implements ActionListener{
     private Stage stage;
     
     private final ScoreBoard scoreBoard = new ScoreBoard();
-    
     private final MoneyDisplay moneyDisplay = new MoneyDisplay();
     private final Legend legend = new Legend();
     
     public void setGame(Game game) {
         this.game = game;
         scoreBoard.setPlayers(game.getPlayers());
+        moneyDisplay.setMoney(game.getCurrentPlayer().getCash()); // not needed
+        stage = game.getStage();
+        add(stage);
+        setFocusedChild(stage);
+        stage.setSize(1280, 500);
+        game.selectionChanged(0);
     }
     
     @Override
     public void init(PApplet context) {
-        font = context.createFont("font/seguibl.ttf", 60);
+//        font = context.createFont("font/seguibl.ttf", 60);
+//        
+//        add(stage, legend, moneyDisplay, scoreBoard);
+        super.init(context);
+//        
+//        legend.setLocation(0, 648);
+//        legend.setSize(1280, 120);
+//        
+//        moneyDisplay.setIcon(context.
+//                loadImage("component/display/money_img.png"));
+//        moneyDisplay.setLocation(870, 690);
+//        moneyDisplay.setSize(180, 50);
+//        
+//        scoreBoard.setLocation(960, 10);
+//        scoreBoard.setSize(320, 200);
         
-        add(stage, legend, moneyDisplay, scoreBoard);
-        
-        
-        legend.setLocation(0, 648);
-        legend.setSize(1280, 120);
-        
-        moneyDisplay.setIcon(context.
-                loadImage("component/display/money_img.png"));
-        moneyDisplay.setLocation(870, 690);
-        moneyDisplay.setSize(180, 50);
-        moneyDisplay.setMoney(game.getCurrentPlayer().getCash());
-        
-        scoreBoard.setLocation(960, 10);
-        scoreBoard.setSize(320, 200);
-        
+    }
+
+    @Override
+    public void draw(PGraphics g) {
+        game.update();
+        super.draw(g);
     }
     
     @Override
     public void actionPerformed(Component comp) {
         
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) { // Test
+        if (e.getKeyCode() == 32) // Space
+            game.getStage().finalizeInteraction();
     }
     
     private class ScoreBoard extends Component {
