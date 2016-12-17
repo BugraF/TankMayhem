@@ -81,50 +81,53 @@ public class ScreenManager extends PApplet {
         topLevelParent.setFocusedChild(currentScreen);
     }
     
-    long last;
-    int frameRate;
+//    long last;
+//    int frameRate;
     
     @Override
     public void draw() {
-        long now = System.currentTimeMillis();
-        if (now - last >= 1000) {
-            System.out.println(frameRate);
-            frameRate = 0;
-            last = now;
-        }
-        frameRate++;
+//        long now = System.currentTimeMillis();
+//        if (now - last >= 1000) {
+//            System.out.println(frameRate);
+//            frameRate = 0;
+//            last = now;
+//        }
+//        frameRate++;
         topLevelParent.draw(g);
     }
     
-    void switchScreen(int screen) {
+    Parent switchScreen(int screen) {
         topLevelParent.remove(currentScreen);
         currentScreen = screens.get(screen);
         topLevelParent.add(currentScreen);
         topLevelParent.setFocusedChild(currentScreen);
+        return currentScreen;
     }
     
-    void switchFrame(int frame) {
+    Frame switchFrame(int frame) {
         if (currentFrame == null) {
             Logger.getLogger("ScreenManager")
                     .log(Level.WARNING, "There is no frame to be replaced.");
-            return;
+            return null;
         }
         topLevelParent.remove(currentFrame);
         currentFrame = frames.get(frame);
         topLevelParent.add(currentFrame);
         topLevelParent.setFocusedChild(currentFrame);
+        return currentFrame;
     }
     
-    void showFrame(int frame) {
+    Frame showFrame(int frame) {
         if (currentFrame != null) {
             Logger.getLogger("ScreenManager")
                     .log(Level.WARNING, "There is already a frame shown.");
-            return;
+            return currentFrame;
         }
         currentScreen.setEnabled(false);
         currentFrame = frames.get(frame);
         topLevelParent.add(currentFrame);
         topLevelParent.setFocusedChild(currentFrame);
+        return currentFrame;
     }
     
     void closeFrame() {
