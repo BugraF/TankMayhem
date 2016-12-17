@@ -13,7 +13,7 @@ import processing.event.KeyEvent;
  * @author Burak Gök
  */
 public class Stage extends InteractiveComponent {
-    /** Context of this bomb */
+    /** Context of this stage */
     private final Game game;
     private World world;
     
@@ -107,7 +107,7 @@ public class Stage extends InteractiveComponent {
     void setCamera(int x, int y) {
         camNext[0] = PApplet.constrain(x, hWidth, world.width() - hWidth);
         camNext[1] = PApplet.constrain(y, hHeight, world.height() - hHeight);
-        
+
         updateCamera = true;
 //        System.out.format("Next Camera: [%s, %s]\n", camNext[0], camNext[1]);
     }
@@ -132,20 +132,15 @@ public class Stage extends InteractiveComponent {
         if (shiftCamera) {
             cam[0] = PApplet.lerp(cam[0], camNext[0], 0.1f);
             cam[1] = PApplet.lerp(cam[1], camNext[1], 0.1f);
+            updateCamera();
             if (Math.abs(cam[0] - camNext[0]) < 1 
                     && Math.abs(cam[1] - camNext[1]) < 1)
                 shiftCamera = false;
-//            System.out.format("Camera: [%s, %s]\n", cam[0], cam[1]);
         } else if (updateCamera) {
             cam[0] = camNext[0];
             cam[1] = camNext[1];
+            updateCamera();
             updateCamera = false;
-        }
-        if (updateCamera) {
-            camBounds[0] = (int)cam[0] - hWidth;
-            camBounds[1] = (int)cam[1] - hHeight;
-            camBounds[2] = (int)cam[0] + hWidth;
-            camBounds[3] = (int)cam[1] + hHeight;
         }
         
         decoration.drawBackground(g, camBounds);
@@ -160,6 +155,14 @@ public class Stage extends InteractiveComponent {
         
         g.translate(camBounds[0], camBounds[1]);
         decoration.drawForeground(g, camBounds);
+    }
+    
+    private void updateCamera() {
+        camBounds[0] = (int)cam[0] - hWidth;
+        camBounds[1] = (int)cam[1] - hHeight;
+        camBounds[2] = (int)cam[0] + hWidth;
+        camBounds[3] = (int)cam[1] + hHeight;
+//        System.out.format("Camera: [%s, %s]\n", cam[0], cam[1]);
     }
     
     @Override
