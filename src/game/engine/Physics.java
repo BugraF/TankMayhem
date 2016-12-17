@@ -37,7 +37,7 @@ public class Physics {
     private int leftOverDeltaTime = 0;
     
     /** The common accelerations for object classes */
-    private List<int[]> acceleration;
+    private final List<int[]> acceleration = new ArrayList<>();
     
     public Physics() {
         this(16);
@@ -60,6 +60,8 @@ public class Physics {
      */
     public void addObjectClasses(List<? extends PhysicsObj>... objClasses) {
         objectClasses.addAll(Arrays.asList(objClasses));
+        for (int i = 0; i < objClasses.length; i++)
+            acceleration.add(new int[2]);
     }
     
     /**
@@ -106,11 +108,13 @@ public class Physics {
                     if (!object.isXStable()) {
                         float velX = object.getVx();
                         velX += acceleration.get(i)[0] * deltaTimeInSeconds;
+                        object.setVx(velX);
                         object.setX(object.getX() + velX * deltaTimeInSeconds);
                     }
                     if (!object.isYStable()) {
                         float velY = object.getVy();
                         velY += acceleration.get(i)[1] * deltaTimeInSeconds;
+                        object.setVy(velY);
                         object.setY(object.getY() + velY * deltaTimeInSeconds);
                     }
                     object.checkConstraints();
