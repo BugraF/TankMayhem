@@ -13,6 +13,7 @@ public abstract class Bomb implements PhysicsObj, RenderObj {
     
     /** Position */
     protected float x, y;
+    protected float lastX, lastY;
     
     /** Velocity */
     protected float velX, velY;
@@ -27,8 +28,8 @@ public abstract class Bomb implements PhysicsObj, RenderObj {
      * Sets the position and velocity of this bomb.
      */
     public void init(float x, float y, float velX, float velY) {
-        this.x = x;
-        this.y = y;
+        this.x = lastX = x;
+        this.y = lastY = y;
         this.velX = velX;
         this.velY = velY;
     }
@@ -43,6 +44,9 @@ public abstract class Bomb implements PhysicsObj, RenderObj {
         Terrain terrain = game.getTerrain();
         int[] bounds = terrain.getBounds();
         int destRes = terrain.destructionResolution;
+        
+//        float[] normal = terrain.getNormal(xPos, yPos);
+//        System.out.format("normal x: %s, y: %s", normal[0], normal[1]);
   
         // TODO Order?
         for (int x = xPos - (int)radius; x < xPos + (int)radius; x += destRes)
@@ -71,7 +75,7 @@ public abstract class Bomb implements PhysicsObj, RenderObj {
                     float distance = (float)Math.sqrt(distSq);
 
                     // the speed will be based on how far the pixel is from the center
-                    float speed = 800 * (1 - distance / radius);
+                    float speed = 400 * (1 - distance / radius);
 
                     if (distance == 0)
                         distance = 0.001f; // prevent divide by zero in next two statements
@@ -79,6 +83,7 @@ public abstract class Bomb implements PhysicsObj, RenderObj {
                     // velocity
                     float velX = speed * (xDiff + ((float)Math.random() * 20) - 10) / distance;
                     float velY = speed * (yDiff + ((float)Math.random() * 20) - 10) / distance;
+//                    System.out.format("vel x: %s y: %s\n", velX, velY);
 
                     // Create a particle
                     Particle particle = new Particle(
@@ -91,8 +96,13 @@ public abstract class Bomb implements PhysicsObj, RenderObj {
                         for (int j = 0; j < destRes; j++)
                             terrain.removePixel(x + i, y + j);
                 }
-            }
+            }    
         }
+        
+        game.getWorld().updateMask(terrain, new int[] {
+                    xPos - (int)radius, yPos - (int)radius,
+                    xPos + (int)radius, yPos + (int)radius});
+        
         damageTanks(xPos, yPos);
     }
     
@@ -112,7 +122,7 @@ public abstract class Bomb implements PhysicsObj, RenderObj {
             float distSq = xDiff * xDiff + yDiff * yDiff;
 
             if (distSq < radiusSq) {
-                float damage = blastPower * 1 / distSq; // TODO Specify factor, shield bonus?
+                float damage = blastPower * 1 / distSq / tank.getShieldBonus(); // TODO Specify factor
                 tank.updateHp(damage);
                 if (tank != game.getActiveTank())
                     totalDamage += damage;

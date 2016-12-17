@@ -8,10 +8,6 @@ import processing.core.PGraphics;
  * @author Burak Gök
  */
 public class SimpleBomb extends Bomb {
-
-    /** Last Position */
-    protected float lastX, lastY;
-    
     /** Reference to the world within the context */
     private final World world;
     

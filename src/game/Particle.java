@@ -39,8 +39,8 @@ public class Particle implements PhysicsObj, RenderObj {
      * Sets the position and velocity of this particle.
      */
     public void init(float x, float y, float velX, float velY) {
-        this.x = x;
-        this.y = y;
+        this.x = lastX = x;
+        this.y = lastY = y;
         this.velX = velX;
         this.velY = velY;
     }
@@ -49,21 +49,27 @@ public class Particle implements PhysicsObj, RenderObj {
     public void draw(PGraphics g, int[] bounds) {
         g.fill(color);
         g.noStroke();
-        g.rect(x, x, size, size);
+        g.rect(x, y, size, size);
     }
     
     @Override
     public void checkConstraints() {
         World world = game.getWorld();
+//        System.out.format("rayCast: [%s, %s] -> [%s, %s]\n", lastX, lastY, x, y);
         int[] collision = world.rayCast((int)lastX, (int)lastY, (int)x, (int)y);
         
         if (collision.length > 0) {
             Terrain terrain = game.getTerrain();
+            int x = collision[0], y = collision[1];
             
             // Stick to the terrain
-            for (int i = 0; i < size; i++)
-                for (int j = 0; j < size; j++)
-                    terrain.addPixel(color, (int)x + i, (int)y + j);
+//            for (int i = 0; i < size; i++)
+//                for (int j = 0; j < size; j++)
+//                    terrain.addPixel(color, x + i, y + j);
+            terrain.addPixel(color, x, y);
+            world.updateMask(terrain, new int[] {x, y, x + 1, y + 1});
+            
+//            world.updateMask(terrain,  new int[] {x, y, x + size, y + size});
             
             game.removeEntity(this);
         }
