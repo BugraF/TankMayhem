@@ -149,6 +149,7 @@ public class AssetManager {
     public static PImage mask(PImage orig, PImage mask) {
         if (orig.width < mask.width || orig.height < mask.height) {
             orig.loadPixels();
+            // Ignore the alpha channel of the texture.
             for (int p = 0; p < orig.width * orig.height; p++)
                 orig.pixels[p] &= 0xFFFFFF;
             
@@ -157,8 +158,9 @@ public class AssetManager {
             for (int y = 0, _y = 0; y < image.height; y++) {
                 for (int x = 0, _x = 0; x < image.width; x++) {
                     int p = x + y * image.width;
-                    image.pixels[p] = (mask.pixels[p] & PImage.ALPHA_MASK)
-                            | (orig.pixels[_x + _y * orig.width] & 0xFFFFFF);
+                    int alpha = (mask.pixels[p] & PImage.ALPHA_MASK);
+                    image.pixels[p] = alpha == 0 ? 0 : alpha
+                            | orig.pixels[_x + _y * orig.width];
                     _x = (_x + 1) % orig.width;
                 }
                 _y = (_y + 1) % orig.height;
