@@ -36,10 +36,11 @@ public class Tank implements PhysicsObj, WorldObj, RenderObj {
     /* Physical Properties */
     private final int color;
     private float rotation;
-    private boolean onGround;
+    private boolean onGround = true; // Test
     
     /* Image & Bounds */
     private final PImage image; // without barrel
+    private final int barrel; // barrel starting position relative to the center
     private final int[] bounds = new int[4];
     
     private int terrainMask;
@@ -47,9 +48,10 @@ public class Tank implements PhysicsObj, WorldObj, RenderObj {
     private int tankHeight;
     private int tankWidth;
     
-    public Tank(Game game, PImage image, int color) {
+    public Tank(Game game, PImage image, int barrel, int color) {
         this.game = game;
         this.image = image;
+        this.barrel = barrel;
         this.color = color;
     }
     
@@ -58,15 +60,6 @@ public class Tank implements PhysicsObj, WorldObj, RenderObj {
         this.y = y;
         this.damageBonus = damageBonus;
         this.shieldBonus = shieldBonus;
-        
-//        if ("assault".equals(mode)) {
-//            damageBonus = 1.2f;
-//            shieldBonus = 0.8f;
-//        }
-//        else if ("armored".equals(mode)) {
-//            damageBonus = 0.8f;
-//            shieldBonus = 1.2f;
-//        }
     }
     
     @Override
@@ -74,11 +67,12 @@ public class Tank implements PhysicsObj, WorldObj, RenderObj {
         if (inside(this.bounds, bounds)) {
             g.pushMatrix();
             g.translate(x, y);
-            g.rotate(rotation);
-            g.image(image, x, y);
-            g.rotate(fireAngle);
+            g.rotate(-rotation);
+            g.image(image, -image.width / 2, -image.height / 2);
+            g.translate(0, barrel); // Barrel starting position
+            g.rotate(-fireAngle);
             g.fill(color);
-            g.rect(0, -2, 20, 4);
+            g.rect(0, -3, 40, 6);
             g.popMatrix();
         }
     }
@@ -128,61 +122,52 @@ public class Tank implements PhysicsObj, WorldObj, RenderObj {
     public int getFuel() {
         return fuel;
     }
-
-    public float getFirePower() {
-        return firePower;
+    
+    float getDamageBonus() {
+        return damageBonus;
     }
-
-    public float getFireAngle() {
-        return fireAngle;
+    float getShieldBonus() {
+        return shieldBonus;
     }
      
     @Override
     public void checkConstraints() { // world border, movement, hold surface
-        if(getX()<0){
-            setX(0);
-        }
-        if(getX()>game.getWorld().width()){
-            setX(game.getWorld().width());
-        }
-        if(getY()>game.getWorld().height()){
-            setY(game.getWorld().height());
-        }
-        // movement
-        if (goLeft) {
-          if (getVx() > -500)
-            setVx(getVx()-40); 
-        }
-        else if (velX < 0)
-            setVx( getVx()*0.8f );     // slow down side-ways velocity if we're not moving left
-
-        if (goRight) {
-          if (getVx() < 500)
-            setVx(getVx()+40);
-        }
-        else if (velX > 0)
-          setVx( getVx()*0.8f );
-
-        onGround=false;
-
-        int []ref = { (int)(getX()- tankWidth/2), (int)(getY()+ tankHeight/2),  (int)(getX()+ tankWidth/2), (int)(getY()- tankHeight/2) };
-        int[] leftCollision = game.getWorld().rayCast(ref[0], ref[1], (int)getX(), ref[0], terrainMask );
-        int[] rightCollision = game.getWorld().rayCast(ref[2], ref[1], (int)getX(), ref[0], terrainMask );
+//        if(getX()<0){
+//            setX(0);
+//        }
+//        if(getX()>game.getWorld().width()){
+//            setX(game.getWorld().width());
+//        }
+//        if(getY()>game.getWorld().height()){
+//            setY(game.getWorld().height());
+//        }
         
-        if(leftCollision.length>0 && rightCollision.length>0){
-            onGround=true;
-            setVy(0);
-        }
-        else if(leftCollision.length>0){
-            rotate(-0.1f);//5 degree 
-        }
-        else if(rightCollision.length>0){
-            rotate(0.1f);
-        }
-        else{
-            if (getVx() < 500)
-                setVy(getVy()+40); 
-        }
+        // Movement
+        if (goLeft ^ goRight) // Either of them is true, but not both
+            velX = goLeft ? -30 : 30;
+        else // Both are false or true
+            velX = 0;
+
+//        onGround=false;
+//
+//        int []ref = { (int)(getX()- tankWidth/2), (int)(getY()+ tankHeight/2),  (int)(getX()+ tankWidth/2), (int)(getY()- tankHeight/2) };
+//        int[] leftCollision = game.getWorld().rayCast(ref[0], ref[1], (int)getX(), ref[0], terrainMask );
+//        int[] rightCollision = game.getWorld().rayCast(ref[2], ref[1], (int)getX(), ref[0], terrainMask );
+//        
+//        if(leftCollision.length>0 && rightCollision.length>0){
+//            onGround=true;
+//            setVy(0);
+//        }
+//        else if(leftCollision.length>0){
+//            rotate(-0.1f);//5 degree 
+//        }
+//        else if(rightCollision.length>0){
+//            rotate(0.1f);
+//        }
+//        else{
+//            if (getVx() < 500)
+//                setVy(getVy()+40); 
+//        }
     }
     
     @Override
@@ -199,6 +184,15 @@ public class Tank implements PhysicsObj, WorldObj, RenderObj {
         rotation += delta;
     }
     
+    float getRotation() {
+        return rotation;
+    }
+    
+    /** Vertical position of the barrel pivot */
+    float getBarrelPosition() {
+        return y + barrel;
+    }
+    
     public float getX() { return x; }
     public float getY() { return y; }
     public float getVx() { return velX; }
@@ -209,7 +203,7 @@ public class Tank implements PhysicsObj, WorldObj, RenderObj {
     public void setVx(float vX) { this.velX = vX; }
     public void setVy(float vY) { this.velY = vY; }
     
-    public boolean isXStable() { return true; }
+    public boolean isXStable() { return false; }
     public boolean isYStable() { return onGround; }
     
 }

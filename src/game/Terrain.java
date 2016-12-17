@@ -123,9 +123,7 @@ public class Terrain implements WorldObj, RenderObj {
 
     @Override
     public void draw(PGraphics g, int[] bounds) {
-        g.translate(-bounds[0], -bounds[1]);
         g.image(image, 0, sky);
-        g.translate(bounds[0], bounds[1]);
     }
     
 }
