@@ -64,6 +64,7 @@ public class FireInteraction implements Interaction {
     public void _finalize() {
 //        Bomb bomb = (Bomb) Catalog.create(itemId);
         Bomb bomb = new SimpleBomb(game); // Test
+        bomb.blastPower = 60; // Test
         
         float angle = -(tank.fireAngle + tank.getRotation());
         float sin = (float) Math.sin(angle);
@@ -91,6 +92,11 @@ public class FireInteraction implements Interaction {
             tank.firePower = (float)Math.min(tank.firePower + 0.02, 1);
         else if (e.getKeyCode() == 40) // Down
             tank.firePower = (float)Math.max(tank.firePower - 0.02, 0);
+    }
+    
+    @Override
+    public boolean mousePressed(MouseEvent e) {
+        return mouseDragged(e);
     }
 
     @Override
