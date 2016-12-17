@@ -213,8 +213,11 @@ public class World {
      *         according to the {@code checkMask}.
      */
     public int isPixelSolid(int x, int y, int checkMask) {
-        int value = collisionMask[x + y * width];
-        return value & checkMask;
+        if (x >= 0 && x < width && y >= 0 && y < height) {
+            int value = collisionMask[x + y * width];
+            return value & checkMask;
+        }
+        return 0;
     }
     
     /**
@@ -223,7 +226,7 @@ public class World {
     public int generateCheckMask(WorldObj... objects) {
         int mask = 0;
         for (WorldObj obj : objects)
-            mask &= (1 << bitMap.get(obj));
+            mask |= (1 << bitMap.get(obj));
         return mask;
     }
     
@@ -248,6 +251,12 @@ public class World {
             };
         }
         this.lastBounds[index] = bounds;
+        
+        // Check world boundaries
+        diffBounds[0] = Math.max(diffBounds[0], 0);
+        diffBounds[1] = Math.max(diffBounds[1], 0);
+        diffBounds[2] = Math.min(diffBounds[2], width);
+        diffBounds[3] = Math.min(diffBounds[3], height);
         
         int solidMask = (1 << index);
         int emptyMask = ~solidMask; // Alternative: ^ (-1)
