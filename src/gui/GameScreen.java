@@ -3,6 +3,7 @@ package gui;
 import game.Game;
 import game.Player;
 import game.Stage;
+import game.Tank;
 import gui.core.Component;
 import gui.core.ActionListener;
 import gui.core.Parent;
@@ -38,21 +39,10 @@ public class GameScreen extends Parent implements ActionListener {
         stage = game.getStage();
         add(stage);
         setFocusedChild(stage);
-        stage.setSize(1280, 648); // was 500
+        stage.setSize(1280, 648);
         game.selectionChanged(0);
         
         add(stage, legend, moneyDisplay, scoreBoard, windDisplay, statusDisplay);
-        
-        statusDisplay.setLocation(10, 660);
-        statusDisplay.setSize(368, 98);
-        windDisplay.setLocation(15, 10);
-        windDisplay.setSize(300, 56);
-        legend.setLocation(0, 648);
-        legend.setSize(1280, 120);
-        moneyDisplay.setLocation(870, 690);
-        moneyDisplay.setSize(180, 50);
-        scoreBoard.setLocation(960, 10);
-        scoreBoard.setSize(320, 200);
     }
     
     @Override
@@ -69,6 +59,17 @@ public class GameScreen extends Parent implements ActionListener {
                 loadImage("component/display/fuel_icon.png"));
         statusDisplay.setBar(context.
                 loadImage("component/display/bar.png"));
+        
+        statusDisplay.setLocation(10, 660);
+        statusDisplay.setSize(368, 98);
+        windDisplay.setLocation(15, 10);
+        windDisplay.setSize(300, 56);
+        legend.setLocation(0, 648);
+        legend.setSize(1280, 120);
+        moneyDisplay.setLocation(870, 690);
+        moneyDisplay.setSize(180, 50);
+        scoreBoard.setLocation(960, 10);
+        scoreBoard.setSize(320, 200);
     }
 
     @Override
@@ -91,7 +92,6 @@ public class GameScreen extends Parent implements ActionListener {
     private class ScoreBoard extends Component {
         
         private Player[] players;
-        private int loc;
         
         public void setPlayers(Player[] players) {
             this.players = players;
@@ -101,7 +101,7 @@ public class GameScreen extends Parent implements ActionListener {
         public void draw(PGraphics g){
             Collections.sort(Arrays.asList(players), 
                     (p1, p2) -> p1.getScore() - p2.getScore());
-            loc = 0;
+            int loc = 0;
             for(Player player : players){
                 if(player == game.getCurrentPlayer())
                     g.fill(player.getColor());
@@ -143,16 +143,6 @@ public class GameScreen extends Parent implements ActionListener {
         public void setBar(PImage bar) {
             this.bar = bar;
         }
-        
-        public int getHealthRatio(){
-            return (int) (bar.width * game.getCurrentPlayer().getTank().getHP()/ 100);
-//                        game.getCurrentPlayer().getTank().getMAXHP();
-        }
-        
-        public int getFuelRatio(){
-            return bar.width * game.getCurrentPlayer().getTank().getFuel()/ 100;
-//                        game.getCurrentPlayer().getTank().getMAXFuel();
-        }
                
         @Override
         public void draw(PGraphics g) {
@@ -183,15 +173,18 @@ public class GameScreen extends Parent implements ActionListener {
 //            g.rect(width - 4 - 3*(width - 8 - (healthIcon.width + 9))/4 - 2,
 //                  (healthIcon.height - 8)/2, 
 //                  4, 8);
+            Tank tank = game.getCurrentPlayer().getTank();
+            float hp = bar.width * tank.getHP() / 100;
+            float fuel = bar.width * tank.getFuel() / 100;
             
             // Health Icon
             g.image(healthIcon, 0, 0);
 
             // Health Bar 
             g.fill(255, 150);
-            g.rect(64, 9, getHealthRatio(), bar.height);
+            g.rect(64, 9, (int)hp, bar.height);
             g.tint(231, 76, 60);
-            g.image(bar.get(0, 0, getHealthRatio(), bar.height), 64, 9);
+            g.image(bar.get(0, 0, (int)hp, bar.height), 64, 9);
             g.tint(255);
             
             // Indicators
@@ -205,11 +198,11 @@ public class GameScreen extends Parent implements ActionListener {
             // Fuel Icon
             g.image(fuelIcon, 0, 53);
             
-            // Fuel Bar 
+            // Fuel Bar
             g.fill(255, 150);
-            g.rect(64, 62, getFuelRatio(), bar.height);
+            g.rect(64, 62, (int)fuel, bar.height);
             g.tint(255, 204, 0);
-            g.image(bar.get(0, 0, getFuelRatio(), bar.height), 64, 62);
+            g.image(bar.get(0, 0, (int)fuel, bar.height), 64, 62);
             g.tint(255);
             
             // Indicators
@@ -227,7 +220,6 @@ public class GameScreen extends Parent implements ActionListener {
     private class WindDisplay extends Component {
         
         private PImage icon;
-        private int wind;
         
         public void setIcon(PImage icon) {
             this.icon = icon;
@@ -235,43 +227,25 @@ public class GameScreen extends Parent implements ActionListener {
         
         @Override
         public void draw(PGraphics g) {
-            wind = 125; // TODO @Buğra add wind here
+            int wind = game.getWind();
             g.fill(255);
             g.textFont(font, 35);
             g.textAlign(g.CENTER, g.CENTER);
-            g.text(wind + " kph", 150, 22); // size 156, 58
+            g.text(Math.abs(wind) + " kph", 150, 22); // size 156, 58
             g.fill(0);
-            if(wind > 0){           // Right icon will be darker 
-                g.tint(255, 20);  
-                g.pushMatrix();
-                g.scale(-1, 1);
-                g.image(icon, -icon.width, 0);  
-                g.popMatrix();
-                
-                g.tint(255,255);
-                g.image(icon, 228, 0);     
-            }
-            else if(wind < 0) {     // Left icon will be darker
-                g.tint(255,255);
-                g.pushMatrix();
-                g.scale(-1, 1);
-                g.image(icon, -icon.width, 0);
-                g.popMatrix();
-                
-                g.tint(255, 20);
-                g.image(icon, 228, 0);
-                g.tint(255,255);
-            }
-            else {   // Both icons will be gray
-                g.tint(255, 20); 
-                g.pushMatrix();
-                g.scale(-1, 1);
-                g.image(icon, -icon.width, 0);
-                g.popMatrix();
-                
-                g.image(icon, 228, 0);
-                g.tint(255,255);
-            }
+            
+            int tintLeft = wind >= 0 ? 20 : 255;
+            int tintRight = wind <= 0 ? 20 : 255;
+            
+            g.tint(255, tintLeft);  
+            g.pushMatrix();
+            g.scale(-1, 1);
+            g.image(icon, -icon.width, 0);  
+            g.popMatrix();
+
+            g.tint(255, tintRight);
+            g.image(icon, 228, 0);
+            g.noTint();
         }
     }
     
@@ -288,7 +262,7 @@ public class GameScreen extends Parent implements ActionListener {
             g.fill(255);
             g.textFont(font, 30);
             g.textAlign(g.LEFT, g.TOP);
-            g.text(game.getCurrentPlayer().getCash(), 60, 0);
+            g.text(game.getCurrentPlayer().getMoney(), 60, 0);
             g.image(icon, 0, 0);
         }
     }
