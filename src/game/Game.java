@@ -5,6 +5,7 @@ import game.engine.World;
 import game.engine.PhysicsObj;
 import game.engine.RenderObj;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import processing.core.PImage;
@@ -16,10 +17,6 @@ import processing.data.JSONObject;
  * @author Burak Gök
  */
 public class Game implements SelectionChangeListener {
-    /**
-     * Currently active instance of this class.
-     */
-    private static Game instance = null;
     
     private final GameManager manager;
     
@@ -39,12 +36,11 @@ public class Game implements SelectionChangeListener {
     /** Game entity catalog */
 //    private final Catalog catalog;
     
-//    private Map<String, ObservableAttribute> observableAttributes;
-    
     private final CircularList<Player>.CircularIterator players;
     
+    private final Map<Class<?>, Interaction> interactions = new HashMap<>();
+    
     public Game(GameManager manager, String map, Player[] players) {
-        instance = this;
         this.manager = manager;
         
         physics = new PhysicsEngine(this);
@@ -71,7 +67,8 @@ public class Game implements SelectionChangeListener {
         
         Map<String, Object> decInfo = (Map<String, Object>) assets.get("decoration");
         Decoration decoration = Decoration.create((String) decInfo.get("name"));
-//        decoration.setResources((PImage[]) decInfo.get("resources"));
+        decoration.setResources((PImage[]) decInfo.get("resources"));
+        decoration.setWorld(world); // World boundaries
         decoration.setTerrain(terrain); // Terrain.getMask() -> image
         stage.setDecoration(decoration);
         
@@ -91,9 +88,8 @@ public class Game implements SelectionChangeListener {
             
             Map<String, Object> mode = (Map<String, Object>)
                     modeInfo.get(player.getMode().toString());
-            Tank tank = new Tank(this, 
-                    AssetManager.fill((PImage) mode.get("image"), 0,
-                    player.getColor()), (int)mode.get("barrel"), player.getColor());
+            Tank tank = new Tank(this, (PImage) mode.get("image"), 
+                    (int)mode.get("barrel"), player.getColor());
             
             y += (int)surface.get("sky") - ((PImage)mode.get("image")).height / 2;
             System.out.println("x: " + x + ", y: " + y);
@@ -101,20 +97,27 @@ public class Game implements SelectionChangeListener {
             tank.init(x, y, ((Number)mode.get("damage")).floatValue(), 
                             ((Number)mode.get("shield")).floatValue());
             
-            tank.fireAngle = (float)(Math.random() * Math.PI); // Test
-            tank.firePower = 0.8f; // Test
-            tank.updateHp(100); // Test, otherwise infinite loop in switchTurn()
+            tank.fireAngle = (float)(Math.PI / 6);
+            tank.firePower = 0.8f;
             
             addEntity(tank);
             player.setTank(tank);
+            player.getInventory().add(0, Integer.MAX_VALUE);
             playerList.add(player);
         }
         this.players = playerList.iterator();
         
+        interactions.put(FireInteraction.class, new FireInteraction(this));
+//        Iterator<CatalogItem> iterator = catalog.iterator();
+//        while (iterator.hasNext()) {
+//            CatalogItem item = iterator.next();
+//            if (item.isPowerUp())
+//                interactions.put(item.getInteractionClass(), item.interact(this));
+//        }
+        
+        physics.setWind((int)(Math.random() * 100) - 50);
         Tank tank = getActiveTank();
-        stage.setSize(1280, 500); // TODO Decoupling ????
         stage.shiftCamera((int)tank.getX(), (int)tank.getY());
-        fi = new FireInteraction(this);
     }
     
     public Player[] getPlayers() {
@@ -144,6 +147,10 @@ public class Game implements SelectionChangeListener {
     
     public Stage getStage() {
         return stage;
+    }
+    
+    public int getWind() {
+        return physics.getWind();
     }
     
     public void update() {
@@ -178,10 +185,13 @@ public class Game implements SelectionChangeListener {
             stage.getRenderer().remove((RenderObj) entity);
     }
     
-    private final Interaction fi; // Test
     @Override
     public void selectionChanged(int itemId) {
-        stage.setInteraction(0, fi);
+//        Class<?> cls = catalog.get(itemId).getInteractionClass();
+        Class<?> cls = FireInteraction.class; // Test
+        Interaction interaction = interactions.get(cls);
+        interaction.setTank(getActiveTank());
+        stage.setInteraction(interaction);
     }
     
     /**
@@ -206,7 +216,10 @@ public class Game implements SelectionChangeListener {
         }
         Tank tank = getActiveTank();
         stage.shiftCamera((int)tank.getX(), (int)tank.getY());
-        ((FireInteraction)fi).setTank(tank); // Test
+        stage.getInteraction().setTank(tank);
+        
+        physics.setWind((int)(Math.random() * 100) - 50);
+        
         if (players.current() instanceof AI)
             ((AI)players.current()).play();
     }
@@ -230,29 +243,12 @@ public class Game implements SelectionChangeListener {
         // observableAttributes.get("game_over").set(true);
     }
     
-//    public Map<String, ObservableAttribute> getAttributes() {
-//        return observableAttributes;
-//    }
-    
 //    /**
 //     * Returns the asset manager associated to the manager of this class.
 //     */
 //    AssetManager getAssetManager() {
 //        return manager.getAssetManager();
 //    }
-    
-    /**
-     * Returns the currently active instance of this class.
-     */
-    public static Game getInstance() {
-        return instance;
-    }
-    
-    @Override
-    public void finalize() {
-        if (instance == this)
-            instance = null;
-    }
     
     private class CircularList<E> extends ArrayList<E> {
         public CircularList(int initialCapacity) {
