@@ -12,33 +12,52 @@ import processing.event.KeyEvent;
  * collectible game entities (inventory items) from the stage.
  * @author Burak Gök
  */
-public interface Interaction extends KeyListener, MouseListener {
+public abstract class Interaction implements KeyListener, MouseListener {
     
-    final static int DEFAULT_ACTION_COLOR = 0; // TODO Specify default color
+    public final static int DEFAULT_ACTION_COLOR = 0; // TODO Specify default color
+    
+    /** Context of this interaction */
+    protected final Game game;
+    
+    /** Associated tank */
+    protected Tank tank;
+    
+    /** Camera bounds of the stage of the game associated to this interaction */
+    protected final int[] camBounds;
+    
+    public Interaction(Game game) {
+        this.game = game;
+        tank = game.getActiveTank();
+        camBounds = game.getStage().getCameraBounds();
+    }
+    
+    void setTank(Tank tank) {
+        this.tank = tank;
+    }
     
     /**
      * Returns the action name of the interaction such as "Fire".
      * The action name is displayed in the launch button.
      */
-    String getAction();
+    public abstract String getAction();
     
     /**
      * Returns the action color of the interaction.
      * The action color is used to paint the launch button.
      */
-    default int getActionColor() {
+    public int getActionColor() {
         return DEFAULT_ACTION_COLOR;
     }
     
     /**
      * Draws the interaction visuals behind the terrain.
      */
-    default void drawBehindTerrain(PGraphics g) {}
+    public void drawBehindTerrain(PGraphics g) {}
     
     /**
      * Draws the interaction visuals after the terrain.
      */
-    default void drawAfterTerrain(PGraphics g) {}
+    public void drawAfterTerrain(PGraphics g) {}
     
     /**
      * Finalizes the interaction and also expected to remove the related item
@@ -47,57 +66,54 @@ public interface Interaction extends KeyListener, MouseListener {
      * (Since the "finalize" method is called by garbage collector before
      * releasing the objects, we use an underscore to differentiate them.)
      */
-    void _finalize();
+    abstract void _finalize();
 
     @Override
-    default void keyPressed(KeyEvent e) {
-    }
+    public void keyPressed(KeyEvent e) {}
 
     @Override
-    default void keyReleased(KeyEvent e) {
-    }
+    public void keyReleased(KeyEvent e) {}
 
     @Override
-    default void keyTyped(KeyEvent e) {
-    }
+    public void keyTyped(KeyEvent e) {}
     
     @Override
-    default boolean mousePressed(MouseEvent e) {
+    public boolean mousePressed(MouseEvent e) {
         return true;
     }
 
     @Override
-    default boolean mouseReleased(MouseEvent e) {
+    public boolean mouseReleased(MouseEvent e) {
         return true;
     }
 
     @Override
-    default boolean mouseClicked(MouseEvent e) {
+    public boolean mouseClicked(MouseEvent e) {
         return true;
     }
 
     @Override
-    default boolean mouseDragged(MouseEvent e) {
+    public boolean mouseDragged(MouseEvent e) {
         return true;
     }
 
     @Override
-    default boolean mouseMoved(MouseEvent e) {
+    public boolean mouseMoved(MouseEvent e) {
         return true;
     }
 
     @Override
-    default boolean mouseEntered(MouseEvent e) {
+    public boolean mouseEntered(MouseEvent e) {
         return true;
     }
 
     @Override
-    default boolean mouseExited(MouseEvent e) {
+    public boolean mouseExited(MouseEvent e) {
         return true;
     }
 
     @Override
-    default boolean mouseWheel(MouseEvent e) {
+    public boolean mouseWheel(MouseEvent e) {
         return true;
     }
 }

@@ -8,27 +8,13 @@ import processing.event.KeyEvent;
  *
  * @author Burak Gök
  */
-public class FireInteraction implements Interaction {
-    /** Context of this interaction */
-    private final Game game;
-    
-    /** Associated tank */
-    private Tank tank;
+public class FireInteraction extends Interaction {
     
     /** Id of the bomb that will be generated */
     private int itemId;
     
-    /** Camera bounds of the stage of the game associated to this interaction */
-    private final int[] camBounds;
-    
     public FireInteraction(Game game) {
-        this.game = game;
-        tank = game.getActiveTank();
-        camBounds = game.getStage().getCameraBounds();
-    }
-    
-    void setTank(Tank tank) {
-        this.tank = tank;
+        super(game);
     }
      
     void setItemId(int itemId) {
