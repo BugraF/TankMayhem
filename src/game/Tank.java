@@ -25,8 +25,8 @@ public class Tank implements PhysicsObj, WorldObj, RenderObj {
     float firePower, fireAngle;
     
     /* Tank Status */
-    private float hp;
-    private int fuel;
+    private float hp = 100;
+    private float fuel = 100;
     
     /* Bonuses & Penalties */
     private float agility = 1;
@@ -68,11 +68,17 @@ public class Tank implements PhysicsObj, WorldObj, RenderObj {
             g.pushMatrix();
             g.translate(x, y);
             g.rotate(-rotation);
-            g.image(image, -image.width / 2, -image.height / 2);
-            g.translate(0, barrel); // Barrel starting position
+            
+            g.pushMatrix();
+            g.translate(0, barrel); // Barrel pivot position
             g.rotate(-fireAngle);
             g.fill(color);
             g.rect(0, -3, 40, 6);
+            g.popMatrix();
+            
+            g.tint(color);
+            g.image(image, -image.width / 2, -image.height / 2);
+            g.noTint();
             g.popMatrix();
         }
     }
@@ -119,7 +125,7 @@ public class Tank implements PhysicsObj, WorldObj, RenderObj {
         return hp;
     }
     
-    public int getFuel() {
+    public float getFuel() {
         return fuel;
     }
     
@@ -143,8 +149,10 @@ public class Tank implements PhysicsObj, WorldObj, RenderObj {
 //        }
         
         // Movement
-        if (goLeft ^ goRight) // Either of them is true, but not both
+        if (goLeft ^ goRight) { // Either of them is true, but not both
             velX = goLeft ? -30 : 30;
+            fuel = Math.max(fuel - 0.05f, 0);
+        }
         else // Both are false or true
             velX = 0;
 
