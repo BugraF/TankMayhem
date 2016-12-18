@@ -18,8 +18,8 @@ public class CreditsFrame extends Frame  {
     @Override
     public void init(PApplet context){
         super.init(context);
-        setSize(580, 640);
-        setLocation(350, 64);
+        setSize(1000, 700);
+        setLocation(140, 34);
         background = context.loadImage("background/credits.png");
         setBackground(background);
     }
