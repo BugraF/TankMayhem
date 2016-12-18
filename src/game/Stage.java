@@ -27,8 +27,6 @@ public class Stage extends InteractiveComponent {
     private final float[] cam = new float[2], camNext = new float[2];
     
     private Interaction interaction;
-    private int z_order;
-    
 //    private final TracerInteraction tracer = new TracerInteraction();
     private boolean tracerEnabled = false;
     
@@ -63,15 +61,8 @@ public class Stage extends InteractiveComponent {
     int[] getCameraBounds() {
         return camBounds;
     }
-    
-    /**
-     * Sets the interaction by specifying its z-order.
-     * @param z_order Use negative values to draw the specified interaction back
-     *                of any render object. For non-negative values, the
-     *                specified interaction is drawn as the fore-most layer.
-     */
-    void setInteraction(int z_order, Interaction interaction) {
-        this.z_order = z_order;
+
+    void setInteraction(Interaction interaction) {
         this.interaction = interaction;
     }
     
@@ -121,8 +112,7 @@ public class Stage extends InteractiveComponent {
             cam[0] = hWidth;
             cam[1] = hHeight;
         }
-        else// Resize
-            setCamera((int)cam[0], (int)cam[1]);
+        setCamera((int)camNext[0], (int)camNext[1]);
     }
     
     // TODO Another graphics object should be passed to this method since
