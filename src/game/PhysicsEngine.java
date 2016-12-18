@@ -36,12 +36,19 @@ public class PhysicsEngine {
         physics.setAcceleration(0, 980, 0, 1, 2, 3);
     }
     
+    private int wind = 0;
+    
     /**
      * Sets the wind (this applies a common acceleration to all physics objects).
      * @param wind Negative values are associated with the left direction.
      */
     void setWind(int wind) {
-        physics.setAcceleration(wind, 980, 0, 1, 2);
+        this.wind = wind;
+        physics.setAcceleration(wind * 5, 980, 0, 1, 2);
+    }
+    
+    int getWind() {
+        return wind;
     }
     
     /**
