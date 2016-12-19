@@ -25,7 +25,6 @@ public class Player {
         this.name = name;
         this.mode = mode;
         this.color = color;
-        inventory.add(0, Integer.MAX_VALUE); // Test
     }
     
     /**
@@ -38,7 +37,7 @@ public class Player {
     /**
      * Assigns the specified tank to this player.
      */
-    public void setTank(Tank tank) { 
+    void setTank(Tank tank) { 
         this.tank = tank;
     }
     
@@ -66,14 +65,14 @@ public class Player {
         return score;
     }
     
-    public int getCash() {
+    public int getMoney() {
         return cash;
     }
     
     /**
      * Increments this player’s total score by the specified amount.
      */
-    public void updateScore(int delta) {
+    void updateScore(int delta) {
         if (delta < 0)
             throw new RuntimeException("Score changes cannot be negative.");
         score += delta;
@@ -82,7 +81,7 @@ public class Player {
     /**
      * Increments this player’s total cash by the specified amount.
      */
-    public void updateCash(int delta) {
+    void updateCash(int delta) {
         if (delta < 0)
             throw new RuntimeException("Money changes cannot be negative.");
         cash = cash + delta;
@@ -92,7 +91,7 @@ public class Player {
      * Indicates whether the tank of this player is destroyed.
      * @see Tank#getHP()
      */
-    public boolean isAlive() {   
+    public boolean isAlive() {
         return tank.getHP() != 0;
     }
     
