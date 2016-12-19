@@ -84,14 +84,20 @@ public class ListButton extends InteractiveComponent {
     
     @Override
     public void draw(PGraphics g) {
-        g.textFont(font, 25);
+        g.textFont(font, 28);
         g.noStroke();
+        
+        // TODO @Buğra set freeshape
         
         if (state == 0){
             g.fill(0, 192);
             g.quad(width/12, 0, width, 0, width, height, 0, height);
             g.fill(255);
             g.textAlign(g.CENTER, g.CENTER);
+            if(g.textWidth(text) > 270)
+                g.textSize((float) 25);
+            else
+                g.textSize((float) 32);
             g.text(text, width/2-10, height/2-5);
         }
         else {
@@ -99,7 +105,20 @@ public class ListButton extends InteractiveComponent {
             g.quad(width/12, 0, width, 0, width, height, 0, height);
             g.fill(0);
             g.textAlign(g.CENTER, g.CENTER);
-            g.text(text, width/2-10, height/2-5);
+            if(isSelected){
+                if(g.textWidth(text) > 270)
+                    g.textSize((float) 28);
+                else
+                    g.textSize((float) 35);
+                g.text(text, width/2+5, height/2-5);
+            }
+            else{
+                if(g.textWidth(text) > 270)
+                    g.textSize((float) 25);
+                else
+                    g.textSize((float) 32);
+                g.text(text, width/2-10, height/2-5);
+            }
         }
     }
     
