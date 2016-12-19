@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import processing.core.PApplet;
+import processing.core.PImage;
 
 /**
  *
@@ -78,7 +80,9 @@ public class World {
         occupied |= (1 << index); // 1: 0..01
         bitMap.put(obj, index);
         objMap.put(index, obj);
-        lastBounds[index] = obj.getBounds();
+//        lastBounds[index] = obj.getBounds(); -> SILLY MISTAKE
+        lastBounds[index] = new int[4];
+        System.arraycopy(obj.getBounds(), 0, lastBounds[index], 0, 4);
         updateMask(obj, obj.getBounds());
     }
     
@@ -88,6 +92,8 @@ public class World {
         bitMap.remove(obj);
         objMap.remove(index);
         occupied &= ~(1 << index); // Alternative: ^ (-1)
+        clearLayer(index, lastBounds[index]);
+        lastBounds[index] = null;
     }
     
     /** Returns the world objects that occupy the specified point. */
@@ -250,7 +256,7 @@ public class World {
                 max(lastBounds[2], bounds[2]), max(lastBounds[3], bounds[3])  // r, b
             };
         }
-        this.lastBounds[index] = bounds;
+        System.arraycopy(bounds, 0, lastBounds[index], 0, 4);
         
         // Check world boundaries
         diffBounds[0] = Math.max(diffBounds[0], 0);
@@ -278,6 +284,31 @@ public class World {
     }
     
     /**
+     * Clears the layer of the collision mask at the specified index.
+     * This method is intended for internal usage. {@code 
+     * update(WorldObj, int[])} should be used to update the collision mask.
+     * @param bounds The region that needs to be removed on the collision
+     *               mask. If null is passed, the whole layer is removed.
+     */
+    private void clearLayer(int index, int[] bounds) {
+        if (bounds == null)
+            bounds = new int[] {0, 0, width, height};
+        else {
+            // Check world boundaries
+            bounds[0] = Math.max(bounds[0], 0);
+            bounds[1] = Math.max(bounds[1], 0);
+            bounds[2] = Math.min(bounds[2], width);
+            bounds[3] = Math.min(bounds[3], height);
+        }
+        
+        int clearMask = ~(1 << index);
+        // The loop order is optimized for spatial locality.
+        for (int y = bounds[1]; y < bounds[3]; y++)
+            for (int x = bounds[0]; x < bounds[2]; x++)
+                    collisionMask[x + y * width] &= clearMask;
+    }
+    
+    /**
      * Refreshes or re-creates the collision mask.
      */
     public void refreshCollisionMask(boolean recreate) {
@@ -291,6 +322,15 @@ public class World {
         else
             for (WorldObj obj : bitMap.keySet())
                 updateMask(obj, null);
+    }
+    
+    public PImage getImageRepresentation(PApplet context) {
+        PImage image = context.createImage(width, height, PImage.ARGB);
+        image.loadPixels();
+        for (int p = 0; p < width * height; p++)
+            image.pixels[p] = PImage.ALPHA_MASK | collisionMask[p] * 100;
+        image.updatePixels();
+        return image;
     }
     
 }
