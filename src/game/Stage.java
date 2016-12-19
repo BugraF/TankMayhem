@@ -27,11 +27,12 @@ public class Stage extends InteractiveComponent {
     private final float[] cam = new float[2], camNext = new float[2];
     
     private Interaction interaction;
-//    private final TracerInteraction tracer = new TracerInteraction();
-    private boolean tracerEnabled = false;
+    private final Tracer tracer;
+    private boolean tracerEnabled = true; // Test
     
     public Stage(Game game) {
         this.game = game;
+        tracer = new Tracer(game);
     }
     
     /**
@@ -68,6 +69,7 @@ public class Stage extends InteractiveComponent {
     
     public void finalizeInteraction() {
         interaction._finalize();
+        tracerEnabled = false;
     }
     
     /**
@@ -137,8 +139,8 @@ public class Stage extends InteractiveComponent {
         g.translate(-camBounds[0], -camBounds[1]);
         
 //        g.image(world.getImageRepresentation(getContext()), 0, 0);
-//        if (tracerEnabled)
-//            tracer.drawBehindTerrain(g);
+        if (tracerEnabled)
+            tracer.draw(g, camBounds);
         if (interaction.isEnabled())
             interaction.drawBehindTerrain(g);
         terrain.draw(g, camBounds);
