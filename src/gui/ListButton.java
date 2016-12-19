@@ -108,7 +108,7 @@ public class ListButton extends InteractiveComponent {
             if(isSelected){
                 if(g.textWidth(text) > 270)
                     g.textSize((float) 28);
-                else
+                else 
                     g.textSize((float) 35);
                 g.text(text, width/2+5, height/2-5);
             }
