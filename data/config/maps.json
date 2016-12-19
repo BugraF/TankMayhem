@@ -4,7 +4,37 @@
         "decoration": {
             "name": "Desert",
             "@resources": [
-                
+                "decoration/desert/background.png"
+            ]
+        }
+    }
+
+    "rainy": {
+        "@terrain.texture": "terrain/texture/mud.png",
+        "decoration": {
+            "name": "Rainy",
+            "@resources": [
+                "decoration/rainy/background.png"
+            ]
+        }
+    }
+
+    "snowy": {
+        "@terrain.texture": "terrain/texture/snow.png",
+        "decoration": {
+            "name": "Snowy",
+            "@resources": [
+                "decoration/snowy/background.png"
+            ]
+        }
+    }
+
+    "sunny": {
+        "@terrain.texture": "terrain/texture/grass.png",
+        "decoration": {
+            "name": "Sunny",
+            "@resources": [
+                "decoration/sunny/background.png"
             ]
         }
     }
