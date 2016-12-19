@@ -13,7 +13,7 @@ import processing.data.JSONArray;
 import processing.data.JSONObject;
 
 /**
- * Singleton + Mediator + Façade
+ * Façade
  * @author Burak Gök
  */
 public class Game implements SelectionChangeListener {
@@ -200,8 +200,8 @@ public class Game implements SelectionChangeListener {
      * @param damageGiven The total damage delivered to other players
      */
     void updatePlayerStatus(float damageGiven) {
-        players.current().updateScore((int)(damageGiven * 0)); // TODO Specify factor
-        players.current().updateCash((int)(damageGiven * 0)); // TODO Specify factor
+        players.current().updateScore((int)(damageGiven * 10));
+        players.current().updateCash((int)(damageGiven * 50));
     }
     
     void switchTurn() {
