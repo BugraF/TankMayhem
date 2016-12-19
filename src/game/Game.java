@@ -75,8 +75,8 @@ public class Game implements SelectionChangeListener {
         JSONObject modes = assetManager.readJSONObject("config/modes.json");
         Map<String, Object> modeInfo = assetManager.process(modes);
         CircularList<Player> playerList = new CircularList<>(players.length);
-        int free = 50;
-        int occupy = (terrainImage.width - (players.length + 1) * free)
+        final int free = 150;
+        final int occupy = (terrainImage.width - (players.length + 1) * free)
                 / players.length;
         int left = free;
         for (Player player : players) {
@@ -190,6 +190,7 @@ public class Game implements SelectionChangeListener {
 //        Class<?> cls = catalog.get(itemId).getInteractionClass();
         Class<?> cls = FireInteraction.class; // Test
         Interaction interaction = interactions.get(cls);
+//        Interaction interaction = new AirstrikeInteraction(this); // Test
         interaction.setTank(getActiveTank());
         stage.setInteraction(interaction);
     }
