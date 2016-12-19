@@ -25,6 +25,8 @@ public class Particle implements PhysicsObj, RenderObj {
     /** Determines the width and height of this particle. */
     private final int size;
     
+    private final int terrainMask;
+    
     public Particle(Game game, int color) {
         this(game, color, 1);
     }
@@ -33,6 +35,7 @@ public class Particle implements PhysicsObj, RenderObj {
         this.game = game;
         this.color = color;
         this.size = size;
+        terrainMask = game.getWorld().generateCheckMask(game.getTerrain());
     }
     
     /**
@@ -56,7 +59,8 @@ public class Particle implements PhysicsObj, RenderObj {
     public void checkConstraints() {
         World world = game.getWorld();
 //        System.out.format("rayCast: [%s, %s] -> [%s, %s]\n", lastX, lastY, x, y);
-        int[] collision = world.rayCast((int)lastX, (int)lastY, (int)x, (int)y);
+        int[] collision = world.rayCast((int)lastX, (int)lastY, (int)x, (int)y,
+                terrainMask);
         
         if (collision.length > 0) {
             Terrain terrain = game.getTerrain();
