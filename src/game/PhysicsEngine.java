@@ -108,8 +108,14 @@ public class PhysicsEngine {
             tanks.remove((Tank) obj);
     }
     
+    /**
+     * Returns the tanks that are not destroyed.
+     * Destroyed tanks are still processed by this engine, but they are not
+     * exposed to outside to avoid confusions.
+     */
     Tank[] getTanks() {
-        return tanks.toArray(new Tank[0]);
+        return tanks.stream().filter((t) -> t.getHP() != 0)
+                .toArray((count) -> new Tank[count]);
     }
     
 }
