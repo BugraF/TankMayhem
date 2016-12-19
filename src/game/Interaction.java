@@ -25,6 +25,8 @@ public abstract class Interaction implements KeyListener, MouseListener {
     /** Camera bounds of the stage of the game associated to this interaction */
     protected final int[] camBounds;
     
+    private boolean enabled = true;
+    
     public Interaction(Game game) {
         this.game = game;
         tank = game.getActiveTank();
@@ -33,6 +35,7 @@ public abstract class Interaction implements KeyListener, MouseListener {
     
     void setTank(Tank tank) {
         this.tank = tank;
+        enabled = true;
     }
     
     /**
@@ -66,13 +69,34 @@ public abstract class Interaction implements KeyListener, MouseListener {
      * (Since the "finalize" method is called by garbage collector before
      * releasing the objects, we use an underscore to differentiate them.)
      */
-    abstract void _finalize();
+    public void _finalize() {
+        enabled = false;
+        tank.stopLeft();
+        tank.stopRight();
+    }
+    
+    boolean isEnabled() {
+        return enabled;
+    }
 
     @Override
-    public void keyPressed(KeyEvent e) {}
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == 65) // A
+            tank.moveLeft();
+        else if (e.getKeyCode() == 68) // D
+            tank.moveRight();
+    }
 
     @Override
-    public void keyReleased(KeyEvent e) {}
+    public void keyReleased(KeyEvent e) {
+        if (e.getKeyCode() == 65 || e.getKeyCode() == 68) {
+            if (e.getKeyCode() == 65) // A
+                tank.stopLeft();
+            else // D
+                tank.stopRight();
+            game.getStage().shiftCamera((int)tank.getX(), (int)tank.getY());
+        }
+    }
 
     @Override
     public void keyTyped(KeyEvent e) {}

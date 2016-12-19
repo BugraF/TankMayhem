@@ -136,11 +136,14 @@ public class Stage extends InteractiveComponent {
         decoration.drawBackground(g, camBounds);
         g.translate(-camBounds[0], -camBounds[1]);
         
+//        g.image(world.getImageRepresentation(getContext()), 0, 0);
 //        if (tracerEnabled)
 //            tracer.drawBehindTerrain(g);
-        interaction.drawBehindTerrain(g);
+        if (interaction.isEnabled())
+            interaction.drawBehindTerrain(g);
         terrain.draw(g, camBounds);
-        interaction.drawAfterTerrain(g);
+        if (interaction.isEnabled())
+            interaction.drawAfterTerrain(g);
         renderer.draw(g, camBounds);
         
         g.translate(camBounds[0], camBounds[1]);
@@ -157,26 +160,21 @@ public class Stage extends InteractiveComponent {
     
     @Override
     public void handleKeyEvent(KeyEvent event) {
-        if (enabled) {
+        if (enabled)
             propagateKeyEvent(this, event);
+        if (interaction.isEnabled())
             propagateKeyEvent(interaction, event);
-        }
     }
     
     @Override
     public boolean handleMouseEvent(MouseEvent event) {
-        if (!enabled) return true;
+        if (!enabled || !interaction.isEnabled()) return true;
         return propagateMouseEvent(interaction, event);
     }
     
     @Override
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == 65) // A
-            game.getActiveTank().moveLeft();
-        else if (e.getKeyCode() == 68) // D
-            game.getActiveTank().moveRight();
-        
-        else if (e.getKeyCode() == 100) // Numpad 4
+        if (e.getKeyCode() == 100) // Numpad 4
             shiftCamera((int)cam[0] - 100, (int)cam[1]);
         else if (e.getKeyCode() == 102) // Numpad 6
             shiftCamera((int)cam[0] + 100, (int)cam[1]);
@@ -184,18 +182,6 @@ public class Stage extends InteractiveComponent {
             shiftCamera((int)cam[0], (int)cam[1] - 50);
         else if (e.getKeyCode() == 98) // Numpad 2
             shiftCamera((int)cam[0], (int)cam[1] + 50);
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {
-        if (e.getKeyCode() == 65 || e.getKeyCode() == 68) {
-            Tank tank = game.getActiveTank();
-            if (e.getKeyCode() == 65) // A
-                tank.stopLeft();
-            else // D
-                tank.stopRight();
-            shiftCamera((int)tank.getX(), (int)tank.getY());
-        }
     }
     
 }

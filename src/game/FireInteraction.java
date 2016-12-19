@@ -48,6 +48,8 @@ public class FireInteraction extends Interaction {
 
     @Override
     public void _finalize() {
+        super._finalize();
+        
 //        Bomb bomb = (Bomb) Catalog.create(itemId);
         Bomb bomb = new SimpleBomb(game); // Test
         bomb.blastPower = 60; // Test
@@ -57,8 +59,8 @@ public class FireInteraction extends Interaction {
         float cos = (float) Math.cos(angle);
         float x = tank.getX() + 40 * cos; // TODO 40: barrel width
         float y = tank.getBarrelPosition() + 40 * sin;
-        float velX = 1000 * tank.firePower * cos; // TODO Specify factor
-        float velY = 1000 * tank.firePower * sin;
+        float velX = 1500 * tank.firePower * cos;
+        float velY = 1500 * tank.firePower * sin;
         
         bomb.init(x, y, velX, velY);
         bomb.blastPower *= tank.getDamageBonus();
@@ -70,6 +72,7 @@ public class FireInteraction extends Interaction {
 
     @Override
     public void keyPressed(KeyEvent e) {
+        super.keyPressed(e);
         if (e.getKeyCode() == 37) // <-
             tank.fireAngle = (float)Math.min(tank.fireAngle + 0.05, Math.PI);
         else if (e.getKeyCode() == 39) // ->
