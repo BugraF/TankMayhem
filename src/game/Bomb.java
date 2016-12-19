@@ -2,6 +2,7 @@ package game;
 
 import game.engine.PhysicsObj;
 import game.engine.RenderObj;
+import game.engine.World;
 
 /**
  *
@@ -10,6 +11,12 @@ import game.engine.RenderObj;
 public abstract class Bomb implements PhysicsObj, RenderObj {
     /** Context of this bomb */
     protected final Game game;
+    
+    /** Reference to the world within the context */
+    protected final World world;
+    
+    /** Collision Detection Masks */
+    protected final int terrainMask, tankMask, allMask;
     
     /** Position */
     protected float x, y;
@@ -22,6 +29,10 @@ public abstract class Bomb implements PhysicsObj, RenderObj {
     
     public Bomb(Game game) {
         this.game = game;
+        world = game.getWorld();
+        terrainMask = world.generateCheckMask(game.getTerrain());
+        tankMask = world.generateCheckMask(game.getPhysicsEngine().getTanks());
+        allMask = terrainMask | tankMask;
     }
     
     /**

@@ -227,6 +227,29 @@ public class World {
     }
     
     /**
+     * Computes the normal vector at the specified point.
+     * @param checkMask The interested world objects are indicated by 1's in
+     *                  the binary representation.
+     * @return X and Y components of the normalized normal vector.
+     */
+    public float[] getNormal(int x, int y, int r, int checkMask) {
+        // First find all nearby solid pixels, and create a vector to the
+        // average solid pixel from (x,y)
+        float avgX = 0;
+        float avgY = 0;
+        for (int w = -r; w <= r; w++)
+            for (int h = -r; h <= r; h++)
+                if (isPixelSolid(x + w, y + h, checkMask) != 0) {
+                    avgX -= w;
+                    avgY -= h;
+                }
+        // Get the distance from (x,y)
+        float len = (float)Math.sqrt(avgX * avgX + avgY * avgY);
+        // Normalize the vector by dividing by that distance
+        return new float[] {avgX / len, avgY / len};
+    }
+    
+    /**
      * Generates a check mask for the specified world objects.
      */
     public int generateCheckMask(WorldObj... objects) {
@@ -259,10 +282,10 @@ public class World {
         System.arraycopy(bounds, 0, lastBounds[index], 0, 4);
         
         // Check world boundaries
-        diffBounds[0] = Math.max(diffBounds[0], 0);
-        diffBounds[1] = Math.max(diffBounds[1], 0);
-        diffBounds[2] = Math.min(diffBounds[2], width);
-        diffBounds[3] = Math.min(diffBounds[3], height);
+        diffBounds[0] = max(diffBounds[0], 0);
+        diffBounds[1] = max(diffBounds[1], 0);
+        diffBounds[2] = min(diffBounds[2], width);
+        diffBounds[3] = min(diffBounds[3], height);
         
         int solidMask = (1 << index);
         int emptyMask = ~solidMask; // Alternative: ^ (-1)
@@ -295,10 +318,10 @@ public class World {
             bounds = new int[] {0, 0, width, height};
         else {
             // Check world boundaries
-            bounds[0] = Math.max(bounds[0], 0);
-            bounds[1] = Math.max(bounds[1], 0);
-            bounds[2] = Math.min(bounds[2], width);
-            bounds[3] = Math.min(bounds[3], height);
+            bounds[0] = max(bounds[0], 0);
+            bounds[1] = max(bounds[1], 0);
+            bounds[2] = min(bounds[2], width);
+            bounds[3] = min(bounds[3], height);
         }
         
         int clearMask = ~(1 << index);

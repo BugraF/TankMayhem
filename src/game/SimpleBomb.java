@@ -1,6 +1,5 @@
 package game;
 
-import game.engine.World;
 import processing.core.PGraphics;
 
 /**
@@ -8,26 +7,15 @@ import processing.core.PGraphics;
  * @author Burak Gök
  */
 public class SimpleBomb extends Bomb {
-    /** Reference to the world within the context */
-    private final World world;
-    
-    /** Collision Detection Masks */
-    private final int terrainMask, tankMask, allMask;
     
     public SimpleBomb(Game game) {
         super(game);
-        world = game.getWorld();
-        terrainMask = world.generateCheckMask(game.getTerrain());
-        tankMask = world.generateCheckMask(game.getPhysicsEngine().getTanks());
-        allMask = terrainMask | tankMask;
     }
-    
-    // public void init(int x, int y, int velX, int velY)
 
     @Override
     public void draw(PGraphics g, int[] bounds) {
         g.fill(0);
-        g.ellipse(x, y, 3, 3);
+        g.ellipse(x - 1, y - 1, 3, 3);
     }
     
     @Override
