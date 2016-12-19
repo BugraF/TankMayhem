@@ -68,12 +68,14 @@ public class PhysicsEngine {
                 bounds[0] = Math.min(bounds[0], bomb.getX());
                 bounds[1] = Math.min(bounds[1], bomb.getY());
                 bounds[2] = Math.max(bounds[2], bomb.getX());
-                bounds[3] = Math.max(bounds[3], bomb.getX());
+                bounds[3] = Math.max(bounds[3], bomb.getY());
             }
             float camX = (bounds[0] + bounds[2]) / 2;
             float camY = (bounds[1] + bounds[3]) / 2;
             game.getStage().shiftCamera((int)camX, (int)camY);
         }
+//        if (switchTurnWhenStabilized)
+//            System.out.format("Bombs: %s Particles: %s\n", bombs.size(), particles.size());
         if (switchTurnWhenStabilized && bombs.isEmpty() && particles.isEmpty()) {
             game.switchTurn();
             switchTurnWhenStabilized = false;
