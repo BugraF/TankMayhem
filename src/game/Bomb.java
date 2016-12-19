@@ -39,7 +39,7 @@ public abstract class Bomb implements PhysicsObj, RenderObj {
      * the blast region of this bomb.
      */
     public void destructTerrain(int xPos, int yPos) {
-        float radius = blastPower * 1; // TODO Specify factor
+        float radius = blastPower;
         float radiusSq = radius * radius;
         Terrain terrain = game.getTerrain();
         int[] bounds = terrain.getBounds();
@@ -47,12 +47,11 @@ public abstract class Bomb implements PhysicsObj, RenderObj {
         
 //        float[] normal = terrain.getNormal(xPos, yPos);
 //        System.out.format("normal x: %s, y: %s", normal[0], normal[1]);
-  
-        // TODO Order?
-        for (int x = xPos - (int)radius; x < xPos + (int)radius; x += destRes)
-        if (bounds[0] < x && x < bounds[2]) // Boundary check
+
         for (int y = yPos - (int)radius; y < yPos + (int)radius; y += destRes)
-        if (bounds[1] < y && y < bounds[3]) { // Boundary check
+        if (bounds[1] < y && y < bounds[3]) // Boundary check
+        for (int x = xPos - (int)radius; x < xPos + (int)radius; x += destRes)
+        if (bounds[0] < x && x < bounds[2]) { // Boundary check
             // First determine if this pixel (or if any contained within its
             // square area) is solid.
             int solidX = 0, solidY = 0;
@@ -112,7 +111,7 @@ public abstract class Bomb implements PhysicsObj, RenderObj {
      */
     public void damageTanks(int xPos, int yPos) {
         float totalDamage = 0;
-        float radius = blastPower * 1; // TODO Specify factor
+        float radius = blastPower * 1.5f; // TODO Specify factor
         float radiusSq = radius * radius;
         
         Tank[] tanks = game.getPhysicsEngine().getTanks();
@@ -120,10 +119,11 @@ public abstract class Bomb implements PhysicsObj, RenderObj {
             float xDiff = tank.getX() - xPos;
             float yDiff = tank.getY() - yPos;
             float distSq = xDiff * xDiff + yDiff * yDiff;
+            distSq = Math.max(distSq, 500);
 
             if (distSq < radiusSq) {
-                float damage = blastPower * 1 / distSq / tank.getShieldBonus(); // TODO Specify factor
-                tank.updateHp(damage);
+                float damage = 200 * blastPower / distSq / tank.getShieldBonus();
+                tank.updateHp(-damage);
                 if (tank != game.getActiveTank())
                     totalDamage += damage;
             }
