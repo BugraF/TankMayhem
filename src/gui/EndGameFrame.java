@@ -42,8 +42,9 @@ public class EndGameFrame extends Frame {
     @Override
     public void actionPerformed(Component comp) {
         if (comp == this.closeBtn) {
-            ((ScreenManager)getContext()).closeFrame();
-            ((ScreenManager)getContext())
+            PApplet context = getContext();
+            ((ScreenManager) context).closeFrame();
+            ((ScreenManager) context)
                     .switchScreen(ScreenManager.SCREEN_MAIN_MENU);
         }
     }
