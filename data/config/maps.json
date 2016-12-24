@@ -7,7 +7,7 @@
                 "decoration/desert/background.png"
             ]
         }
-    }
+    },
 
     "rainy": {
         "@terrain.texture": "terrain/texture/mud.png",
@@ -17,7 +17,7 @@
                 "decoration/rainy/background.png"
             ]
         }
-    }
+    },
 
     "snowy": {
         "@terrain.texture": "terrain/texture/snow.png",
@@ -27,7 +27,7 @@
                 "decoration/snowy/background.png"
             ]
         }
-    }
+    },
 
     "sunny": {
         "@terrain.texture": "terrain/texture/grass.png",
