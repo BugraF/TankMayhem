@@ -16,17 +16,17 @@ public class Button extends InteractiveComponent {
      * Non-rectangular buttons consume mouse events only if the mouse pointer
      * is on a non-transparent point.
      */
-    private boolean freeShape = false;
+    protected boolean freeShape = false;
     
     /**
      * Current state of this button.
      */
-    private int state = 0;
+    protected int state = 0;
     
     /**
      * Sprite sheet of the state images of this button.
      */
-    private PImage[] stateImages; // normal, hover, pressed, disabled
+    protected PImage[] stateImages; // normal, hover, pressed, disabled
     
     /**
      * Key code of the mnemonic of this button.
@@ -74,8 +74,7 @@ public class Button extends InteractiveComponent {
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
-        if (!enabled)
-            state = 3;
+        state = enabled ? 0 : 3;
     }
     
     /**
@@ -138,6 +137,11 @@ public class Button extends InteractiveComponent {
         }
         return true;
     }
+    
+    // Do not override mouseMoved() to catch mouseExited() inside bounds.
+    // The parent of this component cathes mouseMoved() when this button does
+    // not consume it, so it will automatically calls mouseExited() for this
+    // button and mouseEntered() for itself.
 
     @Override
     public boolean mousePressed(MouseEvent e) {
@@ -160,14 +164,12 @@ public class Button extends InteractiveComponent {
     @Override
     public boolean mouseEntered(MouseEvent e) {
         state = 1;
-        System.out.println("Entered");
         return true;
     }
 
     @Override
     public boolean mouseExited(MouseEvent e) {
         state = 0;
-        System.out.println("Exited");
         return true;
     }
     
