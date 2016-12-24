@@ -43,10 +43,10 @@ public class Game implements SelectionChangeListener {
     private final Map<Class<?>, Interaction> interactions = new HashMap<>();
     
     /**
-     * Keeps the turn switch listeners.
+     * Maintains and notifies turn switch listeners.
      * Whether the game is over is passed an argument to the listeners.
      */
-    private final Observable turn = new Observable();
+    private final Turn turn = new Turn();
     
     public Game(GameManager manager, String map, Player[] players) {
         this.manager = manager;
@@ -230,7 +230,7 @@ public class Game implements SelectionChangeListener {
         
         physics.setWind((int)(Math.random() * 100) - 50);
         
-        turn.notifyObservers(false);
+        turn.next(); // Notify listeners
         
         if (players.current() instanceof AI)
             ((AI)players.current()).play();
@@ -252,7 +252,7 @@ public class Game implements SelectionChangeListener {
      * Loads the end-game screen.
      */
     void gameOver() {
-        turn.notifyObservers(true);
+        turn.end(); // Notify listeners
     }
     
     /**
@@ -265,6 +265,17 @@ public class Game implements SelectionChangeListener {
     }
     public void removeTurnListener(Observer listener) {
         turn.deleteObserver(listener);
+    }
+    
+    private class Turn extends Observable {
+        public void next() {
+            setChanged();
+            notifyObservers(false);
+        }
+        public void end() {
+            setChanged();
+            notifyObservers(true);
+        }
     }
     
 //    /**
