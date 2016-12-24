@@ -4,8 +4,11 @@ import game.engine.PhysicsObj;
 import game.engine.RenderObj;
 import game.engine.World;
 import game.engine.WorldObj;
+import processing.awt.PGraphicsJava2D;
 import processing.core.PGraphics;
 import processing.core.PImage;
+import processing.core.PShape;
+import processing.core.PVector;
 
 /**
  *
@@ -42,6 +45,9 @@ public class Tank implements PhysicsObj, WorldObj, RenderObj {
     
     /* Image & Bounds */
     private final PImage image; // without barrel
+    private final PGraphics mask; // without barrel
+    private final PShape hitbox;
+    private final float[] hitboxVertices;
     private final int barrel; // barrel pivot translation
     private final int[] bounds = new int[4];
     
@@ -50,7 +56,7 @@ public class Tank implements PhysicsObj, WorldObj, RenderObj {
     
     private final int terrainMask;
     
-    public Tank(Game game, PImage image, int barrel, int color) {
+    public Tank(Game game, PImage image, int barrel, int color, int[] hitbox) {
         this.game = game;
         this.image = image;
         this.barrel = barrel;
@@ -58,11 +64,29 @@ public class Tank implements PhysicsObj, WorldObj, RenderObj {
         
         this.world = game.getWorld();
         terrainMask = world.generateCheckMask(game.getTerrain());
+        
+        mask = new PGraphicsJava2D();
+        float w = image.width / 2f, h = image.height / 2f;
+        double diameter = 2 * Math.sqrt(w * w + h * h);
+        mask.setSize((int)diameter, (int)diameter);
+        
+        hitboxVertices = new float[hitbox.length];
+        this.hitbox = mask.createShape();
+        this.hitbox.beginShape();
+        this.hitbox.noStroke();
+        this.hitbox.fill(0);
+        for (int i = 0; i < hitbox.length; i += 2) {
+            hitboxVertices[i] = hitbox[i] - w;
+            hitboxVertices[i + 1] = hitbox[i + 1] - h;
+            this.hitbox.vertex(hitboxVertices[i], hitboxVertices[i + 1]);
+        }
+        this.hitbox.endShape(PShape.CLOSE);
     }
     
     void init(int x, int y, float damageBonus, float shieldBonus) {
         this.x = lastX = x;
         this.y = lastY = y;
+        rotation = (float)Math.PI / 6;
         updateBounds();
         this.damageBonus = damageBonus;
         this.shieldBonus = shieldBonus;
@@ -199,6 +223,8 @@ public class Tank implements PhysicsObj, WorldObj, RenderObj {
 //        }
 
         if (update) {
+            rotation += 0.01f;
+            System.out.format("pos: %s, %s\n", x, y);
             updateBounds();
             if (hp != 0)
                 world.updateMask(this, null);
@@ -209,7 +235,7 @@ public class Tank implements PhysicsObj, WorldObj, RenderObj {
     
     @Override
     public PImage getMask() {
-        return image;
+        return mask;
     }
     
     @Override
@@ -218,13 +244,47 @@ public class Tank implements PhysicsObj, WorldObj, RenderObj {
     }
     
     private void updateBounds() {
-        bounds[0] = (int)x - image.width / 2;
-        bounds[1] = (int)y - image.height / 2;
-        bounds[2] = bounds[0] + image.width; // odd width
-        bounds[3] = bounds[1] + image.height; // odd height
-//        bounds[2] = (int)x + image.width / 2;
-//        bounds[3] = (int)y + image.height / 2;
+        mask.beginDraw();
+//        mask.shapeMode(PGraphics.CENTER);
+        mask.stroke(0);
+        mask.strokeWeight(2);
+        mask.noFill();
+        mask.rect(0, 0, mask.width - 2, mask.height - 2);
+        mask.translate(image.width / 2f, image.height / 2f);
+        mask.rotate(-rotation);
+        mask.shape(hitbox);
+        mask.endDraw();
+        
+        bounds[0] = bounds[2] = (int)x;
+        bounds[1] = bounds[3] = (int)y;
+        
+        double sin = Math.sin(rotation);
+        double cos = Math.cos(rotation);
+        for (int i = 0; i < hitboxVertices.length; i += 2) {
+            double x = hitboxVertices[i];
+            double y = hitboxVertices[i + 1];
+            double newX =  this.x + x * cos - y * sin;
+            y = this.y + x * sin + y * cos;
+            x = newX;
+//            System.out.format("vertex [%s, %s] -> [%s, %s]\n", 
+//                    hitboxVertices[i], hitboxVertices[i + 1], x, y);
+            
+            if (x < bounds[0]) bounds[0] = (int)x;
+            else if (x > bounds[2]) bounds[2] = (int)x;
+            if (y < bounds[1]) bounds[1] = (int)y;
+            else if (y > bounds[3]) bounds[3] = (int)y;
+        }
+//        System.out.format("bounds: %s, %s, %s, %s\n", bounds[0], bounds[1], bounds[2], bounds[3]);
     }
+    
+//    private void updateBounds() {
+//        bounds[0] = (int)x - image.width / 2;
+//        bounds[1] = (int)y - image.height / 2;
+//        bounds[2] = bounds[0] + image.width; // odd width
+//        bounds[3] = bounds[1] + image.height; // odd height
+////        bounds[2] = (int)x + image.width / 2;
+////        bounds[3] = (int)y + image.height / 2;
+//    }
 
     private void rotate(float delta) {
         rotation += delta;
