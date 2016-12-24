@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 import processing.core.PImage;
 import processing.data.JSONArray;
 import processing.data.JSONObject;
@@ -39,6 +41,12 @@ public class Game implements SelectionChangeListener {
     private final CircularList<Player>.CircularIterator players;
     
     private final Map<Class<?>, Interaction> interactions = new HashMap<>();
+    
+    /**
+     * Keeps the turn switch listeners.
+     * Whether the game is over is passed an argument to the listeners.
+     */
+    private final Observable turn = new Observable();
     
     public Game(GameManager manager, String map, Player[] players) {
         this.manager = manager;
@@ -222,6 +230,8 @@ public class Game implements SelectionChangeListener {
         
         physics.setWind((int)(Math.random() * 100) - 50);
         
+        turn.notifyObservers(false);
+        
         if (players.current() instanceof AI)
             ((AI)players.current()).play();
     }
@@ -242,7 +252,19 @@ public class Game implements SelectionChangeListener {
      * Loads the end-game screen.
      */
     void gameOver() {
-        // observableAttributes.get("game_over").set(true);
+        turn.notifyObservers(true);
+    }
+    
+    /**
+     * Associates the specified listener to the turn switch event of this game.
+     * The specified listener is provided with a boolean flag that indicates
+     * whether the game is over at each turn switch.
+     */
+    public void addTurnListener(Observer listener) {
+        turn.addObserver(listener);
+    }
+    public void removeTurnListener(Observer listener) {
+        turn.deleteObserver(listener);
     }
     
 //    /**
