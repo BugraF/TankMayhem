@@ -89,7 +89,8 @@ public class Game implements SelectionChangeListener {
             Map<String, Object> mode = (Map<String, Object>)
                     modeInfo.get(player.getMode().toString());
             Tank tank = new Tank(this, (PImage) mode.get("image"), 
-                    (int)mode.get("barrel"), player.getColor());
+                    (int)mode.get("barrel"), player.getColor(),
+                    (int[])mode.get("hitbox"));
             
             y += (int)surface.get("sky") - ((PImage)mode.get("image")).height / 2;
             System.out.println("x: " + x + ", y: " + y);

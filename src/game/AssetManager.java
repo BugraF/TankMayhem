@@ -58,6 +58,10 @@ public class AssetManager {
                     result.put(key, array);
                 }
             }
+            else if (key.startsWith("int[")) {
+                key = key.substring(4);
+                result.put(key, ((JSONArray)value).getIntArray());
+            }
             else result.put(key, process(value));
         }
         return result;
