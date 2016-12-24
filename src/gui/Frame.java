@@ -18,7 +18,7 @@ import processing.core.PGraphics;
  */
 public class Frame extends Parent implements ActionListener{
     
-    private final Button closeBtn = new Button();
+    protected final Button closeBtn = new Button();
     
     @Override
     public void init(PApplet context){

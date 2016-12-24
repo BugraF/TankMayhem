@@ -69,13 +69,13 @@ public class MainMenu extends Parent implements ActionListener{
         musicSlider.setLocation(20,650);
         musicSlider.setSize(150, 40);
         musicSlider.setIcon(context.loadImage("component/button/music_icon.png"));
-        musicSlider.setFocusKey(77);
+        musicSlider.setFocusKey(77);    // mnemonic => m
         
         soundSlider.setScaleRate((float)0.5);
         soundSlider.setLocation(20,710);
         soundSlider.setSize(150, 40);
         soundSlider.setIcon(context.loadImage("component/button/sound_icon.png"));
-        soundSlider.setFocusKey(83);
+        soundSlider.setFocusKey(83);    // mnemonic => s
         
         super.init(context);
     }

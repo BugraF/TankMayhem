@@ -42,7 +42,8 @@ public class ScreenManager extends PApplet {
     final static int FRAME_HELP = 0,
                      FRAME_CREDITS = 1,
                      FRAME_PAUSE_MENU = 2,
-                     FRAME_MARKET = 3;
+                     FRAME_MARKET = 3,
+                     FRAME_END_GAME = 4;
     
     public ScreenManager() {
         instance = this;
@@ -50,7 +51,6 @@ public class ScreenManager extends PApplet {
     
     @Override
     public void settings() {
-        // TODO Buğra: Update screen size
         size(1280, 768);
     }
     
@@ -67,7 +67,8 @@ public class ScreenManager extends PApplet {
                 new HelpFrame(),
                 new CreditsFrame(),
                 new PauseMenu(),
-                new MarketFrame()
+                new MarketFrame(),
+                new EndGameFrame()
         ));
         
         screens.forEach((s) -> {
@@ -81,18 +82,18 @@ public class ScreenManager extends PApplet {
         topLevelParent.setFocusedChild(currentScreen);
     }
     
-//    long last;
-//    int frameRate;
+    long last;
+    int frameRate;
     
     @Override
     public void draw() {
-//        long now = System.currentTimeMillis();
-//        if (now - last >= 1000) {
-//            System.out.println(frameRate);
-//            frameRate = 0;
-//            last = now;
-//        }
-//        frameRate++;
+        long now = System.currentTimeMillis();
+        if (now - last >= 1000) {
+            System.out.println(frameRate);
+            frameRate = 0;
+            last = now;
+        }
+        frameRate++;
         topLevelParent.draw(g);
     }
     
