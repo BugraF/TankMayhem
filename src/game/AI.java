@@ -5,9 +5,11 @@ package game;
  *
  * @author Haluk İncidelen
  */
-public abstract class AI extends Player {
 
-    public AI(String name, Mode mode, int color) {
+public abstract class AI extends Player {
+    protected Game game;
+    protected Interaction interaction;
+    public AI( String name, Mode mode, int color) {
         super(name, mode, color);
     }
     
@@ -16,17 +18,24 @@ public abstract class AI extends Player {
      */
     public void play() {
         // TODO Haluk: Implement AI.play()
+        game=this.getTank().getGame();
+        
+        analyze();
+        move();
+        purchase();
+        interact();
     }
     
+   
     /**
      * AI analyzes the game and chooses a path according to the other player’s situations
      */
-    abstract void analyze();
+    abstract protected void analyze();
     
     /**
      * AI purchases the optimal bomb or bombs in that situation
      */
-    abstract void purchase();
+    abstract protected void purchase();
     
     /**
      * AI moves if necessary (If there are power-up or if there are an obstacle)
