@@ -45,6 +45,12 @@ public class ListButton extends InteractiveComponent {
     private boolean isSelected = false;
     
     /**
+     * Key code of the mnemonic of this button.
+     * A mnemonic can be a key combination.
+     */
+    private int mnemonic;
+    
+    /**
      * The objects that listen to the invocation of this button.
      */
     private final List<ActionListener> actionListeners = new ArrayList<>(1);
@@ -80,6 +86,18 @@ public class ListButton extends InteractiveComponent {
     
     public void setFont(PFont font){
         this.font = font;
+    }
+    
+    /**
+     * Sets the interested key for this button.
+     * When this key is pressed, the button will be invoked and do its
+     * click-action.
+     * @param key Button mnemonic, can be a key combination.
+     */
+    public void setMnemonic(int key) {
+        mnemonic = key;
+        if (parent != null)
+            parent.associateKeys(this, key);
     }
     
     @Override
@@ -141,6 +159,12 @@ public class ListButton extends InteractiveComponent {
      */
     public boolean removeActionListener(ActionListener listener) {
         return actionListeners.remove(listener);
+    }
+    
+    @Override
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == mnemonic)
+            invoke();
     }
     
     private void invoke() {
