@@ -15,9 +15,10 @@ We will develop a turn-based multiplayer 2D game involving tank battle. We inspi
 - [Analysis Report - Final](https://drive.google.com/open?id=0B9wRM7mwf-UfMElCWUZVbzRWZVE)
 - [Analysis Report - Final (Revised)](https://drive.google.com/open?id=0B2zREv4Iy2mGLXlVUG40Y244QU0)
 - [Design Report - Final](https://drive.google.com/open?id=0B9wRM7mwf-Ufak5iOUtrRldiRVk)
+- [Final Report](https://drive.google.com/open?id=0B9wRM7mwf-UfVjhnSXdDSmp0TTA)
 
 ## Progress
-- :construction: UI Core
+- :white_check_mark: UI Core
 - :construction: UI Screens
 - :white_check_mark: Physics Engine
 - :white_check_mark: Rendering Engine
