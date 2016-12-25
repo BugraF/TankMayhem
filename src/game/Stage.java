@@ -71,6 +71,12 @@ public class Stage extends InteractiveComponent {
         interaction._finalize();
         tracerEnabled = false;
     }
+    public String getAction() {
+        return interaction.getAction();
+    }
+    public int getActionColor() {
+        return interaction.getActionColor();
+    }
     
     /**
      * Enabled/disables the tracer.

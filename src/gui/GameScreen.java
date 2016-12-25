@@ -47,7 +47,7 @@ public class GameScreen extends Parent implements ActionListener, Observer {
         add(stage);
         setFocusedChild(stage);
         stage.setSize(1280, 648);
-        game.selectionChanged(0);
+        game.selectionChanged(0); // Test, InventoryView
 
         add(stage, legend, moneyDisplay, scoreBoard, windDisplay, statusDisplay,
                  launchBtn, marketBtn, pauseBtn);
@@ -106,18 +106,19 @@ public class GameScreen extends Parent implements ActionListener, Observer {
 
     @Override
     public void draw(PGraphics g) {
-        game.update();
+        if (enabled)
+            game.update();
         super.draw(g);
     }
 
     @Override
     public void actionPerformed(Component comp) {
-        if (comp == marketBtn){
+        if (comp == marketBtn) {
             Frame market = ((ScreenManager) getContext())
                     .showFrame(ScreenManager.FRAME_MARKET);
             ((MarketFrame) market).setPlayer(game.getCurrentPlayer());
         }
-        if (comp == pauseBtn) 
+        if (comp == pauseBtn)
             ((ScreenManager) getContext())
                     .showFrame(ScreenManager.FRAME_PAUSE_MENU);
         if (comp == launchBtn) {
@@ -139,8 +140,9 @@ public class GameScreen extends Parent implements ActionListener, Observer {
     public void update(Observable o, Object arg) {
         boolean gameOver = (boolean) arg;
         // Turn switched
-        if (!gameOver) {    
-            launchBtn.setText("FIRE", 75);
+        if (!gameOver) {
+            launchBtn.setText(stage.getAction(), 75);
+            launchBtn.setTint(stage.getActionColor());
             launchBtn.setEnabled(true);
             marketBtn.setEnabled(true);
         }
