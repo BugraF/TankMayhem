@@ -65,7 +65,10 @@ public class PauseMenu extends Frame implements ActionListener {
         if(comp == helpBtn)
             ((ScreenManager)getContext()).switchFrame(ScreenManager.FRAME_HELP);
         else if(comp == mainMenuBtn){
-            ((ScreenManager)getContext()).switchScreen(ScreenManager.SCREEN_MAIN_MENU);
+            PApplet context = getContext();
+            ((ScreenManager) context).closeFrame();
+            ((ScreenManager) context)
+                    .switchScreen(ScreenManager.SCREEN_MAIN_MENU);
         }
         // TODO @Buğra add listeners to sliders
     }
