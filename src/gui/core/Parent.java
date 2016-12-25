@@ -165,31 +165,30 @@ public class Parent extends InteractiveComponent {
     }
     
     private PImage background = null;
-    private PImage disabledImage = null;
+//    private PImage disabledImage = null;
     
     @Override
     public void draw(PGraphics g) {
-        if (enabled) {
-            if (background != null)
-                g.image(background, 0, 0);
-            drawComponents(g);
-        }
-        else
-            g.image(disabledImage, 0, 0);
+        if (!enabled)
+            g.tint(60);
+        if (background != null)
+            g.image(background, 0, 0);
+        drawComponents(g);
+        g.noTint();
     }
     
     @Override
     public void setEnabled(boolean enabled) {
-        if (enabled)
-            disabledImage = null;
-        else {
-            PGraphics g2 = getContext().createGraphics(width, height);
-            g2.beginDraw();
-            draw(g2);
-            g2.endDraw();
-//            g2.filter(PImage.BLUR, 6); // TODO Find faster implementation
-            disabledImage = g2;
-        }
+//        if (enabled)
+//            disabledImage = null;
+//        else {
+//            PGraphics g2 = getContext().createGraphics(width, height);
+//            g2.beginDraw();
+//            draw(g2);
+//            g2.endDraw();
+////            g2.filter(PImage.BLUR, 6); // TODO Find faster implementation
+//            disabledImage = g2;
+//        }
         super.setEnabled(enabled);
     }
 
