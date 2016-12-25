@@ -33,7 +33,8 @@ public class LaunchButton extends Button {
 
     @Override
     public void draw(PGraphics g) {
-        g.tint(tint);
+        if (state != 3)
+            g.tint(tint);
         super.draw(g);
         g.noTint();
         g.textAlign(g.CENTER, g.CENTER);
