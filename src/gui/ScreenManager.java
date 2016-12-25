@@ -112,7 +112,9 @@ public class ScreenManager extends PApplet {
             return null;
         }
         topLevelParent.remove(currentFrame);
+        currentFrame.setOwner(null);
         currentFrame = frames.get(frame);
+        currentFrame.setOwner(currentScreen);
         topLevelParent.add(currentFrame);
         topLevelParent.setFocusedChild(currentFrame);
         return currentFrame;
@@ -126,6 +128,7 @@ public class ScreenManager extends PApplet {
         }
         currentScreen.setEnabled(false);
         currentFrame = frames.get(frame);
+        currentFrame.setOwner(currentScreen);
         topLevelParent.add(currentFrame);
         topLevelParent.setFocusedChild(currentFrame);
         return currentFrame;
@@ -139,6 +142,7 @@ public class ScreenManager extends PApplet {
         }
         currentScreen.setEnabled(true);
         topLevelParent.remove(currentFrame);
+        currentFrame.setOwner(null);
         currentFrame = null;
         topLevelParent.setFocusedChild(currentScreen);
     }

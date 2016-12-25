@@ -5,7 +5,6 @@ import gui.core.ActionListener;
 import gui.core.Parent;
 import gui.core.Button;
 import processing.core.PApplet;
-import processing.core.PGraphics;
 
 /**
  * A scheme for mini screens (frames). 
@@ -18,7 +17,13 @@ import processing.core.PGraphics;
  */
 public class Frame extends Parent implements ActionListener{
     
+    protected Parent owner = null;
+    
     protected final Button closeBtn = new Button();
+    
+    public void setOwner(Parent owner) {
+        this.owner = owner;
+    }
     
     @Override
     public void init(PApplet context){
