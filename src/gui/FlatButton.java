@@ -60,7 +60,7 @@ public class FlatButton extends InteractiveComponent {
                 g.noTint();
                 break;
             case 3:
-                g.tint(30);
+                g.tint(80);
                 g.image(icon, 0, 0);
                 g.noTint();
                 break;
