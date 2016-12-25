@@ -11,7 +11,7 @@ import processing.core.PImage;
  * 
  * @author Bugra Felekoglu
  */
-public class EndGameFrame extends Frame {
+public class EndGameFrame extends InGameFrame {
     
     private PImage background;
     private Player winner;
@@ -30,10 +30,11 @@ public class EndGameFrame extends Frame {
     }
     
     @Override
-    public void draw(PGraphics g) {
+    protected void drawComponents(PGraphics g) {
+        super.drawComponents(g);
         g.pushMatrix();
         g.fill(0xFFECC93F);
-        g.textSize(200);
+        g.textSize(120);
         g.textAlign(g.CENTER, g.BASELINE);
         g.text(winner.getName(), 500, 480);
         g.popMatrix();
@@ -41,11 +42,7 @@ public class EndGameFrame extends Frame {
     
     @Override
     public void actionPerformed(Component comp) {
-        if (comp == this.closeBtn) {
-            PApplet context = getContext();
-            ((ScreenManager) context).closeFrame();
-            ((ScreenManager) context)
-                    .switchScreen(ScreenManager.SCREEN_MAIN_MENU);
-        }
+        if (comp == this.closeBtn)
+            returnToMainMenu();
     }
 }

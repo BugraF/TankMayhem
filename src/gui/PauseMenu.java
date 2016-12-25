@@ -15,7 +15,7 @@ import processing.core.PImage;
  * 
  * @author Bugra Felekoglu
  */
-public class PauseMenu extends Frame implements ActionListener {
+public class PauseMenu extends InGameFrame implements ActionListener {
 
     private final Button helpBtn = new Button();
     private final Button mainMenuBtn = new Button();
@@ -64,12 +64,8 @@ public class PauseMenu extends Frame implements ActionListener {
         super.actionPerformed(comp);
         if(comp == helpBtn)
             ((ScreenManager)getContext()).switchFrame(ScreenManager.FRAME_HELP);
-        else if(comp == mainMenuBtn){
-            PApplet context = getContext();
-            ((ScreenManager) context).closeFrame();
-            ((ScreenManager) context)
-                    .switchScreen(ScreenManager.SCREEN_MAIN_MENU);
-        }
+        else if(comp == mainMenuBtn)
+            returnToMainMenu();
         // TODO @Buğra add listeners to sliders
     }
 }
