@@ -39,23 +39,35 @@ public class GameScreen extends Parent implements ActionListener, Observer {
     private final FlatButton marketBtn = new FlatButton();
     private final FlatButton pauseBtn = new FlatButton();
 
-    public void setGame(Game game) {
+    public void attachGame(Game game) {
         this.game = game;
         game.addTurnListener(this);
         scoreBoard.setPlayers(game.getPlayers());
         stage = game.getStage();
-        add(stage);
+        add(0, stage);
         setFocusedChild(stage);
         stage.setSize(1280, 648);
+        
         game.selectionChanged(0); // Test, InventoryView
-
-        add(stage, legend, moneyDisplay, scoreBoard, windDisplay, statusDisplay,
-                 launchBtn, marketBtn, pauseBtn);
+        launchBtn.setText("FIRE", 75);
+        launchBtn.setTint(0xFFD70000);
+        launchBtn.setEnabled(true);
+        marketBtn.setEnabled(true);
+    }
+    
+    public void detachGame() {
+        game.removeTurnListener(this);
+        game = null;
+        scoreBoard.setPlayers(null);
+        remove(stage);
+        setFocusedChild(null);
     }
 
     @Override
     public void init(PApplet context) {
-        super.init(context);
+        add(legend, moneyDisplay, scoreBoard, windDisplay, statusDisplay,
+                 launchBtn, marketBtn, pauseBtn);
+        
         font = context.createFont("font/seguibl.ttf", 60);
         moneyDisplay.setIcon(context.
                 loadImage("component/display/money_icon.png"));
@@ -97,11 +109,12 @@ public class GameScreen extends Parent implements ActionListener, Observer {
         pauseBtn.setMnemonic(80);       // mnemonic => "p"
         pauseBtn.addActionListener(this);
 
-        launchBtn.setTint(0xFFD70000);
         launchBtn.setFont(font);
-        launchBtn.setText("FIRE", 75);
+        
         marketBtn.setTintValues(0xFFFFFFFF, 0xFFFFCC00, 0xFFFF9C00);
         pauseBtn.setTintValues(0xFFFFFFFF, 0xFFD70000, 0xFF7D0000);
+        
+        super.init(context); // Currently not used
     }
 
     @Override
@@ -118,10 +131,11 @@ public class GameScreen extends Parent implements ActionListener, Observer {
                     .showFrame(ScreenManager.FRAME_MARKET);
             ((MarketFrame) market).setPlayer(game.getCurrentPlayer());
         }
-        if (comp == pauseBtn)
-            ((ScreenManager) getContext())
+        else if (comp == pauseBtn) {
+            Frame pauseMenu = ((ScreenManager) getContext())
                     .showFrame(ScreenManager.FRAME_PAUSE_MENU);
-        if (comp == launchBtn) {
+        }
+        else if (comp == launchBtn) {
             game.getStage().finalizeInteraction();
             launchBtn.setText("LOCKED IN", 60);
             launchBtn.setEnabled(false);
@@ -129,12 +143,12 @@ public class GameScreen extends Parent implements ActionListener, Observer {
         }
     }
     
-    @Override
-    public void keyPressed(KeyEvent e) { // Test
-        if (e.getKeyCode() == 32){ // Space
-            actionPerformed(launchBtn);
-        }
-    }
+//    @Override
+//    public void keyPressed(KeyEvent e) { // Test
+//        if (e.getKeyCode() == 32){ // Space
+//            actionPerformed(launchBtn);
+//        }
+//    }
     
     @Override
     public void update(Observable o, Object arg) {
