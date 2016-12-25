@@ -14,7 +14,7 @@ import processing.event.KeyEvent;
  */
 public abstract class Interaction implements KeyListener, MouseListener {
     
-    public final static int DEFAULT_ACTION_COLOR = 0; // TODO Specify default color
+    public final static int DEFAULT_ACTION_COLOR = 0xFFD70000;
     
     /** Context of this interaction */
     protected final Game game;
