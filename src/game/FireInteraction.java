@@ -50,12 +50,12 @@ public class FireInteraction extends Interaction {
     public void _finalize() {
         super._finalize();
         
-//        Bomb bomb = (Bomb) Catalog.create(itemId);
+        Bomb bomb = (Bomb) game.getCatalog().create(itemId);
 //        Bomb bomb = new SimpleBomb(game); // Test, passed
 //        Bomb bomb = new BouncingBomb(game); // Test, passed
 //        Bomb bomb = new OneBounceBomb(game); // Test, passed
-        Bomb bomb = new VolcanoBomb(game); // Test, passed
-        bomb.blastPower = 60; // Test
+//        Bomb bomb = new VolcanoBomb(game); // Test, passed
+//        bomb.blastPower = 60; // Test
         
         float angle = -(tank.fireAngle + tank.getRotation());
         float sin = (float) Math.sin(angle);

@@ -5,7 +5,6 @@ import game.engine.World;
 import game.engine.PhysicsObj;
 import game.engine.RenderObj;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Observable;
@@ -36,11 +35,9 @@ public class Game implements SelectionChangeListener {
     private final World world;
     
     /** Game entity catalog */
-//    private final Catalog catalog;
+    private final Catalog catalog;
     
     private final CircularList<Player>.CircularIterator players;
-    
-    private final Map<Class<?>, Interaction> interactions = new HashMap<>();
     
     /**
      * Maintains and notifies turn switch listeners.
@@ -53,7 +50,7 @@ public class Game implements SelectionChangeListener {
         
         physics = new PhysicsEngine(this);
         stage = new Stage(this);
-//        catalog = new Catalog();
+        catalog = new Catalog(this);
         
         AssetManager assetManager = manager.getAssetManager();
         JSONObject mapInfo = assetManager.readJSONObject("config/maps.json")
@@ -116,14 +113,7 @@ public class Game implements SelectionChangeListener {
         }
         this.players = playerList.iterator();
         
-        interactions.put(FireInteraction.class, new FireInteraction(this));
-//        Iterator<CatalogItem> iterator = catalog.iterator();
-//        while (iterator.hasNext()) {
-//            CatalogItem item = iterator.next();
-//            if (item.isPowerUp())
-//                interactions.put(item.getInteractionClass(), item.interact(this));
-//        }
-        
+        catalog.init();
         physics.setWind((int)(Math.random() * 100) - 50);
         Tank tank = getActiveTank();
         stage.shiftCamera((int)tank.getX(), (int)tank.getY());
@@ -156,6 +146,10 @@ public class Game implements SelectionChangeListener {
     
     public Stage getStage() {
         return stage;
+    }
+    
+    public Catalog getCatalog() {
+        return catalog;
     }
     
     public int getWind() {
@@ -196,10 +190,7 @@ public class Game implements SelectionChangeListener {
     
     @Override
     public void selectionChanged(int itemId) {
-//        Class<?> cls = catalog.get(itemId).getInteractionClass();
-        Class<?> cls = FireInteraction.class; // Test
-        Interaction interaction = interactions.get(cls);
-//        Interaction interaction = new AirstrikeInteraction(this); // Test
+        Interaction interaction = ((Catalog)catalog).getInteraction(itemId);
         interaction.setTank(getActiveTank());
         stage.setInteraction(interaction);
     }
@@ -278,12 +269,12 @@ public class Game implements SelectionChangeListener {
         }
     }
     
-//    /**
-//     * Returns the asset manager associated to the manager of this class.
-//     */
-//    AssetManager getAssetManager() {
-//        return manager.getAssetManager();
-//    }
+    /**
+     * Returns the asset manager associated to the manager of this class.
+     */
+    AssetManager getAssetManager() {
+        return manager.getAssetManager();
+    }
     
     private class CircularList<E> extends ArrayList<E> {
         public CircularList(int initialCapacity) {

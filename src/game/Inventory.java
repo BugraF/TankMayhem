@@ -10,7 +10,7 @@ public class Inventory {
      * The quantities of items are stored at the locations which are the same as
      * their id's.
      */
-    private final int[] quantity = new int[1/*Catalog.COUNT*/]; // Test
+    private final int[] quantity = new int[Catalog.SIZE];
     
     /**
      * Increments the quantity of the specified item by 1.
@@ -36,7 +36,17 @@ public class Inventory {
         if (quantity[itemId] == 0)
             throw new RuntimeException("The quantity of the specified item is "
                     + "already zero.");
-        quantity[itemId]--;
+        if (quantity[itemId] != Integer.MAX_VALUE) // Infinite amount
+            quantity[itemId]--;
+    }
+    
+    /**
+     * Returns the quantity of the specified item.
+     */
+    public int get(int itemId) {
+        if (itemId < 0 || itemId > quantity.length)
+            throw new RuntimeException("Invalid Catalog Item Id!");
+        return quantity[itemId];
     }
     
 }

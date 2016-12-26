@@ -91,8 +91,8 @@ public class AirstrikeInteraction extends Interaction {
             game.addEntity(bomb);
         }
 
-//        game.getCurrentPlayer().getInventory()
-//                .remove(Catalog.get("airstrike").getId());
+        game.getCurrentPlayer().getInventory()
+                .remove(game.getCatalog().get("airstrike").getId());
         game.switchTurnWhenStabilized(true);
     }
 
