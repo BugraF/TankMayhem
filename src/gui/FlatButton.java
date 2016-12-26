@@ -19,11 +19,9 @@ public class FlatButton extends InteractiveComponent {
     private int state = 0;  // normal, hover, pressed, disabled
     
     /**
-     * Color states of button
+     * Color states of this button.
      */
-    private int normalColor = 0,
-                hoverColor = 0,
-                pressedColor = 0;
+    private final int[] tint;
     
     /**
      * Image of this button.
@@ -41,30 +39,15 @@ public class FlatButton extends InteractiveComponent {
      */
     private final List<ActionListener> actionListeners = new ArrayList<>(1);
     
+    public FlatButton() {
+        tint = new int[] {255, 255, 255, 80};
+    }
+    
     @Override
     public void draw(PGraphics g) {
-        switch(state){
-            case 0:
-                g.tint(normalColor);
-                g.image(icon, 0, 0);
-                g.noTint();
-                break;
-            case 1:
-                g.tint(hoverColor);
-                g.image(icon, 0, 0);
-                g.noTint();
-                break;
-            case 2:
-                g.tint(pressedColor);
-                g.image(icon, 0, 0);
-                g.noTint();
-                break;
-            case 3:
-                g.tint(80);
-                g.image(icon, 0, 0);
-                g.noTint();
-                break;
-        }
+        g.tint(tint[state]);
+        g.image(icon, 0, 0);
+        g.noTint();
     }
     
     @Override
@@ -74,23 +57,19 @@ public class FlatButton extends InteractiveComponent {
     }
     
     /**
-     * Sets the image of button
-     * @param icon 
+     * Sets the image of this button.
      */
     public void setImage(PImage icon) {
         this.icon = icon;
     }
     
     /**
-     * Sets the colors of button according to the states of it
-     * @param normal
-     * @param hover
-     * @param pressed 
+     * Sets the tint values of this button.
      */
     public void setTintValues(int normal, int hover, int pressed) {
-        normalColor = normal;
-        hoverColor = hover;
-        pressedColor = pressed;
+        tint[0] = normal;
+        tint[1] = hover;
+        tint[2] = pressed;
     }
     
     /**
@@ -135,21 +114,6 @@ public class FlatButton extends InteractiveComponent {
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == mnemonic)
             invoke();
-    }
-
-    @Override
-    public boolean handleMouseEvent(MouseEvent event) {
-        if (event.getAction() != processing.event.MouseEvent.EXIT
-                && !consumeEvent(event)) return false;
-        if (!enabled) return true;
-        return propagateMouseEvent(this, event);
-    }
-    
-    private boolean consumeEvent(MouseEvent e) {
-        if (state == 3)
-            return false;
-        else
-            return true;
     }
 
     @Override
