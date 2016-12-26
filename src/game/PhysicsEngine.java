@@ -30,10 +30,14 @@ public class PhysicsEngine {
      */
     boolean switchTurnWhenStabilized = false;
     
+    private final Thread powerupGenerator = new Thread(
+            new PowerUpGenerator(), "PowerUpGenerator");
+    
     public PhysicsEngine(Game game) {
         this.game = game;
         physics.addObjectClasses(bombs, particles, powerups, tanks);
         physics.setAcceleration(0, 980, 0, 1, 2, 3);
+        powerupGenerator.start();
     }
     
     private int wind = 0;
@@ -80,6 +84,10 @@ public class PhysicsEngine {
             game.switchTurn();
             switchTurnWhenStabilized = false;
         }
+        synchronized (powerups) {
+            if (powerups.size() < 5)
+                powerups.notify();
+        }
     }
     
     /**
@@ -118,6 +126,31 @@ public class PhysicsEngine {
     Tank[] getTanks() {
         return tanks.stream().filter((t) -> t.getHP() != 0)
                 .toArray((count) -> new Tank[count]);
+    }
+    
+    private class PowerUpGenerator implements Runnable {
+        private long frame = 0;
+        
+        @Override
+        public void run() {
+            while (true) {
+                synchronized (powerups) {
+                    while (powerups.size() >= 5 || ++frame < 900) { // 15 seconds
+                        try {
+                            powerups.wait();
+                        }
+                        catch (InterruptedException e) {}
+                    }
+                }
+                PowerUp powerup = game.getCatalog().getRandomPowerUp();
+                Tank[] tanks = getTanks();
+                Tank tank = tanks[(int)(Math.random() * tanks.length)];
+                float noise = (float)Math.random() * 400 - 200;
+                powerup.init((int)(tank.getX() + noise), (int)powerup.getY());
+                game.addEntity(powerup);
+                frame = 0;
+            }
+        }
     }
     
 }
