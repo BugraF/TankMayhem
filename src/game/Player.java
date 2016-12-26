@@ -39,6 +39,7 @@ public class Player {
      */
     void setTank(Tank tank) { 
         this.tank = tank;
+        tank.setPlayer(this);
     }
     
     /**
