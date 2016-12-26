@@ -8,7 +8,6 @@ import processing.awt.PGraphicsJava2D;
 import processing.core.PGraphics;
 import processing.core.PImage;
 import processing.core.PShape;
-import processing.core.PVector;
 
 /**
  *
@@ -30,6 +29,7 @@ public class Tank implements PhysicsObj, WorldObj, RenderObj {
     float firePower, fireAngle;
     
     /* Tank Status */
+    private Player player;
     private float hp = 100;
     private float fuel = 100;
     
@@ -79,6 +79,7 @@ public class Tank implements PhysicsObj, WorldObj, RenderObj {
             hitboxVertices[i] = hitbox[i] - w;
             hitboxVertices[i + 1] = hitbox[i + 1] - h;
             this.hitbox.vertex(hitboxVertices[i], hitboxVertices[i + 1]);
+//            this.hitbox.vertex(hitbox[i], hitbox[i + 1]);
         }
         this.hitbox.endShape(PShape.CLOSE);
     }
@@ -86,7 +87,7 @@ public class Tank implements PhysicsObj, WorldObj, RenderObj {
     void init(int x, int y, float damageBonus, float shieldBonus) {
         this.x = lastX = x;
         this.y = lastY = y;
-        rotation = (float)Math.PI / 6;
+//        rotation = (float)Math.PI / 6;
         updateBounds();
         this.damageBonus = damageBonus;
         this.shieldBonus = shieldBonus;
@@ -162,6 +163,16 @@ public class Tank implements PhysicsObj, WorldObj, RenderObj {
     }
     
     /**
+     * Returns the player associated to this tank.
+     */
+    public Player getPlayer() {
+        return player;
+    }
+    void setPlayer(Player player) {
+        this.player = player;
+    }
+    
+    /**
      * Returns the health points of this tank.
      */
     public float getHP() {
@@ -223,8 +234,8 @@ public class Tank implements PhysicsObj, WorldObj, RenderObj {
 //        }
 
         if (update) {
-            rotation += 0.01f;
-            System.out.format("pos: %s, %s\n", x, y);
+//            rotation += 0.01f;
+//            System.out.format("pos: %s, %s\n", x, y);
             updateBounds();
             if (hp != 0)
                 world.updateMask(this, null);
@@ -235,7 +246,7 @@ public class Tank implements PhysicsObj, WorldObj, RenderObj {
     
     @Override
     public PImage getMask() {
-        return mask;
+        return image;
     }
     
     @Override
@@ -243,28 +254,17 @@ public class Tank implements PhysicsObj, WorldObj, RenderObj {
         return bounds;
     }
     
-    private void updateBounds() {
-        mask.beginDraw();
-//        mask.shapeMode(PGraphics.CENTER);
-        mask.stroke(0);
-        mask.strokeWeight(2);
-        mask.noFill();
-        mask.rect(0, 0, mask.width - 2, mask.height - 2);
-        mask.translate(image.width / 2f, image.height / 2f);
-        mask.rotate(-rotation);
-        mask.shape(hitbox);
-        mask.endDraw();
-        
-        bounds[0] = bounds[2] = (int)x;
-        bounds[1] = bounds[3] = (int)y;
+    private void updateBounds1() {
+        bounds[0] = bounds[2] = 0;
+        bounds[1] = bounds[3] = 0;
         
         double sin = Math.sin(rotation);
         double cos = Math.cos(rotation);
         for (int i = 0; i < hitboxVertices.length; i += 2) {
             double x = hitboxVertices[i];
             double y = hitboxVertices[i + 1];
-            double newX =  this.x + x * cos - y * sin;
-            y = this.y + x * sin + y * cos;
+            double newX = x * cos - y * sin;
+            y = x * sin + y * cos;
             x = newX;
 //            System.out.format("vertex [%s, %s] -> [%s, %s]\n", 
 //                    hitboxVertices[i], hitboxVertices[i + 1], x, y);
@@ -273,18 +273,35 @@ public class Tank implements PhysicsObj, WorldObj, RenderObj {
             else if (x > bounds[2]) bounds[2] = (int)x;
             if (y < bounds[1]) bounds[1] = (int)y;
             else if (y > bounds[3]) bounds[3] = (int)y;
-        }
-//        System.out.format("bounds: %s, %s, %s, %s\n", bounds[0], bounds[1], bounds[2], bounds[3]);
+        }        
+        System.out.format("bounds: %s, %s, %s, %s\n", 
+                bounds[0], bounds[1], bounds[2], bounds[3]);
+
+        mask.beginDraw();
+//        mask.shapeMode(PGraphics.CENTER);
+        mask.stroke(0);
+        mask.strokeWeight(2);
+        mask.noFill();
+        mask.rect(0, 0, bounds[2] - bounds[0], bounds[3] - bounds[1]);
+        mask.translate((bounds[2] - bounds[0]), (bounds[3] - bounds[1]));
+        mask.rotate(-rotation);
+        mask.shape(hitbox);//, -image.width / 2, -image.height / 2);
+        mask.endDraw();
+        
+        bounds[0] += (int)x;
+        bounds[1] += (int)y;
+        bounds[2] += (int)x;
+        bounds[3] += (int)y;
     }
     
-//    private void updateBounds() {
-//        bounds[0] = (int)x - image.width / 2;
-//        bounds[1] = (int)y - image.height / 2;
-//        bounds[2] = bounds[0] + image.width; // odd width
-//        bounds[3] = bounds[1] + image.height; // odd height
-////        bounds[2] = (int)x + image.width / 2;
-////        bounds[3] = (int)y + image.height / 2;
-//    }
+    private void updateBounds() {
+        bounds[0] = (int)x - image.width / 2;
+        bounds[1] = (int)y - image.height / 2;
+        bounds[2] = bounds[0] + image.width; // odd width
+        bounds[3] = bounds[1] + image.height; // odd height
+//        bounds[2] = (int)x + image.width / 2;
+//        bounds[3] = (int)y + image.height / 2;
+    }
 
     private void rotate(float delta) {
         rotation += delta;
