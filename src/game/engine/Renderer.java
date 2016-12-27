@@ -17,7 +17,8 @@ public class Renderer {
      * that is desired to draw.
      */
     public void draw(PGraphics g, int[] bounds) {
-        objects.forEach((o) -> o.draw(g, bounds));
+        for (int i = 0; i < objects.size(); i++)
+            objects.get(i).draw(g, bounds);
     }
     
     /**
