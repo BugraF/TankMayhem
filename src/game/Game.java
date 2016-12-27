@@ -108,15 +108,21 @@ public class Game implements SelectionChangeListener {
             
             addEntity(tank);
             player.setTank(tank);
-            player.getInventory().add(0, Integer.MAX_VALUE);
+//            player.getInventory().add(0, Integer.MAX_VALUE);
+            for (int i = 0; i < Catalog.SIZE; i++) // Test
+                player.getInventory().add(i, 5);
             playerList.add(player);
         }
         this.players = playerList.iterator();
         
-        catalog.init();
+        catalog.init(); // Initialization order does not matter.
+    }
+    
+    public void start() {
         physics.setWind((int)(Math.random() * 100) - 50);
         Tank tank = getActiveTank();
         stage.shiftCamera((int)tank.getX(), (int)tank.getY());
+        turn.next();
     }
     
     public Player[] getPlayers() {
@@ -191,8 +197,15 @@ public class Game implements SelectionChangeListener {
     @Override
     public void selectionChanged(int itemId) {
         Interaction interaction = ((Catalog)catalog).getInteraction(itemId);
-        interaction.setTank(getActiveTank());
-        stage.setInteraction(interaction);
+        if (interaction != null) {
+            interaction.setTank(getActiveTank());
+            stage.setInteraction(interaction);
+        }
+        else { // null indicates Tracer
+            stage.setTracer(true);
+            getCurrentPlayer().getInventory()
+                    .remove(catalog.get("tracer").getId());
+        } 
     }
     
     /**

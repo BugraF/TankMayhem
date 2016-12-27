@@ -108,12 +108,13 @@ public class NewGameMenu extends Parent implements ActionListener{
         if (comp == start_btn) {
             Game game = GameManager.getInstance().startNewGame(map, 
             new Player[] { // Sample Data
-                new Player("Burak", Mode.Assault, 0xFFFF0000),
+                new Player("Burak", Mode.Armored, 0xFFFF0000),
                 new Player("Buğra", Mode.Armored, 0xFF0000FF)
             });
             Parent screen = ((ScreenManager)getContext())
                     .switchScreen(ScreenManager.SCREEN_GAME);
-            ((GameScreen)screen).setGame(game);
+            ((GameScreen)screen).attachGame(game);
+            game.start();
         }
         else if (comp == back_btn) {
             ((ScreenManager)getContext())

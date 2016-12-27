@@ -7,7 +7,6 @@ import game.Tank;
 import gui.core.Component;
 import gui.core.ActionListener;
 import gui.core.Parent;
-import gui.core.Button;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Observable;
@@ -16,7 +15,6 @@ import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PGraphics;
 import processing.core.PImage;
-import processing.event.KeyEvent;
 
 /**
  * Game Screen
@@ -38,6 +36,7 @@ public class GameScreen extends Parent implements ActionListener, Observer {
     private final LaunchButton launchBtn = new LaunchButton();
     private final FlatButton marketBtn = new FlatButton();
     private final FlatButton pauseBtn = new FlatButton();
+    private final InventoryView inventoryView = new InventoryView();
 
     public void attachGame(Game game) {
         this.game = game;
@@ -48,9 +47,7 @@ public class GameScreen extends Parent implements ActionListener, Observer {
         setFocusedChild(stage);
         stage.setSize(1280, 648);
         
-        game.selectionChanged(0); // Test, InventoryView
-        launchBtn.setText("FIRE", 75);
-        launchBtn.setTint(0xFFD70000);
+        inventoryView.attachGame(game);
         launchBtn.setEnabled(true);
         marketBtn.setEnabled(true);
     }
@@ -61,12 +58,13 @@ public class GameScreen extends Parent implements ActionListener, Observer {
         scoreBoard.setPlayers(null);
         remove(stage);
         setFocusedChild(null);
+        inventoryView.detachGame();
     }
 
     @Override
     public void init(PApplet context) {
         add(legend, moneyDisplay, scoreBoard, windDisplay, statusDisplay,
-                 launchBtn, marketBtn, pauseBtn);
+                 launchBtn, marketBtn, pauseBtn, inventoryView);
         
         font = context.createFont("font/seguibl.ttf", 60);
         moneyDisplay.setIcon(context.
@@ -95,6 +93,8 @@ public class GameScreen extends Parent implements ActionListener, Observer {
         windDisplay.setSize(300, 56);
         statusDisplay.setLocation(10, 660);
         statusDisplay.setSize(368, 98);
+        inventoryView.setLocation(380, 10);
+        inventoryView.setSize(520, 75);
 
         launchBtn.setLocation(410, 658);
         launchBtn.setSize(430, 100);
@@ -106,7 +106,7 @@ public class GameScreen extends Parent implements ActionListener, Observer {
         marketBtn.addActionListener(this);
         pauseBtn.setLocation(1180, 673);
         pauseBtn.setSize(80, 70);
-        pauseBtn.setMnemonic(80);       // mnemonic => "p"
+        pauseBtn.setMnemonic(27);       // mnemonic => "escape"
         pauseBtn.addActionListener(this);
 
         launchBtn.setFont(font);
@@ -155,8 +155,7 @@ public class GameScreen extends Parent implements ActionListener, Observer {
         boolean gameOver = (boolean) arg;
         // Turn switched
         if (!gameOver) {
-            launchBtn.setText(stage.getAction(), 75);
-            launchBtn.setTint(stage.getActionColor());
+            inventoryView.playerChanged();
             launchBtn.setEnabled(true);
             marketBtn.setEnabled(true);
         }
@@ -166,6 +165,11 @@ public class GameScreen extends Parent implements ActionListener, Observer {
                     .showFrame(ScreenManager.FRAME_END_GAME);
             ((EndGameFrame) endGame).setWinner(game.getCurrentPlayer());
         }
+    }
+    
+    void interactionChanged() {
+        launchBtn.setText(stage.getAction(), 75);
+        launchBtn.setTint(stage.getActionColor());
     }
 
     private class ScoreBoard extends Component {
