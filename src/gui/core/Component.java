@@ -22,6 +22,7 @@ public abstract class Component {
     /**
      * Bounds of this component.
      * Left, Top, Right, Bottom
+     * Right and bottom bounds are exclusive.
      */
     protected final int[] bounds = new int[4];
     
@@ -64,18 +65,21 @@ public abstract class Component {
         bounds[3] = bounds[1] + height;
     }
     
-//    /**
-//     * Enables/disables this component.
-//     */
+    /**
+     * Enables/disables this component.
+     */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
-//    public abstract void setEnabled(boolean enabled);
+    public boolean isEnabled() {
+        return enabled;
+    }
     
     /**
-     * This method is used to initialize resources related to the context.
-     * The use of this method for context-independent initialization tasks
-     * is encouraged.
+     * This method is used to initialize context-related resources.
+     * This method should be called after this component is added to a
+     * {@see Parent}. The use of this method for context-independent
+     * initialization tasks is encouraged.
      */
     public void init(PApplet context) {}
     
