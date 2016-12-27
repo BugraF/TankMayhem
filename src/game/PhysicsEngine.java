@@ -36,7 +36,8 @@ public class PhysicsEngine {
     public PhysicsEngine(Game game) {
         this.game = game;
         physics.addObjectClasses(bombs, particles, powerups, tanks);
-        physics.setAcceleration(0, 980, 0, 1, 2, 3);
+        physics.setAcceleration(0, 980, 0, 1, 3);
+        physics.setAcceleration(0, 50, 2);
         powerupGenerator.start();
     }
     
@@ -48,7 +49,8 @@ public class PhysicsEngine {
      */
     void setWind(int wind) {
         this.wind = wind;
-        physics.setAcceleration(wind * 5, 980, 0, 1, 2);
+        physics.setAcceleration(wind * 5, 980, 0, 1);
+        physics.setAcceleration(wind * 2, 50, 2);
     }
     
     int getWind() {
@@ -83,10 +85,6 @@ public class PhysicsEngine {
         if (switchTurnWhenStabilized && bombs.isEmpty() && particles.isEmpty()) {
             game.switchTurn();
             switchTurnWhenStabilized = false;
-        }
-        synchronized (powerups) {
-            if (powerups.size() < 5)
-                powerups.notify();
         }
     }
     
@@ -129,26 +127,25 @@ public class PhysicsEngine {
     }
     
     private class PowerUpGenerator implements Runnable {
-        private long frame = 0;
-        
         @Override
         public void run() {
             while (true) {
                 synchronized (powerups) {
-                    while (powerups.size() >= 5 || ++frame < 900) { // 15 seconds
+                    do {
                         try {
-                            powerups.wait();
+                            powerups.wait(15000); // 15 seconds
                         }
                         catch (InterruptedException e) {}
-                    }
+                    } while (powerups.size() >= 5);
                 }
                 PowerUp powerup = game.getCatalog().getRandomPowerUp();
                 Tank[] tanks = getTanks();
                 Tank tank = tanks[(int)(Math.random() * tanks.length)];
-                float noise = (float)Math.random() * 400 - 200;
+                float noise = (float)Math.random() * 500 - 250;
+                int w = game.getWorld().width();
+                noise = noise < 0 ? 0 : (noise > w ? w - 150 : noise);
                 powerup.init((int)(tank.getX() + noise), (int)powerup.getY());
                 game.addEntity(powerup);
-                frame = 0;
             }
         }
     }
