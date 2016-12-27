@@ -13,7 +13,7 @@ public class Catalog {
     /** Context of this catalog */
     private final Game context;
     
-    public final static int SIZE = 5;
+    public final static int SIZE = 6;
     private final Map<String, Integer> idMap = new HashMap<>(SIZE);
     private final CatalogItem[] items = new CatalogItem[SIZE];
     
@@ -45,7 +45,7 @@ public class Catalog {
         };
         
         PImage i2 = assetManager.loadAsset("entity/bomb/one-bounce.png");
-        items[2] = new BombDefinition(2, "1bounce_bomb", "Simple Bomb", i2) {
+        items[2] = new BombDefinition(2, "1bounce_bomb", "1-Bounce Bomb", i2) {
             public Bomb create(Object... args) {
                 Bomb bomb = new OneBounceBomb(context);
                 bomb.blastPower = args.length > 0 ? (int)args[0] : 60;
@@ -73,6 +73,14 @@ public class Catalog {
             }
         };
         
+        PImage i5 = assetManager.loadAsset("entity/powerup/tracer.png");
+        items[5] = new CollectiblePowerUp(5, "tracer", "Tracer", i5, 
+                box, parachute) {
+            public Interaction interact(Object... args) {
+                return null;
+            }
+        };
+        
         for (CatalogItem item : items)
             idMap.put(item.getKey(), item.getId());
         
@@ -83,11 +91,11 @@ public class Catalog {
     }
     
     public Object create(int itemId, Object... args) {
-        return get(itemId).create(context, args);
+        return get(itemId).create(args);
     }
     
     public Interaction interact(int itemId, Object... args) {
-        return get(itemId).interact(context, args);
+        return get(itemId).interact(args);
     }
 
     public CatalogItem get(int itemId) {
@@ -130,7 +138,7 @@ public class Catalog {
     }
     
     PowerUp getRandomPowerUp() {
-        return (PowerUp) items[4 + (int)(Math.random() * 1)].create();
+        return (PowerUp) items[4 + (int)(Math.random() * 2)].create();
     }
     
     private abstract class BombDefinition extends CatalogItem {
