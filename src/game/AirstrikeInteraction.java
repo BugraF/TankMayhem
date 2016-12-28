@@ -14,10 +14,16 @@ public class AirstrikeInteraction extends Interaction {
     public AirstrikeInteraction(Game game) {
         super(game);
     }
+
+    @Override
+    void setTank(Tank tank) {
+        super.setTank(tank);
+        target = (camBounds[2] + camBounds[0]) / 2;
+    }
     
     @Override
     public String getAction() {
-        return "CALL IN AIRSTRIKE";
+        return "CALL IN";
     }
     
     private final int radius = 100;
