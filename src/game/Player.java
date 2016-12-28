@@ -80,11 +80,12 @@ public class Player {
     }
     
     /**
-     * Increments this player’s total cash by the specified amount.
+     * Updates this player’s total cash by the specified amount.
      */
-    void updateCash(int delta) {
-        if (delta < 0)
-            throw new RuntimeException("Money changes cannot be negative.");
+    public void updateCash(int delta) { // TODO Fix Access Privilege Violation
+        if (cash + delta < 0)
+            throw new RuntimeException("The specified withdraw amount is " + 
+                    "greater than the total cash.");
         cash = cash + delta;
     }
     
