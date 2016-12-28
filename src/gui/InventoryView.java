@@ -9,7 +9,6 @@ import gui.core.InteractiveComponent;
 import gui.core.MouseEvent;
 import gui.core.Parent;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -62,8 +61,8 @@ public class InventoryView extends Parent {
         catalog = null;
         lastSelection.clear();
         selectedItem.setItem(null);
-        for (InventoryItem item : items)
-            remove(item);
+        bombList.clear();
+        powerupList.clear();
         items = null;
     }
     
@@ -172,7 +171,24 @@ public class InventoryView extends Parent {
         }
     }
     
+    /**
+     * Updates the availability information of inventory items and restores the
+     * last interaction if its corresponding item is available.
+     */
     void playerChanged() {
+        Player player = game.getCurrentPlayer();
+        update();
+        
+        CatalogItem lastItem = lastSelection.get(player);
+        if (player.getInventory().get(lastItem.getId()) == 0)
+            lastItem = catalog.get("simple_bomb");
+        itemSelected(lastItem);
+    }
+    
+    /**
+     * Updates the availability information of inventory items.
+     */
+    void update() {
         Player player = game.getCurrentPlayer();
         int availableBombs = 0, availablePowerUps = 0;
         for (InventoryItem inventoryItem : items) {
@@ -184,11 +200,6 @@ public class InventoryView extends Parent {
         }
         bombSelector.setAvailable(availableBombs);
         powerupSelector.setAvailable(availablePowerUps);
-        
-        CatalogItem lastItem = lastSelection.get(player);
-        if (player.getInventory().get(lastItem.getId()) == 0)
-            lastItem = catalog.get("simple_bomb");
-        itemSelected(lastItem);
     }
 
     @Override
@@ -337,6 +348,14 @@ public class InventoryView extends Parent {
                 items.add((InventoryItem) comp);
         }
         
+        void clear() {
+            Iterator<InventoryItem> iterator = items.iterator();
+            while (iterator.hasNext()) {
+                remove(iterator.next());
+                iterator.remove();
+            }
+        }
+        
         @Override
         public void draw(PGraphics g) {
             if (visible)
@@ -357,7 +376,7 @@ public class InventoryView extends Parent {
                 items.get(lastItem).setHighlighted(false);
                 int nav = e.getKeyCode() == 38 ? -1 : 1;
                 do {
-                    lastItem = (lastItem + nav) % items.size();
+                    lastItem = Math.floorMod(lastItem + nav, items.size());
                 } while (!items.get(lastItem).isEnabled());
                 items.get(lastItem).setHighlighted(true);
             }
@@ -374,7 +393,7 @@ public class InventoryView extends Parent {
     }
     
     // TODO Move to UI Core
-    private abstract class AbstractButton extends InteractiveComponent {
+    abstract static class AbstractButton extends InteractiveComponent {
         protected int state = 0;  // normal, hover, pressed, disabled
         
         @Override

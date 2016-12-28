@@ -147,6 +147,10 @@ public class ScreenManager extends PApplet {
         topLevelParent.setFocusedChild(currentScreen);
     }
     
+    Frame getFrame(int frame) {
+        return frames.get(frame);
+    }
+    
     // There is no point for exposing the top-level parent.
     // ScreenManager should be responsible for all screen-related operations.
 //    public Parent getTopLevelParent() {

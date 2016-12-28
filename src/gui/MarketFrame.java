@@ -1,17 +1,18 @@
 package gui;
 
+import game.Catalog;
+import game.CatalogItem;
+import game.Game;
 import game.Player;
 import gui.core.ActionListener;
 import gui.core.Button;
 import gui.core.Component;
-import gui.core.InteractiveComponent;
-import static gui.core.InteractiveComponent.propagateMouseEvent;
-import gui.core.MouseEvent;
-import gui.core.Parent;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import processing.core.PApplet;
-import processing.core.PFont;
 import processing.core.PGraphics;
 import processing.core.PImage;
 import processing.event.KeyEvent;
@@ -22,27 +23,65 @@ import processing.event.KeyEvent;
  * @author Bugra Felekoglu
  */
 public class MarketFrame extends Frame implements ActionListener {
+    /** Context of this market */
+    private Game game;
+    private Player player;
     
     private PImage background;
-    private Player player;
     
     private int cart = 0;
     
     private final Button buyBtn = new Button();
-    private MarketItem volcano;
-    private MarketItem oneBounce;
-    private MarketItem bounce;
-    private MarketItem atom;
-    private final List<MarketItem> marketItems = new ArrayList<>(4);
+    private final List<MarketItem> items = new ArrayList<>(4);
     
-    private final Counter volcanoCounter = new Counter();
-    private final Counter oneBounceCounter = new Counter();
-    private final Counter bounceCounter = new Counter();
-    private final Counter atomCounter = new Counter();
-    private final List<Counter> counters = new ArrayList<>(4);
+    private final static Map<String, Integer> priceTable = new HashMap<>();
+    static {
+        priceTable.put("simple_bomb", 100);
+        priceTable.put("bouncing_bomb", 300);
+        priceTable.put("1bounce_bomb", 200);
+        priceTable.put("volcano_bomb", 250);
+    }
     
-    public void setPlayer(Player player) {
-        this.player = player;
+    private final static int hpad = 50, vpad = 40;
+    
+    public void attachGame(Game game) {
+        this.game = game;
+        
+        int x = hpad, y = 105;
+        Catalog catalog = game.getCatalog();
+        Iterator<CatalogItem> iterator = catalog.iterator();
+        while (iterator.hasNext()) {
+            CatalogItem item = iterator.next();
+            if (catalog.isBomb(item.getId())) {
+                MarketItem marketItem = new MarketItem(
+                        item, priceTable.get(item.getKey()));
+                add(marketItem, marketItem.getCounter());
+                marketItem.setLocation(x, y);
+                marketItem.setSize(290, 130);
+                marketItem.getCounter().init();
+                marketItem.addActionListener(this);
+                items.add(marketItem);
+                x += 290 + hpad;
+                if (x + 290 + hpad > width) {
+                    x = hpad;
+                    y += 130 + vpad;
+                }
+            }
+        }
+    }
+    
+    public void detachGame() {
+        this.game = null;
+        Iterator<MarketItem> iterator = items.iterator();
+        while (iterator.hasNext()) {
+            MarketItem item = iterator.next();
+            remove(item);
+            iterator.remove();
+        }
+    }
+    
+    void playerChanged() {
+        player = game.getCurrentPlayer();
     }
     
     @Override
@@ -52,77 +91,22 @@ public class MarketFrame extends Frame implements ActionListener {
         background = context.loadImage("background/market.png");
         setBackground(background);
         
-        volcano = new MarketItem("volcano", 100);
-        oneBounce = new MarketItem("volcano", 200);
-        bounce = new MarketItem("volcano", 300);
-        atom = new MarketItem("volcano", 400);
-        
-        marketItems.add(volcano);
-        marketItems.add(oneBounce);
-        marketItems.add(bounce);
-        marketItems.add(atom);
-        
-        counters.add(volcanoCounter);
-        counters.add(oneBounceCounter);
-        counters.add(bounceCounter);
-        counters.add(atomCounter);
-        
-        add(buyBtn, volcano, bounce, oneBounce, atom,
-            volcanoCounter, bounceCounter, oneBounceCounter, atomCounter);
+        add(buyBtn);
         
         buyBtn.setStateImages(context.
                 loadImage("component/button/buy_btn.png"), false);
         buyBtn.setLocation(812, 467);
         buyBtn.setSize(240, 95);
-        buyBtn.setMnemonic(66);     // mnemonic => "b"
-        buyBtn.addActionListener(this); 
-        
-        volcano.setStateImages(context.
-                loadImage("component/button/volcano.png"));
-        volcano.setLocation(54, 105);
-        volcano.setSize(290, 130);
-        volcano.setFocusKey(49);    // mnemonic => "1"
-        volcano.setCounter(volcanoCounter);
-        volcanoCounter.setLocation(340, 110);
-        
-        bounce.setStateImages(context.
-                loadImage("component/button/volcano.png"));
-        bounce.setLocation(394, 105);
-        bounce.setSize(290, 130);
-        bounce.setFocusKey(50);    // mnemonic => "2"
-        bounce.setCounter(bounceCounter);
-        bounceCounter.setLocation(680, 110);
-        
-        oneBounce.setStateImages(context.
-                loadImage("component/button/volcano.png"));
-        oneBounce.setLocation(734, 105);
-        oneBounce.setSize(290, 130);
-        oneBounce.setFocusKey(51);    // mnemonic => "3"
-        oneBounce.setCounter(oneBounceCounter);
-        oneBounceCounter.setLocation(1020, 110);
-        
-        atom.setStateImages(context.
-                loadImage("component/button/volcano.png"));
-        atom.setLocation(54, 275);
-        atom.setSize(290, 130);
-        atom.setFocusKey(52);    // mnemonic => "4"
-        atom.setCounter(atomCounter);
-        atomCounter.setLocation(340, 280);
-        
-        for (Counter counter : counters)
-            counter.setSize(25, 25);
-        
-        for (MarketItem item : marketItems)
-            item.addActionListener(this);
+        buyBtn.setMnemonic(10);     // mnemonic => "Enter"
+        buyBtn.addActionListener(this);
         
         super.init(context);
     }
     
     @Override
-    public void draw(PGraphics g) {
-        super.draw(g);
-                 
-        g.pushMatrix();
+    protected void drawComponents(PGraphics g) {
+        super.drawComponents(g);
+        
         g.textAlign(g.LEFT, g.TOP);
         g.fill(255);
         g.textSize(30);
@@ -131,72 +115,54 @@ public class MarketFrame extends Frame implements ActionListener {
         if(player.getMoney() - cart < 0)
             g.fill(0xFFDF2D29);
         g.text(player.getMoney() - cart, 655, 505);   // Balance
-        g.popMatrix();
+    }
+    
+    private int lastItem = 0;
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == 37 || e.getKeyCode() == 39) { // <- / ->
+            items.get(lastItem).setHighlighted(false);
+            int nav = e.getKeyCode() == 37 ? -1 : 1;
+            do {
+                lastItem = Math.floorMod(lastItem + nav, items.size());
+            } while (!items.get(lastItem).isEnabled());
+            items.get(lastItem).setHighlighted(true);
+            setFocusedChild(items.get(lastItem));
+        }
     }
     
     @Override
     public void actionPerformed(Component comp) {
         if (comp == closeBtn) {
-            clearMarket();
+            reset();
             ((ScreenManager)getContext()).closeFrame();
         }
-        else if (comp == buyBtn && player.getMoney() != 0) {
-            for (MarketItem btn : marketItems)
-                if(btn.getQuantity() > 0)
-//                    player.getInventory().add(0, btn.getQuantity());
+        else if (comp == buyBtn) {
+            for (MarketItem marketItem : items) {
+                int itemId = marketItem.getItem().getId();
+                int quantity = marketItem.getCounter().getQuantity();
+                if(quantity > 0)
+                    player.getInventory().add(itemId, quantity);
+            }
             player.updateCash(-cart);
-            clearMarket();
+            ((GameScreen)owner).purchaseMade();
+            actionPerformed(closeBtn);
         }
         else if (comp instanceof MarketItem) {
-            for (MarketItem item : marketItems){
+            for (MarketItem item : items){
                 if(comp == item){
-                    cart += item.charge();
-                    item.getCounter().setQuantity(item.getQuantity());
-                    if(cart > player.getMoney())
-                        buyBtn.setEnabled(false);
-                    else
-                        buyBtn.setEnabled(true);
+                    cart += item.getCounter().collect();
+                    buyBtn.setEnabled(cart <= player.getMoney());
                 }
             }
         }
     }
     
-    public void clearMarket() {
+    private void reset() {
         cart = 0;
         buyBtn.setEnabled(true);
-        for (MarketItem item : marketItems){
-            item.clear();
-            item.getCounter().setQuantity(0);
-        }
-            
+        items.forEach((item) -> item.getCounter().setQuantity(0));
     }
     
-    protected class Counter extends Component {
-        private int quantity = 0;
-        
-        public void setQuantity(int quantity) {
-            this.quantity = quantity;
-        }
-        
-        @Override
-        public void draw(PGraphics g){
-            if(quantity > 0){
-                g.pushMatrix();
-                g.fill(0xFFE30613);
-                g.ellipse(0, 0, width, height);
-                g.fill(255);
-                if(quantity < 10) {
-                    g.textSize(32);
-                    g.textAlign(g.CENTER, g.CENTER);
-                    g.text(quantity, 0, -6);
-                }
-                else {
-                    g.textSize(30);
-                    g.textAlign(g.CENTER, g.CENTER);
-                    g.text(quantity, -2, -6);
-                }
-                g.popMatrix();
-            }
-        }
-    }
 }

@@ -48,6 +48,8 @@ public class GameScreen extends Parent implements ActionListener, Observer {
         stage.setSize(1280, 648);
         
         inventoryView.attachGame(game);
+        ((MarketFrame)((ScreenManager)getContext())
+                .getFrame(ScreenManager.FRAME_MARKET)).attachGame(game);
         launchBtn.setEnabled(true);
         marketBtn.setEnabled(true);
     }
@@ -59,6 +61,8 @@ public class GameScreen extends Parent implements ActionListener, Observer {
         remove(stage);
         setFocusedChild(null);
         inventoryView.detachGame();
+        ((MarketFrame)((ScreenManager)getContext())
+                .getFrame(ScreenManager.FRAME_MARKET)).detachGame();
     }
 
     @Override
@@ -129,14 +133,14 @@ public class GameScreen extends Parent implements ActionListener, Observer {
         if (comp == marketBtn) {
             Frame market = ((ScreenManager) getContext())
                     .showFrame(ScreenManager.FRAME_MARKET);
-            ((MarketFrame) market).setPlayer(game.getCurrentPlayer());
+            ((MarketFrame) market).playerChanged();
         }
         else if (comp == pauseBtn) {
             Frame pauseMenu = ((ScreenManager) getContext())
                     .showFrame(ScreenManager.FRAME_PAUSE_MENU);
         }
         else if (comp == launchBtn) {
-            game.getStage().finalizeInteraction();
+            stage.finalizeInteraction();
             launchBtn.setText("LOCKED IN", 60);
             launchBtn.setEnabled(false);
             marketBtn.setEnabled(false);
@@ -167,9 +171,13 @@ public class GameScreen extends Parent implements ActionListener, Observer {
         }
     }
     
-    void interactionChanged() {
+    void interactionChanged() { // Called by InventoryView
         launchBtn.setText(stage.getAction(), 75);
         launchBtn.setTint(stage.getActionColor());
+    }
+    
+    void purchaseMade() { // Called by Market
+        inventoryView.update();
     }
 
     private class ScoreBoard extends Component {

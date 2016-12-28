@@ -5,10 +5,9 @@
  */
 package gui;
 
-import gui.MarketFrame.Counter;
+import game.CatalogItem;
 import gui.core.ActionListener;
-import gui.core.InteractiveComponent;
-import static gui.core.InteractiveComponent.propagateMouseEvent;
+import gui.core.Component;
 import gui.core.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,283 +19,175 @@ import processing.event.KeyEvent;
  *
  * @author Buğra Felekoğlu
  */
-public class MarketItem extends InteractiveComponent {
-        /**
-         * Current state of this button.
-         *      - 0: normal & hover
-         *      - 1: pressed
-         */
-        private int state = 0;
-        
-        /**
-        * Sprite sheet of the state images of this button.
-        */
-        protected PImage[] stateImages; // normal & hover, pressed
+public class MarketItem extends InventoryView.AbstractButton {
+    /**
+    * Sprite sheet of the state images of this button.
+    */
+    protected PImage[] stateImages; // normal & hover, pressed
 
-        /**
-         * Name of the item
-         */
-        private String name;
+    private final CatalogItem item;
+    private final int cost;
 
-        /**
-         * Cost of this item
-         */
-        private int cost;
-        
-        /**
-         * Current quantity of this button
-         */
+    /** Counter of this item */
+    private final Counter counter = new Counter();
+
+    /**
+     * The objects that listen to the invocation of this button.
+     */
+    private final List<ActionListener> actionListeners = new ArrayList<>(1);
+
+    /**
+     * Constructor that takes name and cost of the item which is known
+     * before the creation of object
+     */
+    public MarketItem(CatalogItem item, int cost) {
+        this.item = item;
+        this.cost = cost;
+    }
+    
+    CatalogItem getItem() {
+        return item;
+    }
+
+    Counter getCounter() {
+        return counter;
+    }
+    
+    void setHighlighted(boolean highlighted) {
+        state = highlighted ? 1 : 0;
+    }
+
+    public void clear() {
+        counter.setQuantity(0);
+    }
+
+    @Override
+    public void draw(PGraphics g) {
+        g.textSize(25);
+        g.textAlign(g.CENTER);
+        if (state == 0) {
+            g.fill(0, 200);
+            g.rect(0, 0, width, height, 11, 11, 11, 11);
+        }
+        else if (state == 1 || state == 2) {
+            if (counter.getQuantity() != 0) {
+                g.fill(0xBBE30613);
+                g.rect(0, 0, width / 2, height, 11, 0, 0, 11);
+                g.fill(0xBB009640);
+                g.rect(width / 2, 0, width / 2, height, 0, 11, 11, 0);
+            }
+            else {
+                g.fill(0xBB009640);
+                g.rect(0, 0, width, height, 11, 11, 11, 11);
+            }
+        }
+        g.fill(255);
+        g.text(item.getName(), width / 2, height / 2 - 15);
+        g.text(String.valueOf(cost), width / 2, height - 30);
+    }
+
+    /**
+     * Associates the specified action listener to this button.
+     * @return False if this button is already associated to the specified
+     *         action listener, true otherwise.
+     */
+    public boolean addActionListener(ActionListener listener) {
+        if (actionListeners.contains(listener))
+            return false;
+        actionListeners.add(listener);
+        return true;
+    }
+
+    /**
+     * Disassociates the specified action listener from this button.
+     * @return False if the specified action listener is not associated to this
+     *         button, true otherwise.
+     */
+    public boolean removeActionListener(ActionListener listener) {
+        return actionListeners.remove(listener);
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == 109 && counter.getQuantity() != 0) { // -
+            counter.decrement();
+            invoke();
+        }      
+        else if (e.getKeyCode() == 107) { // +
+            counter.increment();
+            invoke();
+        }          
+    }
+
+    private void invoke() {
+        for (ActionListener listener : actionListeners)
+            listener.actionPerformed(this);
+    }
+
+    @Override
+    public boolean mouseClicked(MouseEvent e) {
+        if(e.getX() > width / 2 || counter.getQuantity() == 0)
+            counter.increment();
+        else 
+            counter.decrement();
+        invoke();
+        return true;
+    }
+    
+    class Counter extends Component {
         private int quantity = 0;
-        
-        /**
-         * Counter of item
-         */
-        private Counter counter;
-        
-        /**
-         * isAdded: Status of the click, is item added or removed
-         * hover: is mouse over the button
-         */
-        private boolean isAdded, 
-                        hover = false;
-        
-        /**
-         * Key code for focusing to this button.
-         */
-        private int focusKey;
+        private int diff = 0;
 
-        /**
-         * The objects that listen to the invocation of this button.
-         */
-        private final List<ActionListener> actionListeners = new ArrayList<>(1);
-        
-        /**
-         * Constructor that takes name and cost of the item which is known
-         * before the creation of object
-         */
-        public MarketItem (String name, int cost) {
-            this.name = name;
-            this.cost = cost;
+        void init() {
+            int[] parentBounds = MarketItem.this.bounds;
+            setLocation(parentBounds[2] - 4, parentBounds[1] - 4);
+            setSize(25, 25);
         }
         
-        public int getQuantity() {
+        int getQuantity() {
             return quantity;
         }
-        
-        public void updateQuantity(int num) {
-            quantity += num;
+        void setQuantity(int quantity) {
+            if (quantity < 0)
+                throw new RuntimeException("The quantity of an item cannot " +
+                        "be negative.");
+            this.quantity = quantity;
+        }
+        void increment() {
+            quantity++;
+            diff++;
+        }
+        void decrement() {
+            if (quantity == 0)
+                throw new RuntimeException("The quantity for this item is " +
+                        "already zero.");
+            quantity--;
+            diff--;
         }
         
-        public int charge() {
-            if(isAdded == true){
-                updateQuantity(1);
-                return cost;
-            }
-            else{
-                if (quantity > 0){
-                    updateQuantity(-1);
-                    return -cost;
-                }
-                else
-                    return 0;
-            }
-        }
-        
-        public void setCounter(Counter counter) {
-            this.counter = counter;
-        }
-        
-        public Counter getCounter() {
-            return counter;
-        }
-        
-        public void clear() {
-            quantity = 0;
-        }
-        
-        /**
-         * Sets the interested key for this button.
-         * When this key is pressed, the button will be invoked and do its
-         * click-action.
-         * @param key Button mnemonic, can be a key combination.
-         */
-        public void setFocusKey(int key) {
-            focusKey = key;
-            if (parent != null)
-                parent.associateKeys(this, key);
-        }
-        
-        /**
-         * Sets the state images for this button.
-         * @param stateImages Sprite sheet of the state images of this button.
-         *                    The images should be placed vertically.
-         */
-        public void setStateImages(PImage stateImages) {
-            this.stateImages = new PImage[2];
-            int stateHeight = stateImages.height / 2;
-            for (int i = 0; i < 2; i++) {
-                this.stateImages[i] = stateImages.get(0, i * stateHeight, 
-                        stateImages.width, stateHeight);
-                this.stateImages[i].loadPixels();
-            }
+        int collect() {
+            int change = diff * cost;
+            diff = 0;
+            return change;
         }
         
         @Override
-        public void draw(PGraphics g) {
-            g.image(stateImages[state], 0, 0);
-            if (state == 0 && hover) {
-                if(isAdded) {
-                    g.pushMatrix();
-                    g.fill(0xBB009640);
-                    g.rect(width/2, 0, width/2, height, 0, 11, 11, 0);
-                    g.popMatrix();
+        public void draw(PGraphics g){
+            if(quantity > 0){
+                g.fill(0xFFE30613);
+                g.ellipse(0, 0, width, height);
+                g.fill(255);
+                if(quantity < 10) {
+                    g.textSize(32);
+                    g.textAlign(g.CENTER, g.CENTER);
+                    g.text(quantity, 0, -6);
                 }
                 else {
-                    g.pushMatrix();
-                    g.fill(0xBBE30613);
-                    g.rect(0, 0, width/2, height, 11, 0, 0, 11);
-                    g.popMatrix();
+                    g.textSize(30);
+                    g.textAlign(g.CENTER, g.CENTER);
+                    g.text(quantity, -2, -6);
                 }
             }
-            else if (state == 1) {
-                if(isAdded) {
-                    g.pushMatrix();
-                    g.fill(0xBB009640);
-                    g.rect(width/2, 10, width/2, height-10, 0, 11, 11, 0);
-                    g.popMatrix();
-                }
-                else {
-                    g.pushMatrix();
-                    g.fill(0xBBE30613);
-                    g.rect(0, 10, width/2, height-10, 11, 0, 0, 11);
-                    g.popMatrix();
-                }
-            }
-        }
-
-        /**
-         * Associates the specified action listener to this button.
-         * @return False if this button is already associated to the specified
-         *         action listener, true otherwise.
-         */
-        public boolean addActionListener(ActionListener listener) {
-            if (actionListeners.contains(listener))
-                return false;
-            actionListeners.add(listener);
-            return true;
-        }
-
-        /**
-         * Disassociates the specified action listener from this button.
-         * @return False if the specified action listener is not associated to this
-         *         button, true otherwise.
-         */
-        public boolean removeActionListener(ActionListener listener) {
-            return actionListeners.remove(listener);
-        }
-
-        @Override
-        public void keyPressed(KeyEvent e) {
-            if (e.getKeyCode() == focusKey)
-                parent.setFocusedChild(this);
-            else if (e.getKeyCode() == 112){
-                isAdded = false;
-                state = 1;
-                invoke();
-            }      
-            else if (e.getKeyCode() == 113){
-                isAdded = true;
-                state = 1;
-                invoke();
-            }          
-        }
-        
-        @Override
-        public void keyReleased(KeyEvent e) {
-            if (e.getKeyCode() == focusKey)
-                parent.setFocusedChild(this);
-            else if (e.getKeyCode() == 112)
-                state = 0;
-            else if (e.getKeyCode() == 113)
-                state = 0;
-        }
-
-        private void invoke() {
-            for (ActionListener listener : actionListeners)
-                listener.actionPerformed(this);
-        }
-
-        @Override
-        public boolean handleMouseEvent(MouseEvent event) {
-            if (event.getAction() != processing.event.MouseEvent.EXIT
-                    && !consumeEvent(event)) return false;
-            if (!enabled) return true;
-            return propagateMouseEvent(this, event);
-        }
-
-        private boolean consumeEvent(MouseEvent e) {
-            return true;
-        }
-        
-        @Override
-        public boolean mousePressed(MouseEvent e) {
-            if(e.getX() < width/2 && e.getY() < height)
-                isAdded = false;
-            else 
-                isAdded = true;
-            state = 1;
-            return true;
-        }
-
-        @Override
-        public boolean mouseReleased(MouseEvent e) {
-            if(e.getX() < width/2 && e.getY() < height)
-                isAdded = false;
-            else 
-                isAdded = true;
-            state = 0;
-            hover = true;
-            return true;
-        }
-
-        @Override
-        public boolean mouseClicked(MouseEvent e) {
-            if(e.getX() < width/2 && e.getY() < height)
-                isAdded = false;
-            else 
-                isAdded = true;
-            invoke();
-            return true;
-        }
-
-        @Override
-        public boolean mouseEntered(MouseEvent e) {
-            if(e.getX() < width/2 && e.getY() < height)
-                isAdded = false;
-            else 
-                isAdded = true;
-            state = 0;
-            hover = true;
-            return true;
-        }
-
-        @Override
-        public boolean mouseExited(MouseEvent e) {
-            state = 0;
-            hover = false;
-            return true;
-        }
-        
-        @Override
-        public boolean mouseMoved(MouseEvent e) {
-            if(hover) {
-                if(e.getX() < width/2 && e.getY() < height)
-                    isAdded = false;
-                else 
-                    isAdded = true;
-                state = 0;
-                hover = true;
-            }
-            return true;
         }
     }
+}
