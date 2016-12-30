@@ -1,5 +1,6 @@
 package gui;
 
+import game.Game;
 import processing.core.PApplet;
 
 /**
@@ -12,7 +13,8 @@ public class InGameFrame extends Frame {
         GameScreen gameScreen = (GameScreen)owner;
         PApplet context = getContext();
             ((ScreenManager) context).closeFrame();
-        gameScreen.detachGame();
+        Game game = gameScreen.detachGame();
+        game.stop();
         ((ScreenManager) context)
                 .switchScreen(ScreenManager.SCREEN_MAIN_MENU);
     }

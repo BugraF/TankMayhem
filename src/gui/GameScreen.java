@@ -54,8 +54,9 @@ public class GameScreen extends Parent implements ActionListener, Observer {
         marketBtn.setEnabled(true);
     }
     
-    public void detachGame() {
+    public Game detachGame() {
         game.removeTurnListener(this);
+        Game temp = game;
         game = null;
         scoreBoard.setPlayers(null);
         remove(stage);
@@ -63,6 +64,7 @@ public class GameScreen extends Parent implements ActionListener, Observer {
         inventoryView.detachGame();
         ((MarketFrame)((ScreenManager)getContext())
                 .getFrame(ScreenManager.FRAME_MARKET)).detachGame();
+        return temp;
     }
 
     @Override

@@ -103,7 +103,7 @@ public class Game implements SelectionChangeListener {
             tank.init(x, y, ((Number)mode.get("damage")).floatValue(), 
                             ((Number)mode.get("shield")).floatValue());
             
-            tank.fireAngle = (float)(Math.PI / 6);
+            tank.fireAngle = (float)(-Math.PI / 6);
             tank.firePower = 0.8f;
             
             addEntity(tank);
@@ -123,6 +123,9 @@ public class Game implements SelectionChangeListener {
         Tank tank = getActiveTank();
         stage.shiftCamera((int)tank.getX(), (int)tank.getY());
         turn.next();
+    }
+    public void stop() {
+        physics.stop();
     }
     
     public Player[] getPlayers() {
