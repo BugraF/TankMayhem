@@ -21,9 +21,9 @@ public abstract class Decoration {
     static Decoration create(String name) {
         switch (name) {
             case "Desert": return new DesertDecoration();
-//            case "Cloudy": return new Cloudy();
-//            case "Rainy": return new Rainy();
-//            case "Snowy": return new Snowy();
+            case "Sunny": return new SunnyDecoration();
+            case "Rainy": return new RainyDecoration();
+            case "Snowy": return new SnowyDecoration();
             default: throw new RuntimeException("No such decoration: " + name);
         }
     }
