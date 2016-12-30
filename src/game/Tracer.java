@@ -30,8 +30,8 @@ public class Tracer {
         float angle = -(tank.fireAngle + tank.getRotation());
         float sin = (float) Math.sin(angle);
         float cos = (float) Math.cos(angle);
-        float x1 = tank.getX() + 40 * cos; // TODO 40: barrel width
-        float y1 = tank.getBarrelPosition() + 40 * sin;
+        float x1 = tank.getBarrelX() + 40 * cos; // TODO 40: barrel width
+        float y1 = tank.getBarrelY() + 40 * sin;
         float velX = 1500 * tank.firePower * cos;
         float velY = 1500 * tank.firePower * sin;
         
