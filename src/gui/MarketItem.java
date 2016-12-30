@@ -44,6 +44,9 @@ public class MarketItem extends InventoryView.AbstractButton {
     }
     
     void setHighlighted(boolean highlighted) {
+        if (!enabled)
+            throw new RuntimeException("Disabled market item cannot be "
+                    + "highlighted.");
         state = highlighted ? 1 : 0;
     }
 
@@ -53,6 +56,7 @@ public class MarketItem extends InventoryView.AbstractButton {
 
     @Override
     public void draw(PGraphics g) {
+        g.stroke(0, 0, 255, 200);
         g.textSize(25);
         g.textAlign(g.CENTER);
         if (state == 0) {
@@ -71,9 +75,10 @@ public class MarketItem extends InventoryView.AbstractButton {
                 g.rect(0, 0, width, height, 11, 11, 11, 11);
             }
         }
+        g.image(item.getIcon(), 50, 55);
         g.fill(255);
-        g.text(item.getName(), width / 2, height / 2 - 15);
-        g.text(String.valueOf(cost), width / 2, height - 30);
+        g.text(item.getName(), width / 2, height / 2 - 20);
+        g.text(String.valueOf(cost), width / 2 + 50, height - 35);
     }
 
     /**
