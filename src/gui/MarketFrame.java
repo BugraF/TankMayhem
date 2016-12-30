@@ -124,9 +124,7 @@ public class MarketFrame extends Frame implements ActionListener {
         if (e.getKeyCode() == 37 || e.getKeyCode() == 39) { // <- / ->
             items.get(lastItem).setHighlighted(false);
             int nav = e.getKeyCode() == 37 ? -1 : 1;
-            do {
-                lastItem = Math.floorMod(lastItem + nav, items.size());
-            } while (!items.get(lastItem).isEnabled());
+            lastItem = Math.floorMod(lastItem + nav, items.size());
             items.get(lastItem).setHighlighted(true);
             setFocusedChild(items.get(lastItem));
         }
@@ -146,7 +144,7 @@ public class MarketFrame extends Frame implements ActionListener {
                     player.getInventory().add(itemId, quantity);
             }
             player.updateCash(-cart);
-            ((GameScreen)owner).purchaseMade();
+            player.getInventory().notifyObservers();
             actionPerformed(closeBtn);
         }
         else if (comp instanceof MarketItem) {

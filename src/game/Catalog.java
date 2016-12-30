@@ -180,7 +180,9 @@ public class Catalog {
         public PowerUp create(Object... args) {
             PowerUp powerup = new PowerUp(context) {
                 public void activate(Tank tank) {
-                    tank.getPlayer().getInventory().add(id);
+                    Inventory inventory = tank.getPlayer().getInventory();
+                    inventory.add(id);
+                    inventory.notifyObservers();
                 }
             };
             powerup.setImages(box, parachute);

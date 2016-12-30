@@ -177,10 +177,6 @@ public class GameScreen extends Parent implements ActionListener, Observer {
         launchBtn.setText(stage.getAction(), 75);
         launchBtn.setTint(stage.getActionColor());
     }
-    
-    void purchaseMade() { // Called by Market
-        inventoryView.update();
-    }
 
     private class ScoreBoard extends Component {
 
