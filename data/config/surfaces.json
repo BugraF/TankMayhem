@@ -1,3 +1,7 @@
 [
-    {"@image": "terrain/surface/surface1.png", "sky": 800}
+    {"@image": "terrain/surface/surface1.png", "sky": 600},
+    {"@image": "terrain/surface/surface2.png", "sky": 600},
+    {"@image": "terrain/surface/surface3.png", "sky": 600},
+    {"@image": "terrain/surface/surface4.png", "sky": 600},
+    {"@image": "terrain/surface/surface5.png", "sky": 600}
 ]
