@@ -66,7 +66,8 @@ public class Catalog {
         PImage parachute = assetManager.loadAsset("entity/powerup/parachute.png");
         
         PImage i4 = assetManager.loadAsset("entity/powerup/airstrike.png");
-        items[4] = new CollectiblePowerUp(4, "airstrike", "Airstrike", i4, 
+        PImage b4 = assetManager.loadAsset("entity/powerup/airstrike_badge.png");
+        items[4] = new CollectiblePowerUp(4, "airstrike", "Airstrike", i4, b4,
                 box, parachute) {
             public Interaction interact(Object... args) {
                 return new AirstrikeInteraction(context);
@@ -74,7 +75,8 @@ public class Catalog {
         };
         
         PImage i5 = assetManager.loadAsset("entity/powerup/tracer.png");
-        items[5] = new CollectiblePowerUp(5, "tracer", "Tracer", i5, 
+        PImage b5 = assetManager.loadAsset("entity/powerup/tracer_badge.png");
+        items[5] = new CollectiblePowerUp(5, "tracer", "Tracer", i5, b5,
                 box, parachute) {
             public Interaction interact(Object... args) {
                 return null;
@@ -158,8 +160,12 @@ public class Catalog {
     }
     
     private abstract class PowerUpDefinition extends CatalogItem {
-        public PowerUpDefinition(int id, String key, String name, PImage icon) {
+        protected final PImage badge;
+        
+        public PowerUpDefinition(int id, String key, String name, PImage icon, 
+                PImage badge) {
             super(id, key, name, icon);
+            this.badge = badge;
         }
 
         @Override
@@ -170,8 +176,8 @@ public class Catalog {
         private final PImage box, parachute;
         
         public CollectiblePowerUp(int id, String key, String name, PImage icon,
-                PImage box, PImage parachute) {
-            super(id, key, name, icon);
+                PImage badge, PImage box, PImage parachute) {
+            super(id, key, name, icon, badge);
             this.box = box;
             this.parachute = parachute;
         }
@@ -183,6 +189,7 @@ public class Catalog {
                     Inventory inventory = tank.getPlayer().getInventory();
                     inventory.add(id);
                     inventory.notifyObservers();
+                    showBadge(badge);
                 }
             };
             powerup.setImages(box, parachute);

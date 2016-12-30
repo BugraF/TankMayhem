@@ -2,6 +2,7 @@ package game;
 
 import game.engine.PhysicsObj;
 import game.engine.RenderObj;
+import game.engine.Renderer;
 import game.engine.World;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,6 +53,11 @@ public abstract class PowerUp implements PhysicsObj, RenderObj {
     }
 
     public abstract void activate(Tank tank);
+    
+    protected void showBadge(PImage badge) {
+        Renderer renderer = game.getStage().getRenderer();
+        renderer.add(new Badge(renderer, badge, x, y));
+    }
     
     void init(int x, int y) {
         this.x = lastX = x;
