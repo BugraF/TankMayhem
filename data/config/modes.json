@@ -3,14 +3,16 @@
         "@image": "entity/tank/assault.png",
         "barrel": -7,
         "damage": 1.2,
-        "shield": 0.8
+        "shield": 0.8,
+        "int[hitbox": [43, 6, 56, 6, 94, 24, 99, 29, 85, 39, 14, 39, 0, 29, 0, 24]
     },
     
     "Balanced": {
         "@image": "entity/tank/balanced.png",
         "barrel": -8,
         "damage": 1,
-        "shield": 1
+        "shield": 1,
+        "int[hitbox": [38, 3, 57, 3, 72, 14, 99, 28, 89, 39, 10, 39, 0, 28, 24, 14]
     },
     
     "Armored": {
