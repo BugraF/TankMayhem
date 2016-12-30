@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.event.KeyEvent;
@@ -21,7 +23,7 @@ import processing.event.KeyEvent;
  *
  * @author Burak Gök
  */
-public class InventoryView extends Parent {
+public class InventoryView extends Parent implements Observer {
     /** Context of this inventory view */
     private Game game;
     private Catalog catalog;
@@ -35,6 +37,8 @@ public class InventoryView extends Parent {
     private final InventoryItemList powerupList = new InventoryItemList();
     private InventoryItem[] items;
     private boolean expanded = false;
+    
+    private int tracerId;
 
     @Override
     public void init(PApplet context) {
@@ -49,9 +53,12 @@ public class InventoryView extends Parent {
         Player[] players = game.getPlayers();
         lastSelection = new HashMap<>(players.length);
         CatalogItem starter = catalog.get("simple_bomb");
-        for (Player player : players)
+        for (Player player : players) {
             lastSelection.put(player, starter);
+            player.getInventory().addObserver(this);
+        }
         
+        tracerId = catalog.get("tracer").getId();
         items = new InventoryItem[Catalog.SIZE];
         initializeItems();
     }
@@ -157,14 +164,14 @@ public class InventoryView extends Parent {
     private void itemSelected(InventoryItem inventoryItem) {
         CatalogItem item = inventoryItem.getItem();
         itemSelected(item);
-        if (item.getKey().equals("tracer"))
+        if (item.getId() == tracerId)
             inventoryItem.setEnabled(false);
     }
     
     private void itemSelected(CatalogItem item) {
         collapse();
         game.selectionChanged(item.getId());
-        if (!item.getKey().equals("tracer")) {
+        if (item.getId() != tracerId) {
             selectedItem.setItem(item);
             lastSelection.put(game.getCurrentPlayer(), item);
             ((GameScreen)parent).interactionChanged();
@@ -176,9 +183,8 @@ public class InventoryView extends Parent {
      * last interaction if its corresponding item is available.
      */
     void playerChanged() {
-        Player player = game.getCurrentPlayer();
         update();
-        
+        Player player = game.getCurrentPlayer();
         CatalogItem lastItem = lastSelection.get(player);
         if (player.getInventory().get(lastItem.getId()) == 0)
             lastItem = catalog.get("simple_bomb");
@@ -188,15 +194,19 @@ public class InventoryView extends Parent {
     /**
      * Updates the availability information of inventory items.
      */
-    void update() {
+    private void update() {
         Player player = game.getCurrentPlayer();
+        
         int availableBombs = 0, availablePowerUps = 0;
         for (InventoryItem inventoryItem : items) {
             int itemId = inventoryItem.getItem().getId();
             boolean available = player.getInventory().get(itemId) != 0;
-            inventoryItem.setEnabled(available);
-            if (catalog.isBomb(itemId)) availableBombs++;
-            else if (catalog.isPowerUp(itemId)) availablePowerUps++;
+            if (itemId != tracerId || !game.getStage().isTracerEnabled())
+                inventoryItem.setEnabled(available);
+            if (available) {
+                if (catalog.isBomb(itemId)) availableBombs++;
+                else if (catalog.isPowerUp(itemId)) availablePowerUps++;
+            }
         }
         bombSelector.setAvailable(availableBombs);
         powerupSelector.setAvailable(availablePowerUps);
@@ -219,6 +229,12 @@ public class InventoryView extends Parent {
             categorySelected(powerupSelector);
         else if (e.getKeyCode() == 8) // Backspace
             collapse();
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        if (o == game.getCurrentPlayer().getInventory())
+            update();
     }
     
     private class SelectedItem extends InventoryItem {
@@ -260,13 +276,14 @@ public class InventoryView extends Parent {
             g.stroke(255);
             g.strokeWeight(3);
             g.fill(255);
+            g.imageMode(g.CENTER);
             g.textAlign(g.CENTER, g.CENTER);
             g.textSize(38);
             
             int quantity = game.getCurrentPlayer().getInventory()
                     .get(item.getId());
-            int x = leftSec / 2, y = height / 2;
-//            g.image(item.getIcon(), x, y);
+            int x = leftSec / 2 + 10, y = height / 2;
+            g.image(item.getIcon(), x, y);
             x = (leftSec + width - rightSec) / 2;
             y -= 9;
             g.text(item.getName(), x, y);
@@ -284,6 +301,9 @@ public class InventoryView extends Parent {
         }
         
         void setHighlighted(boolean highlighted) {
+            if (!enabled)
+                throw new RuntimeException("Disabled inventory item cannot "
+                        + "be highlighted.");
             state = highlighted ? 1 : 0;
         }
     }
@@ -368,19 +388,26 @@ public class InventoryView extends Parent {
                 super.handleKeyEvent(e);
         }
 
-        private int lastItem = 0;
+        private int lastItem = -1;
         
         @Override
         public void keyPressed(KeyEvent e) {
             if (e.getKeyCode() == 38 || e.getKeyCode() == 40) { // Up / Down
-                items.get(lastItem).setHighlighted(false);
+                if (lastItem != -1 && items.get(lastItem).isEnabled())
+                    items.get(lastItem).setHighlighted(false);
                 int nav = e.getKeyCode() == 38 ? -1 : 1;
+                if (lastItem == -1) lastItem = 0;
+                int item = lastItem;
                 do {
-                    lastItem = Math.floorMod(lastItem + nav, items.size());
-                } while (!items.get(lastItem).isEnabled());
-                items.get(lastItem).setHighlighted(true);
+                    item = Math.floorMod(item + nav, items.size());
+                } while (item != lastItem && !items.get(item).isEnabled());
+                if (items.get(item).isEnabled()) {
+                    items.get(item).setHighlighted(true);
+                    lastItem = item;
+                }
+                else lastItem = -1;
             }
-            else if (e.getKeyCode() == 10) // Enter
+            else if (e.getKeyCode() == 10 && lastItem != -1) // Enter
                 itemSelected(items.get(lastItem));
         }
 
