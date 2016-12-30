@@ -32,6 +32,7 @@ public class PhysicsEngine {
     
     private final Thread powerupGenerator = new Thread(
             new PowerUpGenerator(), "PowerUpGenerator");
+    private volatile boolean active = true;
     
     public PhysicsEngine(Game game) {
         this.game = game;
@@ -126,16 +127,24 @@ public class PhysicsEngine {
                 .toArray((count) -> new Tank[count]);
     }
     
+    /**
+     * Stops the power-up generator thread.
+     */
+    void stop() {
+        active = false;
+    }
+    
     private class PowerUpGenerator implements Runnable {
         @Override
         public void run() {
-            while (true) {
+            while (active) {
                 synchronized (powerups) {
                     do {
                         try {
                             powerups.wait(15000); // 15 seconds
                         }
                         catch (InterruptedException e) {}
+                        if (!active) return;
                     } while (powerups.size() >= 5);
                 }
                 PowerUp powerup = game.getCatalog().getRandomPowerUp();
