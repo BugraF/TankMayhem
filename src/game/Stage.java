@@ -28,7 +28,7 @@ public class Stage extends InteractiveComponent {
     
     private Interaction interaction;
     private final Tracer tracer;
-    private boolean tracerEnabled = true; // Test
+    private boolean tracerEnabled = false;
     
     public Stage(Game game) {
         this.game = game;
@@ -79,10 +79,13 @@ public class Stage extends InteractiveComponent {
     }
     
     /**
-     * Enabled/disables the tracer.
+     * Enables/disables the tracer.
      */
     void setTracer(boolean enabled) {
         tracerEnabled = enabled;
+    }
+    public boolean isTracerEnabled() {
+        return tracerEnabled;
     }
     
     private boolean updateCamera = false,
