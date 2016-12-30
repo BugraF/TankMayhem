@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package gui;
 
 import game.CatalogItem;
@@ -12,7 +7,6 @@ import gui.core.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import processing.core.PGraphics;
-import processing.core.PImage;
 import processing.event.KeyEvent;
 
 /**
@@ -20,10 +14,6 @@ import processing.event.KeyEvent;
  * @author Buğra Felekoğlu
  */
 public class MarketItem extends InventoryView.AbstractButton {
-    /**
-    * Sprite sheet of the state images of this button.
-    */
-    protected PImage[] stateImages; // normal & hover, pressed
 
     private final CatalogItem item;
     private final int cost;
