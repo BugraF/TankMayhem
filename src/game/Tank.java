@@ -111,15 +111,15 @@ public class Tank implements PhysicsObj, WorldObj, RenderObj {
             g.tint(color);
             g.image(image, -image.width / 2, -image.height / 2);
             g.noTint();
-            g.rotate(-rotation);
+//            g.rotate(-rotation);
 //            g.image(mask, this.bounds[0] - x, this.bounds[1] - y);
-            g.stroke(0, 0, 255);
+//            g.stroke(0, 0, 255);
 //            g.line(vertices[10], vertices[11] + 1, 
 //                    vertices[8], vertices[9] + 1);
-            g.line(rotated[10], rotated[11] + 1, rotated[8], rotated[9] + 1);
-            g.fill(0, 0, 255);
-            g.ellipse(lcx - x - 1, lcy - y - 1, 2, 2);
-            g.ellipse(rcx - x - 1, rcy - y - 1, 2, 2);
+//            g.line(rotated[10], rotated[11] + 1, rotated[8], rotated[9] + 1);
+//            g.fill(0, 0, 255);
+//            g.ellipse(lcx - x - 1, lcy - y - 1, 2, 2);
+//            g.ellipse(rcx - x - 1, rcy - y - 1, 2, 2);
             g.popMatrix();
         }
     }
@@ -200,7 +200,7 @@ public class Tank implements PhysicsObj, WorldObj, RenderObj {
         return shieldBonus;
     }
     
-    private int lcx, lcy, rcx, rcy;
+//    private int lcx, lcy, rcx, rcy;
      
     @Override
     public void checkConstraints() { // world border, movement, hold surface
@@ -241,10 +241,10 @@ public class Tank implements PhysicsObj, WorldObj, RenderObj {
                     : (leftCollision[2] - x1) - (x2 - rightCollision[2]);
             if (Math.abs(bias) > 3) {
                 float rotate = bias > 0 ? -0.01f : 0.01f;
-                lcx = leftCollision[2]; lcy = leftCollision[3];
-                if (rightCollision.length > 0) {
-                    rcx = rightCollision[2]; rcy = rightCollision[3];
-                } else { rcx = rcy = 0; }
+//                lcx = leftCollision[2]; lcy = leftCollision[3];
+//                if (rightCollision.length > 0) {
+//                    rcx = rightCollision[2]; rcy = rightCollision[3];
+//                } else { rcx = rcy = 0; }
                 rotation += rotate;
                 update = true;
             }
@@ -340,8 +340,8 @@ public class Tank implements PhysicsObj, WorldObj, RenderObj {
     public float getVx() { return velX; }
     public float getVy() { return velY; }
     
-    public void setX(float x) { this.x = x; /*updateBounds();*/ }
-    public void setY(float y) { this.y = y; /*updateBounds();*/ }
+    public void setX(float x) { this.x = x; }
+    public void setY(float y) { this.y = y; }
     public void setVx(float vX) { this.velX = vX; }
     public void setVy(float vY) { this.velY = vY; }
     
