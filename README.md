@@ -23,3 +23,6 @@ We will develop a turn-based multiplayer 2D game involving tank battle. We inspi
 - :white_check_mark: Physics Engine
 - :white_check_mark: Rendering Engine
 - :construction: Game Logic
+
+## Build
+Processing 3.2.3 is required to build the project. You can either [download Processing](https://processing.org/download) or [download this archive](https://drive.google.com/open?id=0B2zREv4Iy2mGVlEzOFBVQ3hSMUk) which only includes the necessary libraries. You also need to [download the data files](https://drive.google.com/open?id=0B9wRM7mwf-UfRko0aDI1el9kdHc) to build and execute the project.
